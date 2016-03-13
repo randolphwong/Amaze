@@ -3,39 +3,42 @@ package com.mygdx.amaze.entities;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.mygdx.amaze.components.PlayerGraphicsComponent;
-import com.mygdx.amaze.components.PlayerInputComponent;
-import com.mygdx.amaze.components.PlayerPhysicsComponent;
+import com.mygdx.amaze.components.MonsterGraphicsComponent;
+import com.mygdx.amaze.components.MonsterInputComponent;
+import com.mygdx.amaze.components.MonsterPhysicsComponent;
 import com.mygdx.amaze.screens.PlayScreen;
 
 /**
  * Created by Randolph on 12/3/2016.
  */
-public class Player {
+public class Monster {
+
+    private PlayScreen screen;
+
+    public static final float WIDTH = 48;
+    public static final float HEIGHT = 72;
+    public float x;
+    public float y;
 
     public float spawnX;
     public float spawnY;
 
-    public static final float SIZE = 32;
-    public float x;
-    public float y;
-
     public Vector2 velocity;
 
     // components
-    public PlayerInputComponent input;
-    public PlayerPhysicsComponent physics;
-    public PlayerGraphicsComponent graphics;
+    public MonsterInputComponent input;
+    public MonsterPhysicsComponent physics;
+    public MonsterGraphicsComponent graphics;
 
-    public Player(PlayScreen screen, float x, float y) {
+    public Monster(PlayScreen screen, float x, float y) {
         this.x = spawnX = x;
         this.y = spawnY = y;
 
         this.velocity = new Vector2(0, 0);
 
-        input = new PlayerInputComponent(this);
-        physics = new PlayerPhysicsComponent(this, screen.world);
-        graphics = new PlayerGraphicsComponent(this, physics);
+        input = new MonsterInputComponent(this);
+        physics = new MonsterPhysicsComponent(this, screen.world);
+        graphics = new MonsterGraphicsComponent(this);
     }
 
     public Body getBody() {

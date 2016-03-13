@@ -1,4 +1,4 @@
-package com.mygdx.amaze.util;
+package com.mygdx.amaze.utilities;
 
 import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.MapObject;
@@ -20,7 +20,10 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-public class MapBodyBuilder {
+/**
+ * Created by Randolph on 12/3/2016.
+ */
+public class MapPhysicsBuilder {
 
     // The pixels per tile. If your tiles are 16x16, this is set to 16f
     private static float ppt = 0;
@@ -67,6 +70,21 @@ public class MapBodyBuilder {
             shape.dispose();
         }
         return bodies;
+    }
+
+    public static Array<Vector2> getSpawnLocation(String objname, Map map) {
+        Array<Vector2> locations = new Array<Vector2>();
+        MapObjects objects = map.getLayers().get(objname).getObjects();
+        Rectangle spawnBox;
+
+        int i = 0;
+        for (MapObject object : objects) {
+            spawnBox = ((RectangleMapObject) object).getRectangle();
+            locations.add(new Vector2());
+            spawnBox.getCenter(locations.get(i++));
+        }
+
+        return locations;
     }
 
     private static PolygonShape getRectangle(RectangleMapObject rectangleObject) {
