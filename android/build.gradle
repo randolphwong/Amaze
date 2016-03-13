@@ -15,7 +15,7 @@ android {
         instrumentTest.setRoot('tests')
     }
     defaultConfig {
-        applicationId "com.mygdx.amze"
+        applicationId "com.mygdx.amaze"
         minSdkVersion 8
         targetSdkVersion 20
     }
@@ -68,7 +68,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.mygdx.amze/com.mygdx.amze.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.mygdx.amaze/com.mygdx.amaze.AndroidLauncher'
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
