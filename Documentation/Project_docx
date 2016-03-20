@@ -1,0 +1,23 @@
+                                                          PROJECT DOCUMENTATION
+
+1	INTRODUCTION	
+The genesis of the game came from wanting to make a two player game which required the players to co-operate with each other to make it through a level. In this case, each level is a maze. Players start at different parts of the maze and have to find their way through to a door that can be opened only if the players are together. In the course of this, they can collect items that can be used to defeat monsters that are also present. 
+There are _ main constituent parts of the game. They are as follows:
+•	Players
+•	Monsters
+•	Items
+2	 PLAYERS
+There are two players in the game. They are able to move around the maze, pick up items and interact with monsters. The actions performed by the player are listed in detail below:
+Picking up an item: When the player steps on a tile with an item on it, they can pick it up and put it in their inventory until it fills up. The maximum number of items in inventory is 5. 
+Bumping into a monster: When a player hits a monster, their health reduces. When health becomes 0, they return to the starting point of the maze.
+Attacking a monster: When a player attacks a monster, the monster reduces health/dies. 
+
+3	 MONSTER
+The monsters move in different lanes of the maze. They interact with players. 
+Attacking a player: When the monster attacks a player, it reduces their health. 
+(TODO: Different kinds of monsters?)
+
+4	ITEMS
+There are _ types of items that a player can collect. They are as follows:
+(TODO: list them)
+Player picks an item up: If inventory is full, item remains where it is. Else, it disappears and is added to player’s inventory. 
