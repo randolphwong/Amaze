@@ -56,13 +56,11 @@ public class PlayScreen implements Screen {
     public PlayScreen(AmazeGame game) {
         this.game = game;
 
-        // camera and viewport
+        // camera and viewport (game world is set as square to reserve space for the HUDs at the sides)
         camera = new OrthographicCamera();
-        viewport = new FitViewport(AmazeGame.VIEW_WIDTH / 3, AmazeGame.VIEW_HEIGHT / 4, camera);
-        viewport.apply();
-        camera.position.set(AmazeGame.VIEW_WIDTH / 2, AmazeGame.VIEW_WIDTH / 2, 0); // centre of map
+        viewport = new FitViewport(AmazeGame.VIEW_WIDTH / 4, AmazeGame.VIEW_HEIGHT / 4, camera);
 
-        // Hud (touchpad)
+        // Hud
         hud = new Hud(game.batch);
 
         // map
@@ -119,6 +117,7 @@ public class PlayScreen implements Screen {
 
         update(delta);
 
+        viewport.apply();
         mapRenderer.render();
         debugRenderer.render(world, viewport.getCamera().combined);
 
@@ -128,6 +127,8 @@ public class PlayScreen implements Screen {
         monster.draw(game.batch);
         game.batch.end();
 
+        // draw HUD on top of everything else
+        hud.stage.getViewport().apply();
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.act(Gdx.graphics.getDeltaTime());
         hud.stage.draw();
@@ -144,7 +145,7 @@ public class PlayScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        hud.viewport.update(width, height);
+        hud.stage.getViewport().update(width, height);
     }
 
     @Override
