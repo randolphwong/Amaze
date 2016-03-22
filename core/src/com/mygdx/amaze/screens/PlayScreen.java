@@ -48,8 +48,8 @@ public class PlayScreen implements Screen {
     public World world;
     private CollisionListener collisionListener;
 
-    // touchpad
-    private Hud hud;
+    // HUD
+    public Hud hud;
 
     private Sprite test;
 
@@ -84,7 +84,6 @@ public class PlayScreen implements Screen {
         // create player
         Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation("playerA_location", map).get(0);
         player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
-        player.input.setHud(hud);
 
         // create monster
         Vector2 monsterSpawnLocation = MapPhysicsBuilder.getSpawnLocation("monster_location", map).get(0);

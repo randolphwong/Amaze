@@ -15,13 +15,9 @@ public class PlayerInputComponent extends InputComponent {
     private Hud hud;
     private Touchpad touchpad;
 
-    public PlayerInputComponent(Player player) {
+    public PlayerInputComponent(Player player, Touchpad touchpad) {
         this.player = player;
-    }
-
-    public void setHud(Hud hud) {
-        this.hud = hud;
-        touchpad = hud.getTouchpad();
+        this.touchpad = touchpad;
     }
 
     public void update(float delta) {

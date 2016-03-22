@@ -78,6 +78,10 @@ public class Hud implements Disposable {
         return touchpad;
     }
 
+    public Healthbar getHealthbar() {
+        return healthbar;
+    }
+
     @Override
     public void dispose() {
         stage.dispose();
