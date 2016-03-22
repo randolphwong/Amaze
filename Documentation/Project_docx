@@ -18,6 +18,9 @@ Attacking a player: When the monster attacks a player, it reduces their health.
 (TODO: Different kinds of monsters?)
 
 4	ITEMS
-There are _ types of items that a player can collect. They are as follows:
-(TODO: list them)
+(3 items for now. Can update later)
+There are 3 types of items that a player can collect. They are as follows:
+  -Health potion
+  -Laser gun
+  -Invisibility
 Player picks an item up: If inventory is full, item remains where it is. Else, it disappears and is added to player’s inventory. 
