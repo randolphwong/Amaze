@@ -32,6 +32,7 @@ public class Hud implements Disposable {
     private Sprite touchpadBackground, touchpadKnob;
 
     private Healthbar healthbar;
+    private InventoryTest inventory;
 
     public Hud(SpriteBatch batch) {
         this.batch = batch;
@@ -50,6 +51,10 @@ public class Hud implements Disposable {
         // healthbar
         healthbar = new Healthbar(centerOfRightGutter, 50);
         stage.addActor(healthbar);
+
+        // healthbar
+        inventory = new InventoryTest(centerOfRightGutter, 200);
+        stage.addActor(inventory);
 
         // input
         Gdx.input.setInputProcessor(stage);
