@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.scenes.Healthbar;
 import com.mygdx.amaze.scenes.Hud;
 
 /**
@@ -123,9 +124,15 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
 
     public void updateHealthBar() {
         // check player's health and update the healthbar Image appropriately
-        if (Gdx.input.justTouched()) {
-            hud.getHealthbar().addHeart();
+//        System.out.println(player.health);
+        if (player.health == 99) {
+            hud.getHealthbar().threeLives();
+        } else if(player.health == 66){
+            hud.getHealthbar().twoLives();
+        }else if(player.health == 33){
+            hud.getHealthbar().oneLife();
         }
+
     }
 
     @Override

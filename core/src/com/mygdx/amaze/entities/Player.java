@@ -20,6 +20,11 @@ public class Player {
     public float x;
     public float y;
 
+    public int health = 99;
+
+    //inventory
+    public Item[] Inventory;
+
     public Vector2 velocity;
 
     // components

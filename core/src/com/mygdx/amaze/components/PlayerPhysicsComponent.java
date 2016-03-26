@@ -45,15 +45,19 @@ public class PlayerPhysicsComponent extends PhysicsComponent {
     public void update(float delta) {
         // check if collided with monster
         Boolean dead = (Boolean) body.getUserData();
-        if (dead != null && dead == true) {
+        int playerHealth = player.health;
+        if (dead != null && dead == true && playerHealth <=0) {
             world.destroyBody(body);
             createBody();
+            player.health = 99;
             return;
         }
 
         body.setLinearVelocity(player.velocity);
         player.x = body.getPosition().x;
         player.y = body.getPosition().y;
+
+
     }
 
     public Body getBody() {

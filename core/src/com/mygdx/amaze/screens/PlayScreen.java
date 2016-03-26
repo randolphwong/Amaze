@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.collision.CollisionListener;
+import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.scenes.Hud;
@@ -33,6 +34,11 @@ public class PlayScreen implements Screen {
     public Player player;
 
     public Monster monster;
+
+    //Items
+    public Item healthPotion;
+    public Item laserGun;
+    public Item shield;
 
     // camera and viewport
     private OrthographicCamera camera;
@@ -89,6 +95,15 @@ public class PlayScreen implements Screen {
         Vector2 monsterSpawnLocation = MapPhysicsBuilder.getSpawnLocation("monster_location", map).get(0);
         monster = new Monster(this, monsterSpawnLocation.x, monsterSpawnLocation.y);
 
+        // create items
+        Vector2 healthSpawnLocation = MapPhysicsBuilder.getSpawnLocation("health_location", map).get(0);
+        Vector2 laserSpawnLocation = MapPhysicsBuilder.getSpawnLocation("laser_location", map).get(0);
+        Vector2 shieldSpawnLocation = MapPhysicsBuilder.getSpawnLocation("shield_location", map).get(0);
+
+        healthPotion = new Item(this, Item.Type.HEALTH_POTION, healthSpawnLocation.x, healthSpawnLocation.y);
+        laserGun = new Item(this, Item.Type.LASER_GUN, laserSpawnLocation.x, laserSpawnLocation.y);
+        shield = new Item(this, Item.Type.SHIELD, shieldSpawnLocation.x, shieldSpawnLocation.y);
+
         // make walls
         Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, 1, world);
     }
@@ -97,6 +112,11 @@ public class PlayScreen implements Screen {
 
         player.update(delta);
         monster.update(delta);
+
+        //update items
+        healthPotion.update(delta);
+        laserGun.update(delta);
+        shield.update(delta);
 
         // let camera follow player
         camera.position.x = player.x;
@@ -124,7 +144,14 @@ public class PlayScreen implements Screen {
         game.batch.begin();
         player.draw(game.batch);
         monster.draw(game.batch);
+
+        //draw items
+        healthPotion.draw(game.batch);
+        laserGun.draw(game.batch);
+        shield.draw(game.batch);
+
         game.batch.end();
+
 
         // draw HUD on top of everything else
         hud.stage.getViewport().apply();
