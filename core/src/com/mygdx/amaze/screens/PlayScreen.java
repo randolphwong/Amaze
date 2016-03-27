@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -21,6 +20,7 @@ import com.mygdx.amaze.collision.CollisionListener;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
 
@@ -57,7 +57,8 @@ public class PlayScreen implements Screen {
     // HUD
     public Hud hud;
 
-    private Sprite test;
+    // for networking
+    private GameData gameData;
 
     public PlayScreen(AmazeGame game, String playerType) {
         this.game = game;
@@ -106,12 +107,30 @@ public class PlayScreen implements Screen {
 
         // make walls
         Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, 1, world);
+
+        // for networking
+        game.networkClient.startMultiplayerGame();
     }
 
     public void update(float delta) {
 
+        // get GameData from remote client
+        gameData = game.networkClient.getGameData();
+        if (gameData != null) {
+            if (gameData.msgType == GameData.MessageType.POSTGAME) {
+                Gdx.app.log("PlayScreen", "Remote client disconnected.");
+            }
+        }
+
         player.update(delta);
         monster.update(delta);
+
+        // send GameData from remote client
+        GameData dataToSend = new GameData();
+        dataToSend.msgType = GameData.MessageType.INGAME;
+        dataToSend.x = player.x;
+        dataToSend.y = player.y;
+        game.networkClient.sendGameData(dataToSend);
 
         //update items
         healthPotion.update(delta);

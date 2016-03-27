@@ -15,18 +15,23 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import com.mygdx.amaze.AmazeGame;
+import com.mygdx.amaze.networking.AmazeNetworkListener;
+import com.mygdx.amaze.networking.GameData;
 
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen implements Screen, AmazeNetworkListener {
 
     private AmazeGame game;
     
+    // stage ui (buttons and etc.)
     private Stage stage;
-
     private BitmapFont font;
     private Texture buttonTexture;
     private TextButton textButton;
 
-    public MainMenuScreen(final AmazeGame game) {
+    private boolean joinedRoom; // guarded by MainMenuScreen.class
+    private GameData gameData; // guarded by MainMenuScreen.class
+
+    public MainMenuScreen(AmazeGame game) {
         this.game = game;
 
         // set up a stage for displaying button
@@ -36,6 +41,10 @@ public class MainMenuScreen implements Screen {
         // add a button
         textButton = createButton();
         stage.addActor(textButton);
+
+        // set up networking
+        game.networkClient.setNetworkListener(this);
+        joinedRoom = false;
     }
 
     public TextButton createButton() {
@@ -59,21 +68,40 @@ public class MainMenuScreen implements Screen {
 
     public void buttonClicked() {
         textButton.setText("Waiting ...");
-        game.setScreen(new PlayScreen(game, "playerB"));
-        dispose();
+        game.networkClient.joinRoom();
     }
 
     public void update(float delta) {
+        synchronized(MainMenuScreen.class) {
+            if (joinedRoom) {
+                joinedRoom = false;
+
+                game.setScreen(new PlayScreen(game, gameData.player));
+                dispose();
+            }
+        }
     }
 
     @Override
     public void render(float delta) {
+        update(delta);
         // clear the screen
         Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act(delta);
         stage.draw();
+    }
+
+    @Override
+    public void onRoomCreated(GameData data) {
+        // unfortunately i cannot perform setscreen here because this is not
+        // under the UI thread... so it means this onRoomCreated is kind of
+        // redundant
+        synchronized(MainMenuScreen.class) {
+            joinedRoom = true;
+            gameData = data;
+        }
     }
 
     @Override
