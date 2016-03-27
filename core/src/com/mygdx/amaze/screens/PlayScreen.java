@@ -59,7 +59,7 @@ public class PlayScreen implements Screen {
 
     private Sprite test;
 
-    public PlayScreen(AmazeGame game) {
+    public PlayScreen(AmazeGame game, String playerType) {
         this.game = game;
 
         // camera and viewport (game world is set as square to reserve space for the HUDs at the sides)
@@ -88,7 +88,7 @@ public class PlayScreen implements Screen {
                 true /* draw contacts */);
 
         // create player
-        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation("playerA_location", map).get(0);
+        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerType + "_location", map).get(0);
         player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
         // create monster
