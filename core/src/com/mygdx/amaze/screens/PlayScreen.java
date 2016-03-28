@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.collision.CollisionListener;
 import com.mygdx.amaze.entities.Item;
+import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.networking.GameData;
@@ -32,6 +33,7 @@ public class PlayScreen implements Screen {
     private AmazeGame game;
 
     public Player player;
+    public Friend friend;
 
     public Monster monster;
 
@@ -56,9 +58,6 @@ public class PlayScreen implements Screen {
 
     // HUD
     public Hud hud;
-
-    // for networking
-    private GameData gameData;
 
     public PlayScreen(AmazeGame game, String playerType) {
         this.game = game;
@@ -92,6 +91,11 @@ public class PlayScreen implements Screen {
         Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerType + "_location", map).get(0);
         player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
+        // create friend
+        String friendType = playerType.equals("playerA") ? new String("playerB") : new String("playerA");
+        Vector2 friendSpawnLocation = MapPhysicsBuilder.getSpawnLocation(friendType + "_location", map).get(0);
+        friend = new Friend(this, friendSpawnLocation.x, friendSpawnLocation.y);
+
         // create monster
         Vector2 monsterSpawnLocation = MapPhysicsBuilder.getSpawnLocation("monster_location", map).get(0);
         monster = new Monster(this, monsterSpawnLocation.x, monsterSpawnLocation.y);
@@ -115,10 +119,12 @@ public class PlayScreen implements Screen {
     public void update(float delta) {
 
         // get GameData from remote client
-        gameData = game.networkClient.getGameData();
+        GameData gameData = game.networkClient.getGameData();
         if (gameData != null) {
             if (gameData.msgType == GameData.MessageType.POSTGAME) {
                 Gdx.app.log("PlayScreen", "Remote client disconnected.");
+            } else {
+                friend.update(delta, gameData);
             }
         }
 
@@ -162,6 +168,7 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
         player.draw(game.batch);
+        friend.draw(game.batch);
         monster.draw(game.batch);
 
         //draw items
