@@ -14,7 +14,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class AmazeClient {
 
-    private static final String SERVER_IP_ADDRESS = "192.168.1.169";
+//    private static final String SERVER_IP_ADDRESS = "192.168.1.169";
+    private static final String SERVER_IP_ADDRESS = "10.12.15.125";
     private static final int SERVER_PORT = 5668;
     private static final int PACKET_SIZE = 512;
 

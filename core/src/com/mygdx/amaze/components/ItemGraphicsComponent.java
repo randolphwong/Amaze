@@ -1,12 +1,12 @@
 package com.mygdx.amaze.components;
 
-        import com.badlogic.gdx.graphics.Texture;
-        import com.badlogic.gdx.graphics.g2d.Sprite;
-        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-        import com.mygdx.amaze.entities.Item;
-        import com.mygdx.amaze.entities.Monster;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.amaze.entities.Item;
+import com.mygdx.amaze.entities.Monster;
 
-        import java.lang.reflect.Type;
+
 
 /**
  * Created by Dhanya on 22/03/2016.

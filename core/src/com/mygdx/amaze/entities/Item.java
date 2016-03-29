@@ -1,14 +1,9 @@
 package com.mygdx.amaze.entities;
 
-        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-        import com.badlogic.gdx.math.Vector2;
-        import com.badlogic.gdx.physics.box2d.Body;
-        import com.mygdx.amaze.components.ItemGraphicsComponent;
-        import com.mygdx.amaze.components.ItemPhysicsComponent;
-        import com.mygdx.amaze.components.MonsterGraphicsComponent;
-        import com.mygdx.amaze.components.MonsterInputComponent;
-        import com.mygdx.amaze.components.MonsterPhysicsComponent;
-        import com.mygdx.amaze.screens.PlayScreen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.amaze.components.ItemGraphicsComponent;
+import com.mygdx.amaze.components.ItemPhysicsComponent;
+import com.mygdx.amaze.screens.PlayScreen;
 
 /**
  * Created by Dhanya on 22/03/2016.

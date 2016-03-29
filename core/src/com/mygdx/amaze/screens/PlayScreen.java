@@ -56,6 +56,15 @@ public class PlayScreen implements Screen {
     public World world;
     private CollisionListener collisionListener;
 
+//    //boundaries of the gate.
+//    player 1: 485.98505 1495.758
+//    player 2: 315.84088 1583.9951
+    double leftBound = 315.5;
+    double rightBound = 485.5;
+    double topBound = 1495.5;
+    double bottomBound = 1583.5;
+
+
     // HUD
     public Hud hud;
 
@@ -73,6 +82,7 @@ public class PlayScreen implements Screen {
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("map/level1.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1);
+
 
         // physics
         world = new World(new Vector2(0, 0), true);
@@ -116,6 +126,24 @@ public class PlayScreen implements Screen {
         game.networkClient.startMultiplayerGame();
     }
 
+
+
+    public void checkWinState(){
+//        System.out.println("player 1: " + player.x  + " " +player.y );
+//        System.out.println("player 2: " + friend.x  + " " +friend.y );
+        //to check if p1 and p2 are in the area of the door
+        if((player.x > leftBound && player.x < rightBound) &&
+                (friend.x > leftBound && friend.x < rightBound)){
+            if((player.y > topBound && player.y < bottomBound) &&
+                    (friend.y > topBound && friend.y < bottomBound)){
+                System.out.println("player 1 is at door: " + player.x  + " " +player.y );
+                System.out.println("player 2 is at door: " + friend.x  + " " +friend.y );
+                System.out.println("PLAYERS HAVE COMPLETED LEVEL!");
+            }
+        }
+
+    }
+
     public void update(float delta) {
 
         // get GameData from remote client
@@ -130,6 +158,8 @@ public class PlayScreen implements Screen {
 
         player.update(delta);
         monster.update(delta);
+
+        checkWinState();
 
         // send GameData from remote client
         GameData dataToSend = new GameData();
