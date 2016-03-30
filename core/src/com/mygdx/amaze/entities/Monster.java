@@ -54,4 +54,8 @@ public class Monster {
     public void draw(SpriteBatch batch) {
         graphics.draw(batch);
     }
+
+    public void dispose() {
+        graphics.dispose();
+    }
 }

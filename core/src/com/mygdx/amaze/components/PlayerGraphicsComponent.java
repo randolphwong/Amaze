@@ -148,4 +148,10 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     public void draw(SpriteBatch batch) {
         playerSprite.draw(batch);
     }
+
+    @Override
+    public void dispose() {
+        playerSprite.getTexture().dispose();
+        playerAtlas.dispose();
+    }
 }

@@ -253,6 +253,13 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
+        player.dispose();
+        friend.dispose();
+        monster.dispose();
+        healthPotion.dispose();
+        laserGun.dispose();
+        shield.dispose();
+
         map.dispose();
         hud.dispose();
         debugRenderer.dispose();

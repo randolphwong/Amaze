@@ -62,5 +62,9 @@ public class ItemGraphicsComponent extends GraphicsComponent {
         itemSprite.draw(batch);
     }
 
-
+    @Override
+    public void dispose() {
+        for (int i = 0; i < itemList.length; i++)
+            itemList[i].getTexture().dispose();
+    }
 }

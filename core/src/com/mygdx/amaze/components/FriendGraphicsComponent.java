@@ -133,4 +133,10 @@ public class FriendGraphicsComponent extends GraphicsComponent {
     public void draw(SpriteBatch batch) {
         friendSprite.draw(batch);
     }
+
+    @Override
+    public void dispose() {
+        friendSprite.getTexture().dispose();
+        friendAtlas.dispose();
+    }
 }
