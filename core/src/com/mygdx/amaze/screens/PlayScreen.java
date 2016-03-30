@@ -136,9 +136,9 @@ public class PlayScreen implements Screen {
                 (friend.x > leftBound && friend.x < rightBound)){
             if((player.y > topBound && player.y < bottomBound) &&
                     (friend.y > topBound && friend.y < bottomBound)){
-                System.out.println("player 1 is at door: " + player.x  + " " +player.y );
-                System.out.println("player 2 is at door: " + friend.x  + " " +friend.y );
-                System.out.println("PLAYERS HAVE COMPLETED LEVEL!");
+                Gdx.app.log("PlayScreen", "player 1 is at door: " + player.x  + " " +player.y );
+                Gdx.app.log("PlayScreen", "player 2 is at door: " + friend.x  + " " +friend.y );
+                Gdx.app.log("PlayScreen", "PLAYERS HAVE COMPLETED LEVEL!");
             }
         }
 
