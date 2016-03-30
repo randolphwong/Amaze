@@ -360,10 +360,10 @@
   <object id="22" x="304" y="0" width="192" height="128"/>
  </objectgroup>
  <objectgroup name="playerA_location">
-  <object id="25" x="32" y="1296" width="48" height="48"/>
+  <object id="25" x="352" y="256" width="48" height="48"/>
  </objectgroup>
  <objectgroup name="playerB_location">
-  <object id="35" x="1488" y="912" width="48" height="48"/>
+  <object id="35" x="256" y="256" width="48" height="48"/>
  </objectgroup>
  <objectgroup name="monster_location">
   <object id="27" x="464" y="736" width="80" height="80"/>

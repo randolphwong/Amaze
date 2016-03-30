@@ -32,4 +32,9 @@ public class MonsterGraphicsComponent extends GraphicsComponent {
     public void draw(SpriteBatch batch) {
         monsterSprite.draw(batch);
     }
+
+    @Override
+    public void dispose() {
+        monsterSprite.getTexture().dispose();
+    }
 }

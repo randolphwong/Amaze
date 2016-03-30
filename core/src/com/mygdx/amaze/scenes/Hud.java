@@ -5,45 +5,68 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.amaze.AmazeGame;
 
 /**
  * Created by Randolph on 13/3/2016.
  */
 public class Hud implements Disposable {
 
+    private final float centerOfLeftGutter;
+    private final float centerOfRightGutter;
+    private final float gutterWidth;
+
     private SpriteBatch batch;
 
     public Stage stage;
 
-    public Viewport viewport;
+    private Viewport viewport;
 
     private Touchpad touchpad;
 
     private Sprite touchpadBackground, touchpadKnob;
 
+    private Healthbar healthbar;
+    private InventoryTest inventory;
+
     public Hud(SpriteBatch batch) {
         this.batch = batch;
 
-        viewport = new FitViewport(AmazeGame.VIEW_WIDTH / 3, AmazeGame.VIEW_HEIGHT / 4, new OrthographicCamera());
-        viewport.apply();
+        // define the constants for the left and right gutters/pane
+        gutterWidth = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2;
+        centerOfLeftGutter = gutterWidth / 2;
+        centerOfRightGutter = (1.5f * gutterWidth) + Gdx.graphics.getHeight();
 
+        viewport = new ScreenViewport(new OrthographicCamera());
         stage = new Stage(viewport, batch);
 
+        // touchpad
+        makeTouchpad();
+
+        // healthbar
+        healthbar = new Healthbar(centerOfRightGutter, 50);
+        stage.addActor(healthbar);
+
+        // healthbar
+        inventory = new InventoryTest(centerOfRightGutter, 200);
+        stage.addActor(inventory);
+
+        // input
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    public void makeTouchpad() {
         touchpadBackground = new Sprite(new Texture(Gdx.files.internal("hud/touchpad_background.png")));
         touchpadKnob = new Sprite(new Texture(Gdx.files.internal("hud/touchpad_knob.png")));
 
-        // magic numbers
-        touchpadBackground.setSize(60, 60);
-        touchpadKnob.setSize(30, 30);
+        // make the touchpad diameter to be half the gutter width
+        touchpadBackground.setSize(gutterWidth / 2, gutterWidth / 2);
+        touchpadKnob.setSize(touchpadBackground.getWidth() / 2, touchpadBackground.getHeight() / 2);
 
         Touchpad.TouchpadStyle ts = new Touchpad.TouchpadStyle();
         ts.background = new SpriteDrawable(touchpadBackground);
@@ -51,14 +74,17 @@ public class Hud implements Disposable {
 
         // magic numbers
         touchpad = new Touchpad(5f, ts);
-        touchpad.setPosition(30, 30);
+        touchpad.setPosition(centerOfLeftGutter - (touchpadBackground.getWidth() / 2), 30);
 
         stage.addActor(touchpad);
-        Gdx.input.setInputProcessor(stage);
     }
 
     public Touchpad getTouchpad() {
         return touchpad;
+    }
+
+    public Healthbar getHealthbar() {
+        return healthbar;
     }
 
     @Override

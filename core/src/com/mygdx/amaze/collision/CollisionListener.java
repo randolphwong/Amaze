@@ -25,16 +25,25 @@ public class CollisionListener implements ContactListener {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
 
+
         Body bodyA = fixtureA.getBody();
         Body bodyB = fixtureB.getBody();
 
         Body playerBody = screen.player.getBody();
         Body monsterBody = screen.monster.getBody();
 
+
+
         if ((bodyA == playerBody && bodyB == monsterBody) ||
                 (bodyB == playerBody && bodyA == monsterBody)) {
+            screen.player.health -= 33;
+            System.out.println("health: " + screen.player.health);
             playerBody.setUserData(true);
         }
+
+        //Check if player picks up item
+
+
     }
 
     @Override

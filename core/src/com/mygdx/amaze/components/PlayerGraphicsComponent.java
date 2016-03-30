@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.scenes.Healthbar;
+import com.mygdx.amaze.scenes.Hud;
 
 /**
  * Created by Randolph on 13/3/2016.
@@ -16,6 +18,8 @@ import com.mygdx.amaze.entities.Player;
 public class PlayerGraphicsComponent extends GraphicsComponent {
 
     private enum MovementState { MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, STATIONARY };
+
+    private Hud hud;
 
     private Player player;
     private PlayerPhysicsComponent physics;
@@ -32,9 +36,10 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
 
     private float elapsedTime = 0;
 
-    public PlayerGraphicsComponent(Player player, PlayerPhysicsComponent physics) {
+    public PlayerGraphicsComponent(Player player, PlayerPhysicsComponent physics, Hud hud) {
         this.player = player;
         this.physics = physics;
+        this.hud = hud;
 
         playerAtlas = new TextureAtlas("player/reyspritesheet.atlas");
         playerSprite = new Sprite(playerAtlas.findRegion("Rey_down_stationary"));
@@ -95,11 +100,7 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         }
     }
 
-    @Override
-    public void update(float delta) {
-
-        updateMovementState();
-
+    public void updatePlayerSprite() {
         switch (movementState) {
             case MOVE_UP:
                 playerSprite.setRegion(moveUpAnimation.getKeyFrame(elapsedTime, true));
@@ -121,8 +122,36 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         playerSprite.setCenter(player.x, player.y);
     }
 
+    public void updateHealthBar() {
+        // check player's health and update the healthbar Image appropriately
+//        System.out.println(player.health);
+        if (player.health == 99) {
+            hud.getHealthbar().threeLives();
+        } else if(player.health == 66){
+            hud.getHealthbar().twoLives();
+        }else if(player.health == 33){
+            hud.getHealthbar().oneLife();
+        }
+
+    }
+
+    @Override
+    public void update(float delta) {
+
+        updateMovementState();
+        updatePlayerSprite();
+        updateHealthBar();
+
+    }
+
     @Override
     public void draw(SpriteBatch batch) {
         playerSprite.draw(batch);
+    }
+
+    @Override
+    public void dispose() {
+        playerSprite.getTexture().dispose();
+        playerAtlas.dispose();
     }
 }
