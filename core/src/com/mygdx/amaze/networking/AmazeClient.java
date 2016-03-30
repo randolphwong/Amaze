@@ -35,6 +35,8 @@ public class AmazeClient {
     private Thread senderThread;
     private Thread receiverThread;
 
+    private boolean gameStarted = false;
+
     private AmazeNetworkListener networkListener;
 
     public AmazeClient() {
@@ -55,8 +57,11 @@ public class AmazeClient {
     }
 
     public void startMultiplayerGame() {
-        startSender();
-        startReceiver();
+        if (!gameStarted) {
+            startSender();
+            startReceiver();
+            gameStarted = true;
+        }
     }
 
     public void stop() {
