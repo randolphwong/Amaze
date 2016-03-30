@@ -31,7 +31,7 @@ public class CollisionListener implements ContactListener {
 
         Body playerBody = screen.player.getBody();
         Body monsterBody = screen.monster.getBody();
-
+        Body potionitemBody = screen.healthPotion.getBody();
 
 
         if ((bodyA == playerBody && bodyB == monsterBody) ||
@@ -39,6 +39,14 @@ public class CollisionListener implements ContactListener {
             screen.player.health -= 33;
             System.out.println("health: " + screen.player.health);
             playerBody.setUserData(true);
+        }else if ((bodyA == playerBody && bodyB == potionitemBody) ||
+                (bodyB == playerBody && bodyA == potionitemBody)) {
+            if(screen.player.health < 99) {
+                screen.player.health += 33;
+            }
+            System.out.println("health: " + screen.player.health);
+            playerBody.setUserData(true);
+            screen.healthPotion.destroy();
         }
 
         //Check if player picks up item

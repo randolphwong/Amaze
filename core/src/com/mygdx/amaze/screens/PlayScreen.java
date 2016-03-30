@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.collision.CollisionListener;
-import com.mygdx.amaze.collision.PotionItemCollisionListener;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.entities.Monster;
@@ -58,7 +57,7 @@ public class PlayScreen implements Screen {
     private Box2DDebugRenderer debugRenderer;
     public World world;
     private CollisionListener collisionListener;
-    private PotionItemCollisionListener potionlistener;
+
 
 //    //boundaries of the gate.
 //    player 1: 485.98505 1495.758
@@ -103,7 +102,7 @@ public class PlayScreen implements Screen {
         world = new World(new Vector2(0, 0), true);
 
         collisionListener = new CollisionListener(this);
-//        potionlistener = new PotionItemCollisionListener(this);
+
 
         debugRenderer = new Box2DDebugRenderer(
                 true, /* draw bodies */
