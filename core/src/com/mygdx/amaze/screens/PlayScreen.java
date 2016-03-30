@@ -203,12 +203,15 @@ public class PlayScreen implements Screen {
         dataToSend.msgType = GameData.MessageType.INGAME;
         dataToSend.x = player.x;
         dataToSend.y = player.y;
+        dataToSend.potionDestroyed = healthPotion.isDestroyed();
+        dataToSend.laserDestroyed = laserGun.isDestroyed();
+        dataToSend.shieldDestroyed = shield.isDestroyed();
         game.networkClient.sendGameData(dataToSend);
 
         //update items
-        healthPotion.update(delta);
-        laserGun.update(delta);
-        shield.update(delta);
+        healthPotion.update(delta, gameData);
+        laserGun.update(delta, gameData);
+        shield.update(delta, gameData);
 
         // let camera follow player
         camera.position.x = player.x;

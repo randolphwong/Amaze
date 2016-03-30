@@ -1,8 +1,10 @@
 package com.mygdx.amaze.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.amaze.components.ItemGraphicsComponent;
 import com.mygdx.amaze.components.ItemPhysicsComponent;
+import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.screens.PlayScreen;
 
 /**
@@ -42,7 +44,14 @@ public class Item {
         return physics.getBody();
     }
 
-    public void update(float delta) {
+    public void update(float delta, GameData gameData) {
+        if (gameData != null) {
+            switch (type) {
+            case HEALTH_POTION: todestroy |= gameData.potionDestroyed; break;
+            case LASER_GUN: todestroy |= gameData.laserDestroyed; break;
+            case SHIELD: todestroy |= gameData.shieldDestroyed; break;
+            }
+        }
 //        physics.update(delta);
         graphics.update(delta);
         if(todestroy && !destroyed){
@@ -53,6 +62,10 @@ public class Item {
 
     public void destroy(){
         todestroy = true;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
     }
 
     public void draw(SpriteBatch batch) {
