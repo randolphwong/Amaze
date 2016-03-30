@@ -76,7 +76,7 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
             if (joinedRoom) {
                 joinedRoom = false;
 
-                game.setScreen(new PlayScreen(game, gameData.player));
+                game.setScreen(new PlayScreen(game, gameData.player, 1));
                 dispose();
             }
         }

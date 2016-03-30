@@ -32,8 +32,10 @@ public class PlayScreen implements Screen {
 
     private AmazeGame game;
 
+    // players
     public Player player;
     public Friend friend;
+    public String playerType;
 
     public Monster monster;
 
@@ -64,12 +66,24 @@ public class PlayScreen implements Screen {
     double topBound = 1495.5;
     double bottomBound = 1583.5;
 
+    // states
+    public enum GameState { RUNNING, WIN };
+    public GameState gameState;
+    public int level;
+
+    // time
+    private float elapsedTime;
+    private float winTime;
 
     // HUD
     public Hud hud;
 
-    public PlayScreen(AmazeGame game, String playerType) {
+    public PlayScreen(AmazeGame game, String playerType, int level) {
         this.game = game;
+        this.level = level;
+        this.playerType = playerType;
+
+        gameState = GameState.RUNNING;
 
         // camera and viewport (game world is set as square to reserve space for the HUDs at the sides)
         camera = new OrthographicCamera();
@@ -80,9 +94,8 @@ public class PlayScreen implements Screen {
 
         // map
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("map/level1.tmx");
+        map = mapLoader.load("map/level" + level + ".tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1);
-
 
         // physics
         world = new World(new Vector2(0, 0), true);
@@ -126,11 +139,12 @@ public class PlayScreen implements Screen {
         game.networkClient.startMultiplayerGame();
     }
 
+    public void openDoor() {
+        map.getLayers().get("door").setVisible(false);
+        map.getLayers().get("Tile Layer 3").setVisible(true);
+    }
 
-
-    public void checkWinState(){
-//        System.out.println("player 1: " + player.x  + " " +player.y );
-//        System.out.println("player 2: " + friend.x  + " " +friend.y );
+    public boolean checkWinState() {
         //to check if p1 and p2 are in the area of the door
         if((player.x > leftBound && player.x < rightBound) &&
                 (friend.x > leftBound && friend.x < rightBound)){
@@ -139,12 +153,35 @@ public class PlayScreen implements Screen {
                 Gdx.app.log("PlayScreen", "player 1 is at door: " + player.x  + " " +player.y );
                 Gdx.app.log("PlayScreen", "player 2 is at door: " + friend.x  + " " +friend.y );
                 Gdx.app.log("PlayScreen", "PLAYERS HAVE COMPLETED LEVEL!");
+                return true;
             }
         }
-
+        return false;
     }
 
     public void update(float delta) {
+
+        elapsedTime += delta;
+
+        switch (gameState) {
+        case RUNNING:
+            if (checkWinState()) {
+                Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
+                openDoor();
+                gameState = GameState.WIN;
+                winTime = elapsedTime;
+            }
+            break;
+        case WIN:
+            if (level == game.MAX_LEVEL) return;
+
+            // pause for about 2 seconds before to transit to next level
+            if ((elapsedTime - winTime) > 2) {
+                dispose();
+                game.setScreen(new PlayScreen(game, playerType, level + 1));
+            }
+            return;
+        }
 
         // get GameData from remote client
         GameData gameData = game.networkClient.getGameData();
@@ -158,8 +195,6 @@ public class PlayScreen implements Screen {
 
         player.update(delta);
         monster.update(delta);
-
-        checkWinState();
 
         // send GameData from remote client
         GameData dataToSend = new GameData();
@@ -193,7 +228,7 @@ public class PlayScreen implements Screen {
 
         viewport.apply();
         mapRenderer.render();
-        debugRenderer.render(world, viewport.getCamera().combined);
+        //debugRenderer.render(world, viewport.getCamera().combined);
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
@@ -219,9 +254,9 @@ public class PlayScreen implements Screen {
     @Override
     public void dispose() {
         map.dispose();
-        world.dispose();
-        debugRenderer.dispose();
         hud.dispose();
+        debugRenderer.dispose();
+        world.dispose();
     }
 
     @Override

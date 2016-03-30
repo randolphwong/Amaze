@@ -14,6 +14,9 @@ public class AmazeGame extends Game {
     public static final float VIEW_WIDTH = 1600;
     public static final float VIEW_HEIGHT = 1600;
 
+    // levels
+    public static final int MAX_LEVEL = 2;
+
     // networking
     public AmazeClient networkClient;
 
