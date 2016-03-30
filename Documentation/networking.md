@@ -120,3 +120,11 @@ below for more information.
 ## AmazeNetworkListener
 
 TODO
+
+## Usage
+
+##### Windows:
+Double click on server\_launcher.bat in the project's root directory
+
+##### Mac OS and Linux:
+run `./server_launcher` from the project's root directory
