@@ -67,4 +67,8 @@ public class ItemGraphicsComponent extends GraphicsComponent {
         for (int i = 0; i < itemList.length; i++)
             itemList[i].getTexture().dispose();
     }
+
+    public Sprite getItemSprite() {
+        return itemSprite;
+    }
 }

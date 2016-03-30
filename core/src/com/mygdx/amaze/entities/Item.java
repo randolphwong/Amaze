@@ -15,7 +15,9 @@ public class Item {
         HEALTH_POTION, LASER_GUN, SHIELD;
     }
     public Type type;
-
+    private boolean todestroy;
+    private boolean destroyed;
+//    private Body body;
     public float posX;
     public float posY;
 
@@ -30,21 +32,33 @@ public class Item {
         this.posX = x;
         this.posY = y;
 
-//        physics = new ItemPhysicsComponent(this, screen.world);
+        physics = new ItemPhysicsComponent(this, screen.world);
+
         graphics = new ItemGraphicsComponent(this);
+        physics.itemsize = graphics.getItemSprite().getHeight();
     }
 
-//    public Body getBody() {
-//        return physics.getBody();
-//    }
+    public Body getBody() {
+        return physics.getBody();
+    }
 
     public void update(float delta) {
 //        physics.update(delta);
         graphics.update(delta);
+        if(todestroy && !destroyed){
+            screen.world.destroyBody(getBody());
+            destroyed = true;
+        }
+    }
+
+    public void destroy(){
+        todestroy = true;
     }
 
     public void draw(SpriteBatch batch) {
-        graphics.draw(batch);
+        if(!destroyed) {
+            graphics.draw(batch);
+        }
     }
 
     public void dispose() {
