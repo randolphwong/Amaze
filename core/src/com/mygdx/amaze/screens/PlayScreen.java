@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -58,14 +59,8 @@ public class PlayScreen implements Screen {
     public World world;
     private CollisionListener collisionListener;
 
-
-//    //boundaries of the gate.
-//    player 1: 485.98505 1495.758
-//    player 2: 315.84088 1583.9951
-    double leftBound = 315.5;
-    double rightBound = 485.5;
-    double topBound = 1495.5;
-    double bottomBound = 1583.5;
+    private Rectangle level1DoorRect;
+    private Rectangle level2DoorRect;
 
     // states
     public enum GameState { RUNNING, WIN };
@@ -139,6 +134,10 @@ public class PlayScreen implements Screen {
 
         // for networking
         game.networkClient.startMultiplayerGame();
+
+        // door for level1/2
+        level1DoorRect = new Rectangle(304, 1600 - 128, 192, 128);
+        level2DoorRect = new Rectangle(144, 3200 - 128, 192, 128);
     }
 
     public void openDoor() {
@@ -148,15 +147,19 @@ public class PlayScreen implements Screen {
 
     public boolean checkWinState() {
         //to check if p1 and p2 are in the area of the door
-        if((player.x > leftBound && player.x < rightBound) &&
-                (friend.x > leftBound && friend.x < rightBound)){
-            if((player.y > topBound && player.y < bottomBound) &&
-                    (friend.y > topBound && friend.y < bottomBound)){
-                Gdx.app.log("PlayScreen", "player 1 is at door: " + player.x  + " " +player.y );
-                Gdx.app.log("PlayScreen", "player 2 is at door: " + friend.x  + " " +friend.y );
-                Gdx.app.log("PlayScreen", "PLAYERS HAVE COMPLETED LEVEL!");
+        switch (level) {
+        case 1:
+            if (level1DoorRect.contains(player.x, player.y) && 
+                level1DoorRect.contains(friend.x, friend.y)) {
                 return true;
             }
+            break;
+        case 2:
+            if (level2DoorRect.contains(player.x, player.y) && 
+                level2DoorRect.contains(friend.x, friend.y)) {
+                return true;
+            }
+            break;
         }
         return false;
     }

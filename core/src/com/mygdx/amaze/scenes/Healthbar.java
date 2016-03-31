@@ -14,8 +14,8 @@ public class Healthbar extends Image {
     private Sprite healthbarSprite;
     private Sprite healthbarSprite2;
     private Sprite healthbarSprite3;
-    private static final float healthBarWidth = 50;
-    private static final float healthBarHeight = 50;
+    private static float healthBarWidth = Hud.gutterWidth * 0.75f;
+    private static float healthBarHeight = healthBarWidth * 0.6f;
 
     /**
      *

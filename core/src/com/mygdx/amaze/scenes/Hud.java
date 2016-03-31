@@ -17,9 +17,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  */
 public class Hud implements Disposable {
 
-    private final float centerOfLeftGutter;
-    private final float centerOfRightGutter;
-    private final float gutterWidth;
+    public static float centerOfLeftGutter;
+    public static float centerOfRightGutter;
+    public static float gutterWidth;
 
     private SpriteBatch batch;
 
@@ -53,8 +53,8 @@ public class Hud implements Disposable {
         stage.addActor(healthbar);
 
         // healthbar
-        inventory = new InventoryTest(centerOfRightGutter, 200);
-        stage.addActor(inventory);
+        //inventory = new InventoryTest(centerOfRightGutter, 200);
+        //stage.addActor(inventory);
 
         // input
         Gdx.input.setInputProcessor(stage);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="16" tileheight="16" nextobjectid="26">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="16" tileheight="16" nextobjectid="29">
  <tileset firstgid="1" name="384_594_16bit-Dungeon-Tileset" tilewidth="16" tileheight="16" spacing="1" margin="1" tilecount="1288" columns="46">
   <image source="384_594_16bit-Dungeon-Tileset.jpg" width="793" height="477"/>
  </tileset>
@@ -642,9 +642,7 @@
   </object>
  </objectgroup>
  <objectgroup name="door">
-  <object id="25" x="140" y="8">
-   <polyline points="0,0 0,116 188,116 192,8"/>
-  </object>
+  <object id="27" x="144" y="0" width="192" height="128"/>
  </objectgroup>
  <objectgroup name="playerA_location" opacity="0.9">
   <object id="18" x="48" y="3128" width="40" height="32"/>
