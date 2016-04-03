@@ -39,7 +39,7 @@ public class PlayScreen implements Screen {
     public Friend friend;
     public String playerType;
 
-    public Monster monster;
+    private Array<Monster> monsters;
 
     //Items
     public Item healthPotion;
@@ -120,8 +120,11 @@ public class PlayScreen implements Screen {
         friend = new Friend(this, friendSpawnLocation.x, friendSpawnLocation.y);
 
         // create monster
-        Vector2 monsterSpawnLocation = MapPhysicsBuilder.getSpawnLocation("monster_location", map).get(0);
-        monster = new Monster(this, monsterSpawnLocation);
+        monsters = new Array<Monster>();
+        Array<Vector2> monsterSpawnLocations = MapPhysicsBuilder.getSpawnLocation("monster_location", map);
+        for (Vector2 monsterSpawnLocation : monsterSpawnLocations) {
+            monsters.add(new Monster(this, monsterSpawnLocation));
+        }
 
         // create items
         Vector2 healthSpawnLocation = MapPhysicsBuilder.getSpawnLocation("health_location", map).get(0);
@@ -220,10 +223,10 @@ public class PlayScreen implements Screen {
         }
 
         player.update(delta);
-        monster.update(delta);
         hud.update(delta);
 
-
+        for (Monster monster : monsters)
+            monster.update(delta);
 
         // send GameData from remote client
         GameData dataToSend = new GameData();
@@ -269,7 +272,8 @@ public class PlayScreen implements Screen {
         game.batch.begin();
         player.draw(game.batch);
         friend.draw(game.batch);
-        monster.draw(game.batch);
+        for (Monster monster : monsters)
+            monster.draw(game.batch);
 
         //draw items
         healthPotion.draw(game.batch);
@@ -288,9 +292,10 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
+        for (Monster monster : monsters)
+            monster.dispose();
         player.dispose();
         friend.dispose();
-        monster.dispose();
         healthPotion.dispose();
         laserGun.dispose();
         shield.dispose();
