@@ -67,7 +67,7 @@ public class Hud implements Disposable {
         makeTouchpad();
 
         // healthbar
-        healthbar = new Healthbar(centerOfRightGutter, 50);
+        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.1f);
         stage.addActor(healthbar);
 
         // healthbar
@@ -115,7 +115,7 @@ public class Hud implements Disposable {
 
         // magic numbers
         touchpad = new Touchpad(5f, ts);
-        touchpad.setPosition(centerOfLeftGutter - (touchpadBackground.getWidth() / 2), 30);
+        touchpad.setPosition(centerOfLeftGutter - (touchpadBackground.getWidth() / 2), Gdx.graphics.getHeight() * 0.1f);
 
         stage.addActor(touchpad);
     }
