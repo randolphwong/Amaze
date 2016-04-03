@@ -1,6 +1,7 @@
 package com.mygdx.amaze.components;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -36,6 +37,8 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     private TextureRegion white;
     private Animation blinkAnimation;
 
+    private Sprite shieldGlowSprite;
+
     private MovementState movementState;
 
     private float elapsedTime = 0;
@@ -49,6 +52,9 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         playerSprite = new Sprite(playerAtlas.findRegion("Rey_down_stationary"));
         playerSprite.setCenter(player.x, player.y);
         playerSprite.setSize(player.SIZE, player.SIZE);
+
+        shieldGlowSprite = new Sprite(new Texture("glow.png"));
+        shieldGlowSprite.setCenter(player.x, player.y);
 
         setUpAnimation();
     }
@@ -158,6 +164,11 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     @Override
     public void draw(SpriteBatch batch) {
         playerSprite.draw(batch);
+
+        if (player.shielded) {
+            shieldGlowSprite.setCenter(player.x, player.y);
+            shieldGlowSprite.draw(batch);
+        }
     }
 
     @Override
