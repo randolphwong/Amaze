@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.mygdx.amaze.components.Earthquake;
 import com.mygdx.amaze.screens.PlayScreen;
 
 /**
@@ -13,10 +14,12 @@ import com.mygdx.amaze.screens.PlayScreen;
  */
 public class CollisionListener implements ContactListener {
 
-    PlayScreen screen;
+    public PlayScreen screen;
+    public Earthquake earthquake;
 
     public CollisionListener(PlayScreen screen) {
         this.screen = screen;
+        earthquake = new Earthquake();
         screen.world.setContactListener(this);
     }
 
@@ -37,6 +40,7 @@ public class CollisionListener implements ContactListener {
         if ((bodyA == playerBody && bodyB == monsterBody) ||
                 (bodyB == playerBody && bodyA == monsterBody)) {
             if(!screen.player.shielded) {
+                earthquake.rumble(12.1f, .12f);
                 screen.player.health -= 33;
             }else{
                 screen.player.shielded = false;
@@ -59,7 +63,6 @@ public class CollisionListener implements ContactListener {
             screen.shield.destroy();
         }
 
-        //Check if player picks up item
 
 
     }
@@ -90,4 +93,6 @@ public class CollisionListener implements ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
     }
+
+
 }

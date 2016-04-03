@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.collision.CollisionListener;
+import com.mygdx.amaze.components.Earthquake;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.entities.Monster;
@@ -46,8 +47,8 @@ public class PlayScreen implements Screen {
     public Item shield;
 
     // camera and viewport
-    private OrthographicCamera camera;
-    private Viewport viewport;
+    public OrthographicCamera camera;
+    public Viewport viewport;
 
     // tiled map
     private TmxMapLoader mapLoader;
@@ -63,13 +64,14 @@ public class PlayScreen implements Screen {
     private Rectangle level2DoorRect;
 
     // states
-    public enum GameState { RUNNING, WIN };
+    public enum GameState { RUNNING, WIN, TIME_UP };
     public GameState gameState;
     public int level;
 
     // time
     private float elapsedTime;
     private float winTime;
+    private float playTime;
 
     // HUD
     public Hud hud;
@@ -97,6 +99,7 @@ public class PlayScreen implements Screen {
         world = new World(new Vector2(0, 0), true);
 
         collisionListener = new CollisionListener(this);
+
 
 
         debugRenderer = new Box2DDebugRenderer(
@@ -165,27 +168,36 @@ public class PlayScreen implements Screen {
     }
 
     public void update(float delta) {
-
         elapsedTime += delta;
+        System.out.println(elapsedTime);
 
         switch (gameState) {
-        case RUNNING:
-            if (checkWinState()) {
-                Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
-                openDoor();
-                gameState = GameState.WIN;
-                winTime = elapsedTime;
-            }
-            break;
-        case WIN:
-            if (level == game.MAX_LEVEL) return;
+            case RUNNING:
+                if (checkWinState()) {
+                    Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
+                    openDoor();
+                    gameState = GameState.WIN;
+                    winTime = elapsedTime;
+                }
+                else if(elapsedTime == 30){
+                    Gdx.app.log("TimeUp", "Dun Dun Dun. Game over!");
+                    gameState = GameState.TIME_UP;
+                }
+                break;
 
-            // pause for about 2 seconds before to transit to next level
-            if ((elapsedTime - winTime) > 2) {
+            case WIN:
+                if (level == game.MAX_LEVEL) return;
+
+                // pause for about 2 seconds before to transit to next level
+                if ((elapsedTime - winTime) > 2) {
+                    dispose();
+                    game.setScreen(new PlayScreen(game, playerType, level + 1));
+                }
+                return;
+
+            case TIME_UP:
                 dispose();
-                game.setScreen(new PlayScreen(game, playerType, level + 1));
-            }
-            return;
+
         }
 
         // get GameData from remote client
@@ -216,12 +228,15 @@ public class PlayScreen implements Screen {
         laserGun.update(delta, gameData);
         shield.update(delta, gameData);
 
-        // let camera follow player
-        camera.position.x = player.x;
-        camera.position.y = player.y;
-
+        if(collisionListener.earthquake.time>0){
+            collisionListener.earthquake.tick(delta, this, player);
+        }
+        else{
+            // let camera follow player
+            camera.position.x = player.x;
+            camera.position.y = player.y;
+        }
         world.step(1 / 60f, 6, 2);
-
         camera.update();
         mapRenderer.setView(camera);
     }
