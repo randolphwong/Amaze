@@ -32,6 +32,10 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     private Animation moveUpAnimation;
     private Animation moveDownAnimation;
 
+    private TextureRegion normal;
+    private TextureRegion white;
+    private Animation blinkAnimation;
+
     private MovementState movementState;
 
     private float elapsedTime = 0;
@@ -83,6 +87,13 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         regions.add(playerAtlas.findRegion("Rey_right_stationary"));
         moveRightAnimation = new Animation(1 / 5f, regions);
         regions.clear();
+
+        normal = new TextureRegion();
+        white = new TextureRegion();
+        regions.add(normal);
+        regions.add(white);
+        blinkAnimation = new Animation(1 / 5f, regions);
+        regions.clear();
     }
 
     private void updateMovementState() {
@@ -116,6 +127,16 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
                 break;
         }
 
+        if (player.attacked) {
+            if (blinkAnimation.getKeyFrame(elapsedTime, true) == white) {
+                playerSprite.setColor(0, 0, 0, 0.5f);
+            } else {
+                playerSprite.setColor(1, 1, 1, 1);
+            }
+        } else {
+            playerSprite.setColor(1, 1, 1, 1);
+        }
+
         // update elapsedTime for animation
         elapsedTime += Gdx.graphics.getDeltaTime();
 
@@ -132,7 +153,6 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         updateMovementState();
         updatePlayerSprite();
         updateHealthBar();
-
     }
 
     @Override
@@ -144,5 +164,7 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     public void dispose() {
         playerSprite.getTexture().dispose();
         playerAtlas.dispose();
+        normal.getTexture().dispose();
+        white.getTexture().dispose();
     }
 }

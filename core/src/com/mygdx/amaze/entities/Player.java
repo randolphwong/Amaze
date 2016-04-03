@@ -22,6 +22,7 @@ public class Player {
 
     public float health = 99;
     public boolean shielded = false;
+    public boolean attacked = false;
 
     //inventory
     public Item[] Inventory;

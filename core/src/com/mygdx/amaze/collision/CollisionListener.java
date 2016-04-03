@@ -54,7 +54,9 @@ public class CollisionListener implements ContactListener {
     }
 
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
-
+        if (!screen.player.shielded) {
+            screen.player.attacked = true;
+        }
     }
 
     private void onMonsterRadarCollision(Fixture fixtureA, Fixture fixtureB) {
@@ -104,6 +106,7 @@ public class CollisionListener implements ContactListener {
         switch (categoryA | categoryB) {
         case PLAYER_BIT | MONSTER_BIT:
             screen.player.shielded = false;
+            screen.player.attacked = false;
             break;
         case PLAYER_BIT | MONSTER_RADAR_BIT:
             onMonsterRadarCollisionEnded(categoryA == MONSTER_RADAR_BIT ? fixtureA : fixtureB);
@@ -121,8 +124,9 @@ public class CollisionListener implements ContactListener {
 
         if (collidedEntities == (PLAYER_BIT | MONSTER_BIT)) {
             contact.setEnabled(false); // allow player and monster to move through each other
-            if (!screen.player.shielded)
+            if (!screen.player.shielded) {
                 screen.player.health -= 0.5f;
+            }
         }
     }
 
