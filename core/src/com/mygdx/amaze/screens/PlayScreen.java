@@ -169,7 +169,7 @@ public class PlayScreen implements Screen {
 
     public void update(float delta) {
         elapsedTime += delta;
-        System.out.println(elapsedTime);
+//        System.out.println(elapsedTime);
 
         switch (gameState) {
             case RUNNING:
@@ -179,7 +179,13 @@ public class PlayScreen implements Screen {
                     gameState = GameState.WIN;
                     winTime = elapsedTime;
                 }
-                else if(elapsedTime == 30){
+                else if(hud.timer == 200){
+                    map.getLayers().get("Tile layer 4").setVisible(true);
+                }
+                else if(hud.timer == 100){
+                    map.getLayers().get("Tile layer 5").setVisible(true);
+                }
+                else if(hud.isTimeUp()){
                     Gdx.app.log("TimeUp", "Dun Dun Dun. Game over!");
                     gameState = GameState.TIME_UP;
                 }
@@ -212,6 +218,9 @@ public class PlayScreen implements Screen {
 
         player.update(delta);
         monster.update(delta);
+        hud.update(delta);
+
+
 
         // send GameData from remote client
         GameData dataToSend = new GameData();
@@ -228,8 +237,8 @@ public class PlayScreen implements Screen {
         laserGun.update(delta, gameData);
         shield.update(delta, gameData);
 
-        if(collisionListener.earthquake.time>0){
-            collisionListener.earthquake.tick(delta, this, player);
+        if(hud.earthquake.time>0){
+            hud.earthquake.tick(delta, this, player);
         }
         else{
             // let camera follow player

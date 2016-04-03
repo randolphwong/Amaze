@@ -25,7 +25,8 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
     // stage ui (buttons and etc.)
     private Stage stage;
     private BitmapFont font;
-    private Texture buttonTexture;
+    private Texture buttonTexture, backgroundImg;
+    private Sprite backgroundSet;
     private TextButton textButton;
 
     private boolean joinedRoom; // guarded by MainMenuScreen.class
@@ -37,6 +38,10 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
         // set up a stage for displaying button
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+
+        backgroundImg = new Texture(Gdx.files.internal("startScreen/instructions.png"));
+        backgroundSet = new Sprite(backgroundImg);
+        backgroundSet.setSize(game.VIEW_WIDTH,game.VIEW_HEIGHT);
 
         // add a button
         textButton = createButton();
@@ -55,7 +60,7 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
         buttonStyle.font = font;
         buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
         TextButton textButton = new TextButton("START GAME", buttonStyle);
-        textButton.setPosition((Gdx.graphics.getWidth() / 2) - (textButton.getWidth() / 2), (Gdx.graphics.getHeight() / 2) - (textButton.getHeight() / 2));
+        textButton.setPosition(Gdx.graphics.getWidth()/2, 0);
         textButton.addListener(new ClickListener() {             
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -89,6 +94,10 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
         // clear the screen
         Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        game.batch.begin();
+        game.batch.draw(backgroundSet, stage.getWidth()/8, stage.getHeight()/8);
+        game.batch.end();
 
         stage.act(delta);
         stage.draw();
