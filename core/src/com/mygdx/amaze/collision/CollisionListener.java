@@ -42,7 +42,7 @@ public class CollisionListener implements ContactListener {
 
         if ((bodyA == potionitemBody) || (bodyB == potionitemBody)) {
             if(screen.player.health < 99) {
-                screen.player.health += 33;
+                screen.player.health = 99;
             }
             System.out.println("health: " + screen.player.health);
             screen.healthPotion.destroy();
@@ -54,12 +54,7 @@ public class CollisionListener implements ContactListener {
     }
 
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
-        if (!screen.player.shielded) {
-            screen.player.health -= 33;
-        } else {
-            screen.player.shielded = false;
-        }
-        System.out.println("health: " + screen.player.health);
+
     }
 
     private void onMonsterRadarCollision(Fixture fixtureA, Fixture fixtureB) {
@@ -106,8 +101,13 @@ public class CollisionListener implements ContactListener {
         int categoryA = fixtureA.getFilterData().categoryBits;
         int categoryB = fixtureB.getFilterData().categoryBits;
 
-        if ((categoryA | categoryB) == (PLAYER_BIT | MONSTER_RADAR_BIT)) {
+        switch (categoryA | categoryB) {
+        case PLAYER_BIT | MONSTER_BIT:
+            screen.player.shielded = false;
+            break;
+        case PLAYER_BIT | MONSTER_RADAR_BIT:
             onMonsterRadarCollisionEnded(categoryA == MONSTER_RADAR_BIT ? fixtureA : fixtureB);
+            break;
         }
     }
 
@@ -121,6 +121,8 @@ public class CollisionListener implements ContactListener {
 
         if (collidedEntities == (PLAYER_BIT | MONSTER_BIT)) {
             contact.setEnabled(false); // allow player and monster to move through each other
+            if (!screen.player.shielded)
+                screen.player.health -= 0.5f;
         }
     }
 

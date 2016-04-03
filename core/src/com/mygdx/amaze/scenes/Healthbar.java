@@ -11,11 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
  */
 public class Healthbar extends Image {
 
-    private Sprite healthbarSprite;
-    private Sprite healthbarSprite2;
-    private Sprite healthbarSprite3;
+    private Sprite healthbarBar;
     private static float healthBarWidth = Hud.gutterWidth * 0.75f;
-    private static float healthBarHeight = healthBarWidth * 0.6f;
+    private static float healthBarHeight = healthBarWidth * 0.25f;
 
     /**
      *
@@ -23,26 +21,17 @@ public class Healthbar extends Image {
      * @param y: y coordinate for the centre of the sprite
      */
     public Healthbar(float x, float y) {
-        healthbarSprite = new Sprite(new Texture("health/1_lives.png"));
-        healthbarSprite2 = new Sprite(new Texture("health/2_lives.png"));
-        healthbarSprite3 = new Sprite(new Texture("health/3_lives.png"));
+        //healthbarBackground = new Sprite(new Texture("health/healthbar-background.png"));
+        healthbarBar = new Sprite(new Texture("health/healthbar-bar.png"));
 
-        setDrawable(new SpriteDrawable(healthbarSprite3));
+        setDrawable(new SpriteDrawable(healthbarBar));
 
         setSize(healthBarWidth, healthBarHeight);
         setPosition(x - (healthBarWidth / 2), y - (healthBarHeight / 2));
     }
 
-    public void threeLives() {
-        setDrawable(new SpriteDrawable(healthbarSprite3));
-    }
-
-    public void twoLives() {
-        setDrawable(new SpriteDrawable(healthbarSprite2));
-    }
-
-    public void oneLife() {
-        setDrawable(new SpriteDrawable(healthbarSprite));
+    public void setHealth(float health) {
+        setScaleX(health / 100f);
     }
 
     @Override

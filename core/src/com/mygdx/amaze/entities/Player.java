@@ -20,7 +20,7 @@ public class Player {
     public float x;
     public float y;
 
-    public int health = 99;
+    public float health = 99;
     public boolean shielded = false;
 
     //inventory

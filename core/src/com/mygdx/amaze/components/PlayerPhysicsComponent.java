@@ -52,8 +52,7 @@ public class PlayerPhysicsComponent extends PhysicsComponent {
 
     public void update(float delta) {
         // check if collided with monster
-        int playerHealth = player.health;
-        if (playerHealth <= 0) {
+        if (player.health <= 0) {
             world.destroyBody(body);
             createBody();
             player.health = 99;

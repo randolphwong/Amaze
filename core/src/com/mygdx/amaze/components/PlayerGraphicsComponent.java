@@ -123,16 +123,7 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     }
 
     public void updateHealthBar() {
-        // check player's health and update the healthbar Image appropriately
-//        System.out.println(player.health);
-        if (player.health == 99) {
-            hud.getHealthbar().threeLives();
-        } else if(player.health == 66){
-            hud.getHealthbar().twoLives();
-        }else if(player.health == 33){
-            hud.getHealthbar().oneLife();
-        }
-
+        hud.getHealthbar().setHealth(player.health);
     }
 
     @Override
