@@ -270,8 +270,7 @@ public class PlayScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        player.draw(game.batch);
-        friend.draw(game.batch);
+        // draw monsters
         for (Monster monster : monsters)
             monster.draw(game.batch);
 
@@ -279,6 +278,10 @@ public class PlayScreen implements Screen {
         healthPotion.draw(game.batch);
         laserGun.draw(game.batch);
         shield.draw(game.batch);
+
+        // draw players
+        friend.draw(game.batch);
+        player.draw(game.batch);
 
         game.batch.end();
 
