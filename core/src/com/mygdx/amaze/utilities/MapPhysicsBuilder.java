@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -26,10 +27,9 @@ import com.badlogic.gdx.utils.Array;
 public class MapPhysicsBuilder {
 
     // The pixels per tile. If your tiles are 16x16, this is set to 16f
-    private static float ppt = 0;
+    private static float ppt = 1;
 
-    public static Array<Body> buildShapes(String objname, Map map, float pixels, World world) {
-        ppt = pixels;
+    public static Array<Body> buildShapes(String objname, Map map, short categoryBits, World world) {
         MapObjects objects = map.getLayers().get(objname).getObjects();
 
         Array<Body> bodies = new Array<Body>();
@@ -59,11 +59,14 @@ public class MapPhysicsBuilder {
             else {
                 continue;
             }
+            FixtureDef fdef = new FixtureDef();
+            fdef.shape = shape;
+            fdef.filter.categoryBits = categoryBits;
 
             BodyDef bd = new BodyDef();
             bd.type = BodyDef.BodyType.StaticBody;
             Body body = world.createBody(bd);
-            body.createFixture(shape, 1);
+            body.createFixture(fdef);
 
             bodies.add(body);
 

@@ -7,6 +7,8 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+
+import com.mygdx.amaze.collision.CollisionListener;
 import com.mygdx.amaze.entities.Item;
 
 
@@ -32,19 +34,23 @@ public class ItemPhysicsComponent extends PhysicsComponent{
 //        item.posY = body.getPosition().y;
     }
 
-    public void createBody(){
+    public void createBody() {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(item.posX, item.posY);
+        body = world.createBody(bodyDef);
 
         CircleShape shape = new CircleShape();
         shape.setRadius(itemsize/2);
+        FixtureDef itemFixtureDef = new FixtureDef();
+        itemFixtureDef.shape = shape;
 
+        itemFixtureDef.isSensor = true;
+        itemFixtureDef.filter.categoryBits = CollisionListener.ITEM_BIT;
+        itemFixtureDef.filter.maskBits = CollisionListener.PLAYER_BIT;
 
-        bodyDef.position.set(item.posX, item.posY);
-        body = world.createBody(bodyDef);
-        body.createFixture(shape,0.0f);
+        body.createFixture(itemFixtureDef);
         shape.dispose();
-
     }
 
     @Override

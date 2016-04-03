@@ -6,7 +6,9 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.mygdx.amaze.components.Earthquake;
+
+import com.mygdx.amaze.entities.Monster;
+import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.screens.PlayScreen;
 
 /**
@@ -16,6 +18,15 @@ public class CollisionListener implements ContactListener {
 
     public PlayScreen screen;
 
+    // collision filter bits (for identification of collision entities)
+    public static final short WALL_BIT              = 1 << 0;
+    public static final short PLAYER_BIT            = 1 << 1;
+    public static final short MONSTER_BIT           = 1 << 2;
+    public static final short MONSTER_RADAR_BIT     = 1 << 3;
+    public static final short MONSTER_BOUNDARY_BIT  = 1 << 4;
+    public static final short ITEM_BIT              = 1 << 5;
+
+    PlayScreen screen;
 
     public CollisionListener(PlayScreen screen) {
         this.screen = screen;
@@ -23,52 +34,81 @@ public class CollisionListener implements ContactListener {
         screen.world.setContactListener(this);
     }
 
+    private void onItemCollision(Fixture fixtureA, Fixture fixtureB) {
+        Body bodyA = fixtureA.getBody();
+        Body bodyB = fixtureB.getBody();
+        Body potionitemBody = screen.healthPotion.getBody();
+        Body shielditemBody = screen.shield.getBody();
+
+        if ((bodyA == potionitemBody) || (bodyB == potionitemBody)) {
+            if(screen.player.health < 99) {
+                screen.player.health += 33;
+            }
+            System.out.println("health: " + screen.player.health);
+            screen.healthPotion.destroy();
+        } else if ((bodyA == shielditemBody) || (bodyB == shielditemBody)) {
+            screen.player.shielded = true;
+            System.out.println("Shield obtained");
+            screen.shield.destroy();
+        }
+    }
+
+    private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
+        if (!screen.player.shielded) {
+            screen.player.health -= 33;
+        } else {
+            screen.player.shielded = false;
+        }
+        System.out.println("health: " + screen.player.health);
+    }
+
+    private void onMonsterRadarCollision(Fixture fixtureA, Fixture fixtureB) {
+        Monster monster;
+
+        if (fixtureA.getFilterData().categoryBits == MONSTER_RADAR_BIT) {
+            monster = (Monster) fixtureA.getUserData();
+        } else {
+            monster = (Monster) fixtureB.getUserData();
+        }
+        monster.startChase(screen.player);
+    }
+
+    private void onMonsterRadarCollisionEnded(Fixture monsterFixture) {
+        ((Monster) monsterFixture.getUserData()).stopChase();
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
 
+        int collidedEntities = fixtureA.getFilterData().categoryBits |
+                               fixtureB.getFilterData().categoryBits;
 
-        Body bodyA = fixtureA.getBody();
-        Body bodyB = fixtureB.getBody();
-
-        Body playerBody = screen.player.getBody();
-        Body monsterBody = screen.monster.getBody();
-        Body potionitemBody = screen.healthPotion.getBody();
-        Body shielditemBody = screen.shield.getBody();
-
-        if ((bodyA == playerBody && bodyB == monsterBody) ||
-                (bodyB == playerBody && bodyA == monsterBody)) {
-            if(!screen.player.shielded) {
-                screen.player.health -= 33;
-            }else{
-                screen.player.shielded = false;
-            }
-            System.out.println("health: " + screen.player.health);
-            playerBody.setUserData(true);
-        }else if ((bodyA == playerBody && bodyB == potionitemBody) ||
-                (bodyB == playerBody && bodyA == potionitemBody)) {
-            if(screen.player.health < 99) {
-                screen.player.health += 33;
-            }
-            System.out.println("health: " + screen.player.health);
-            playerBody.setUserData(true);
-            screen.healthPotion.destroy();
-        }else if ((bodyA == playerBody && bodyB == shielditemBody) ||
-                (bodyB == playerBody && bodyA == shielditemBody)) {
-            screen.player.shielded = true;
-            System.out.println("Shield obtained");
-            playerBody.setUserData(true);
-            screen.shield.destroy();
+        switch (collidedEntities) {
+        case PLAYER_BIT | ITEM_BIT:
+            onItemCollision(fixtureA, fixtureB);
+            break;
+        case PLAYER_BIT | MONSTER_BIT:
+            onMonsterCollision(fixtureA, fixtureB);
+            break;
+        case PLAYER_BIT | MONSTER_RADAR_BIT:
+            onMonsterRadarCollision(fixtureA, fixtureB);
+            break;
         }
-
-
-
     }
 
     @Override
     public void endContact(Contact contact) {
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
 
+        int categoryA = fixtureA.getFilterData().categoryBits;
+        int categoryB = fixtureB.getFilterData().categoryBits;
+
+        if ((categoryA | categoryB) == (PLAYER_BIT | MONSTER_RADAR_BIT)) {
+            onMonsterRadarCollisionEnded(categoryA == MONSTER_RADAR_BIT ? fixtureA : fixtureB);
+        }
     }
 
     @Override
@@ -76,15 +116,11 @@ public class CollisionListener implements ContactListener {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
 
-        Body bodyA = fixtureA.getBody();
-        Body bodyB = fixtureB.getBody();
+        int collidedEntities = fixtureA.getFilterData().categoryBits |
+                               fixtureB.getFilterData().categoryBits;
 
-        Body playerBody = screen.player.getBody();
-        Body monsterBody = screen.monster.getBody();
-
-        if ((bodyA == playerBody && bodyB == monsterBody) ||
-                (bodyB == playerBody && bodyA == monsterBody)) {
-            contact.setEnabled(false);
+        if (collidedEntities == (PLAYER_BIT | MONSTER_BIT)) {
+            contact.setEnabled(false); // allow player and monster to move through each other
         }
     }
 

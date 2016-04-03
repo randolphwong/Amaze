@@ -121,7 +121,7 @@ public class PlayScreen implements Screen {
 
         // create monster
         Vector2 monsterSpawnLocation = MapPhysicsBuilder.getSpawnLocation("monster_location", map).get(0);
-        monster = new Monster(this, monsterSpawnLocation.x, monsterSpawnLocation.y);
+        monster = new Monster(this, monsterSpawnLocation);
 
         // create items
         Vector2 healthSpawnLocation = MapPhysicsBuilder.getSpawnLocation("health_location", map).get(0);
@@ -133,7 +133,10 @@ public class PlayScreen implements Screen {
         shield = new Item(this, Item.Type.SHIELD, shieldSpawnLocation.x, shieldSpawnLocation.y);
 
         // make walls
-        Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, 1, world);
+        Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, CollisionListener.WALL_BIT, world);
+
+        // make monster boundaries
+        Array<Body> monster_boundaries = MapPhysicsBuilder.buildShapes("monster_boundary", map, CollisionListener.MONSTER_BOUNDARY_BIT, world);
 
         // for networking
         game.networkClient.startMultiplayerGame();
@@ -260,7 +263,7 @@ public class PlayScreen implements Screen {
 
         viewport.apply();
         mapRenderer.render();
-        //debugRenderer.render(world, viewport.getCamera().combined);
+        debugRenderer.render(world, viewport.getCamera().combined);
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();

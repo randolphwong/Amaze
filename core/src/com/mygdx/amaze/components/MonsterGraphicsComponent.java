@@ -18,14 +18,14 @@ public class MonsterGraphicsComponent extends GraphicsComponent {
         this.monster = monster;
 
         monsterSprite = new Sprite(new Texture("enemy/enemy_shyo.png"));
-        monsterSprite.setCenter(monster.x, monster.y);
+        monsterSprite.setCenter(monster.position.x, monster.position.y);
         monsterSprite.setSize(monster.WIDTH, monster.HEIGHT);
 
     }
 
     @Override
     public void update(float delta) {
-        monsterSprite.setCenter(monster.x, monster.y);
+        monsterSprite.setCenter(monster.position.x, monster.position.y);
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+
+import com.mygdx.amaze.collision.CollisionListener;
 import com.mygdx.amaze.entities.Player;
 
 /**
@@ -28,6 +30,8 @@ public class PlayerPhysicsComponent extends PhysicsComponent {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(player.spawnX, player.spawnY);
+        body = world.createBody(bodyDef);
 
         CircleShape circle = new CircleShape();
         circle.setRadius(player.SIZE / 2);
@@ -35,18 +39,21 @@ public class PlayerPhysicsComponent extends PhysicsComponent {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
 
-        bodyDef.position.set(player.spawnX, player.spawnY);
-        body = world.createBody(bodyDef);
-        body.createFixture(fixtureDef);
+        fixtureDef.filter.categoryBits = CollisionListener.PLAYER_BIT;
+        fixtureDef.filter.maskBits = CollisionListener.WALL_BIT |
+                                     CollisionListener.ITEM_BIT |
+                                     CollisionListener.MONSTER_BIT |
+                                     CollisionListener.MONSTER_RADAR_BIT;
+
+        body.createFixture(fixtureDef).setUserData(player);
 
         circle.dispose();
     }
 
     public void update(float delta) {
         // check if collided with monster
-        Boolean dead = (Boolean) body.getUserData();
         int playerHealth = player.health;
-        if (dead != null && dead == true && playerHealth <=0) {
+        if (playerHealth <= 0) {
             world.destroyBody(body);
             createBody();
             player.health = 99;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="47">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="55">
  <tileset firstgid="1" name="384_594_16bit-Dungeon-Tileset" tilewidth="16" tileheight="16" spacing="1" margin="1" tilecount="1288" columns="46">
   <image source="384_594_16bit-Dungeon-Tileset.jpg" width="793" height="477"/>
  </tileset>
@@ -584,5 +584,10 @@
  </objectgroup>
  <objectgroup name="shield_location">
   <object id="40" x="996.967" y="200" width="63.6388" height="63.6366"/>
+ </objectgroup>
+ <objectgroup name="monster_boundary">
+  <object id="53" x="176" y="448">
+   <polyline points="0,0 656,0 656,656 0,656 0,0"/>
+  </object>
  </objectgroup>
 </map>
