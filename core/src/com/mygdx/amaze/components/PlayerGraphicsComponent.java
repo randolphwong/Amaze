@@ -53,7 +53,7 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         playerSprite.setCenter(player.x, player.y);
         playerSprite.setSize(player.SIZE, player.SIZE);
 
-        shieldGlowSprite = new Sprite(new Texture("glow.png"));
+        shieldGlowSprite = new Sprite(new Texture("player/glow.png"));
         shieldGlowSprite.setCenter(player.x, player.y);
 
         setUpAnimation();
