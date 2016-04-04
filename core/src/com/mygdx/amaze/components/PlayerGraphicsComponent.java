@@ -174,8 +174,7 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     @Override
     public void dispose() {
         playerSprite.getTexture().dispose();
+        shieldGlowSprite.getTexture().dispose();
         playerAtlas.dispose();
-        normal.getTexture().dispose();
-        white.getTexture().dispose();
     }
 }
