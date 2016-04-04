@@ -25,9 +25,10 @@ import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.scenes.Hud;
-import com.mygdx.amaze.utilities.MapPhysicsBuilder;
-
 import com.mygdx.amaze.screens.SplashScreen;
+import com.mygdx.amaze.utilities.Coord;
+import com.mygdx.amaze.utilities.Const;
+import com.mygdx.amaze.utilities.MapPhysicsBuilder;
 
 /**
  * Created by Randolph on 12/3/2016.
@@ -39,7 +40,9 @@ public class PlayScreen implements Screen {
     // players
     public Player player;
     public Friend friend;
-    public String playerType;
+    public byte playerType;
+    public static final String[] playerTypeString = {"playerA", "playerB"};
+    public static final String[] friendTypeString = {"playerB", "playerA"};
 
     private Array<Monster> monsters;
 
@@ -78,7 +81,7 @@ public class PlayScreen implements Screen {
     // HUD
     public Hud hud;
 
-    public PlayScreen(AmazeGame game, String playerType, int level) {
+    public PlayScreen(AmazeGame game, byte playerType, int level) {
         this.game = game;
         this.level = level;
         this.playerType = playerType;
@@ -113,12 +116,11 @@ public class PlayScreen implements Screen {
                 true /* draw contacts */);
 
         // create player
-        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerType + "_location", map).get(0);
+        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerTypeString[playerType - 1] + "_location", map).get(0);
         player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
         // create friend
-        String friendType = playerType.equals("playerA") ? new String("playerB") : new String("playerA");
-        Vector2 friendSpawnLocation = MapPhysicsBuilder.getSpawnLocation(friendType + "_location", map).get(0);
+        Vector2 friendSpawnLocation = MapPhysicsBuilder.getSpawnLocation(friendTypeString[playerType - 1] + "_location", map).get(0);
         friend = new Friend(this, friendSpawnLocation.x, friendSpawnLocation.y);
 
         // create monster
@@ -219,7 +221,7 @@ public class PlayScreen implements Screen {
         // get GameData from remote client
         GameData gameData = game.networkClient.getGameData();
         if (gameData != null) {
-            if (gameData.msgType == GameData.MessageType.POSTGAME) {
+            if (gameData.msgType == Const.POSTGAME) {
                 Gdx.app.log("PlayScreen", "Remote client disconnected.");
             } else {
                 friend.update(delta, gameData);
@@ -234,12 +236,8 @@ public class PlayScreen implements Screen {
 
         // send GameData from remote client
         GameData dataToSend = new GameData();
-        dataToSend.msgType = GameData.MessageType.INGAME;
-        dataToSend.x = player.x;
-        dataToSend.y = player.y;
-        dataToSend.potionDestroyed = healthPotion.isDestroyed();
-        dataToSend.laserDestroyed = laserGun.isDestroyed();
-        dataToSend.shieldDestroyed = shield.isDestroyed();
+        dataToSend.msgType = Const.INGAME;
+        dataToSend.playerPosition = new Coord((short)player.x, (short)player.y);
         game.networkClient.sendGameData(dataToSend);
 
         //update items

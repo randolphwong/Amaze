@@ -21,8 +21,8 @@ public class FriendInputComponent {
 
     public void update(float delta, GameData gameData) {
         if (gameData != null) {
-            friend.x = gameData.x;
-            friend.y = gameData.y;
+            friend.x = gameData.playerPosition.x;
+            friend.y = gameData.playerPosition.y;
         }
     }
 }

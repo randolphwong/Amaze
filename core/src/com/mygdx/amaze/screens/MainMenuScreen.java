@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.networking.AmazeNetworkListener;
 import com.mygdx.amaze.networking.GameData;
+import com.mygdx.amaze.utilities.Const;
 
 public class MainMenuScreen implements Screen, AmazeNetworkListener {
 
@@ -73,8 +74,8 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
 
     public void buttonClicked() {
         textButton.setText("Waiting ...");
-//        game.networkClient.joinRoom();
-        game.setScreen(new PlayScreen(game, "playerA", 1));
+        game.networkClient.joinRoom();
+        //game.setScreen(new PlayScreen(game, Const.MAIN_PLAYER, 1));
     }
 
     public void update(float delta) {
@@ -83,7 +84,7 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
             if (joinedRoom) {
                 joinedRoom = false;
 
-                game.setScreen(new PlayScreen(game, gameData.player, 1));
+                game.setScreen(new PlayScreen(game, gameData.playerType, 1));
                 dispose();
             }
         }

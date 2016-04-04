@@ -45,13 +45,13 @@ public class Item {
     }
 
     public void update(float delta, GameData gameData) {
-        if (gameData != null) {
-            switch (type) {
-            case HEALTH_POTION: todestroy |= gameData.potionDestroyed; break;
-            case LASER_GUN: todestroy |= gameData.laserDestroyed; break;
-            case SHIELD: todestroy |= gameData.shieldDestroyed; break;
-            }
-        }
+        //if (gameData != null) {
+            //switch (type) {
+            //case HEALTH_POTION: todestroy |= gameData.potionDestroyed; break;
+            //case LASER_GUN: todestroy |= gameData.laserDestroyed; break;
+            //case SHIELD: todestroy |= gameData.shieldDestroyed; break;
+            //}
+        //}
 //        physics.update(delta);
         graphics.update(delta);
         if(todestroy && !destroyed){

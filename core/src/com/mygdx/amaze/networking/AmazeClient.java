@@ -12,12 +12,14 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.mygdx.amaze.utilities.Const;
+
 public class AmazeClient {
 
 //    private static final String SERVER_IP_ADDRESS = "192.168.1.169";
     private static final String SERVER_IP_ADDRESS = "10.12.15.125";
     private static final int SERVER_PORT = 5668;
-    private static final int PACKET_SIZE = 512;
+    private static final int PACKET_SIZE = 1024;
 
     // udp stuffs
     private DatagramSocket clientSocket;
@@ -66,7 +68,7 @@ public class AmazeClient {
 
     public void stop() {
         GameData data = new GameData();
-        data.msgType = GameData.MessageType.POSTGAME;
+        data.msgType = Const.POSTGAME;
         sendGameDataBlocking(data);
 
         if (joinRoomThread != null) joinRoomThread.interrupt();
@@ -159,11 +161,11 @@ public class AmazeClient {
             if (Thread.interrupted()) return;
 
             GameData data = new GameData();
-            data.msgType = GameData.MessageType.PREGAME;
+            data.msgType = Const.PREGAME;
             sendGameDataBlocking(data);
 
             data = getGameDataBlocking();
-            if (data != null && data.msgType == GameData.MessageType.INGAME) {
+            if (data != null && data.msgType == Const.INGAME) {
                 // clear receiveQueue in case it has any PREGAME data
                 receiveQueue.clear();
                 networkListener.onRoomCreated(data);

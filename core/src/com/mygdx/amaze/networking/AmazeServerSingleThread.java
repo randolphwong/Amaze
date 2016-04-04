@@ -12,9 +12,11 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import com.mygdx.amaze.utilities.Const;
+
 public class AmazeServerSingleThread {
 
-    private static final int PACKET_SIZE = 512;
+    private static final int PACKET_SIZE = 1024;
 
     private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;
@@ -47,9 +49,9 @@ public class AmazeServerSingleThread {
             System.out.println("received packet");
             
             switch (receiveGameData.msgType) {
-                case PREGAME: handlePreGameMessage(); break;
-                case INGAME: handleInGameMessage(); break;
-                case POSTGAME: handlePostGameMessage(); break;
+                case Const.PREGAME: handlePreGameMessage(); break;
+                case Const.INGAME: handleInGameMessage(); break;
+                case Const.POSTGAME: handlePostGameMessage(); break;
             }
         }
     }
@@ -64,7 +66,7 @@ public class AmazeServerSingleThread {
             receiveGameData = (GameData) objInputStream.readObject();
 
             // add the sender address so that the server knows who to relay the message to
-            receiveGameData.ipAddress = receivePacket.getAddress();
+            receiveGameData.ipAddress = receivePacket.getAddress().getHostAddress();
             receiveGameData.port = receivePacket.getPort();
         } catch (ClassNotFoundException e) {
             // DEBUG PRINT
@@ -127,14 +129,14 @@ public class AmazeServerSingleThread {
         room.put(clientB, clientA);
 
         GameData newGameData = new GameData();
-        newGameData.msgType = GameData.MessageType.INGAME;
+        newGameData.msgType = Const.INGAME;
         // DEBUG PRINT
         System.out.println("Sending confirmation to " + clientA);
         System.out.println("Sending confirmation to " + clientB);
         // assuming that these packets don't get lost!
-        newGameData.player = new String("playerA");
+        newGameData.playerType = Const.MAIN_PLAYER;
         send(clientA, newGameData);
-        newGameData.player = new String("playerB");
+        newGameData.playerType = Const.OTHER_PLAYER;
         send(clientB, newGameData);
     }
 
