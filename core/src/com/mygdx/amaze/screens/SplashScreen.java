@@ -7,21 +7,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import com.mygdx.amaze.AmazeGame;
-import com.mygdx.amaze.networking.AmazeNetworkListener;
 import com.mygdx.amaze.networking.GameData;
 
-public class MainMenuScreen implements Screen, AmazeNetworkListener {
-
+/**
+ * Created by Dhanya on 04/04/2016.
+ */
+public class SplashScreen implements Screen {
     private AmazeGame game;
-    
+
     // stage ui (buttons and etc.)
     private Stage stage;
     private BitmapFont font;
@@ -29,27 +29,25 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
     private Sprite backgroundSet;
     private TextButton textButton;
 
-    private boolean joinedRoom; // guarded by MainMenuScreen.class
-    private GameData gameData; // guarded by MainMenuScreen.class
+    private int time = 0;
 
-    public MainMenuScreen(AmazeGame game) {
+
+    public SplashScreen(AmazeGame game) {
         this.game = game;
 
         // set up a stage for displaying button
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        backgroundImg = new Texture(Gdx.files.internal("startScreen/rsz_instructions.png"));
-        backgroundSet = new Sprite(backgroundImg);
+//        backgroundImg = new Texture(Gdx.files.internal("startScreen/instructions.png"));
+//        backgroundSet = new Sprite(backgroundImg);
 //        backgroundSet.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // add a button
         textButton = createButton();
         stage.addActor(textButton);
 
-        // set up networking
-        game.networkClient.setNetworkListener(this);
-        joinedRoom = false;
+
     }
 
     public TextButton createButton() {
@@ -60,34 +58,27 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
         buttonStyle.font = font;
         buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
         TextButton textButton = new TextButton("START GAME", buttonStyle);
-        textButton.setPosition(Gdx.graphics.getWidth()- textButton.getWidth(), 10);
-        textButton.addListener(new ClickListener() {             
+        textButton.setPosition(Gdx.graphics.getWidth()/2 - textButton.getWidth()/2, Gdx.graphics.getHeight()/2 - textButton.getHeight()/2);
+        textButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 buttonClicked();
-            };
+            }
+
+            ;
         });
 
         return textButton;
     }
 
     public void buttonClicked() {
-        textButton.setText("Waiting ...");
-//        game.networkClient.joinRoom();
-        game.setScreen(new PlayScreen(game, "playerA", 1));
+        game.setScreen(new MainMenuScreen(game));
     }
 
     public void update(float delta) {
-        System.out.println("Width: " + Gdx.graphics.getWidth() + " Height: " + Gdx.graphics.getHeight());
-        synchronized(MainMenuScreen.class) {
-            if (joinedRoom) {
-                joinedRoom = false;
 
-                game.setScreen(new PlayScreen(game, gameData.player, 1));
-                dispose();
-            }
         }
-    }
+
 
     @Override
     public void render(float delta) {
@@ -96,24 +87,15 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
         Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        game.batch.begin();
-        game.batch.draw(backgroundSet, 0, 0);
-        game.batch.end();
+//        game.batch.begin();
+//        game.batch.draw(backgroundSet, stage.getWidth()/8, stage.getHeight()/8);
+//        game.batch.end();
 
         stage.act(delta);
         stage.draw();
     }
 
-    @Override
-    public void onRoomCreated(GameData data) {
-        // unfortunately i cannot perform setscreen here because this is not
-        // under the UI thread... so it means this onRoomCreated is kind of
-        // redundant
-        synchronized(MainMenuScreen.class) {
-            joinedRoom = true;
-            gameData = data;
-        }
-    }
+
 
     @Override
     public void dispose() {
@@ -145,6 +127,6 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
 
     @Override
     public void hide() {
+    }
 
     }
-}
