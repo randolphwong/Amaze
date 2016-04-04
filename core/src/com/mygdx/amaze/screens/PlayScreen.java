@@ -27,6 +27,8 @@ import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
 
+import com.mygdx.amaze.screens.SplashScreen;
+
 /**
  * Created by Randolph on 12/3/2016.
  */
@@ -209,7 +211,9 @@ public class PlayScreen implements Screen {
 
             case TIME_UP:
                 dispose();
-
+                // TODO this is just a placeholder to prevent exception
+                game.setScreen(new SplashScreen(game));
+                return;
         }
 
         // get GameData from remote client
@@ -263,6 +267,9 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         update(delta);
+
+        // don't render if game ended (or else we will get seg fault!)
+        if (gameState != GameState.RUNNING) return;
 
         viewport.apply();
         mapRenderer.render();
