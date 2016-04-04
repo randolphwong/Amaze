@@ -186,10 +186,10 @@ public class PlayScreen implements Screen {
                     winTime = elapsedTime;
                 }
                 else if(hud.timer == 200){
-                    map.getLayers().get("Tile layer 4").setVisible(true);
+                    map.getLayers().get("Tile Layer 4").setVisible(true);
                 }
                 else if(hud.timer == 100){
-                    map.getLayers().get("Tile layer 5").setVisible(true);
+                    map.getLayers().get("Tile Layer 5").setVisible(true);
                 }
                 else if(hud.isTimeUp()){
                     Gdx.app.log("TimeUp", "Dun Dun Dun. Game over!");

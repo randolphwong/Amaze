@@ -26,8 +26,6 @@ public class CollisionListener implements ContactListener {
     public static final short MONSTER_BOUNDARY_BIT  = 1 << 4;
     public static final short ITEM_BIT              = 1 << 5;
 
-    PlayScreen screen;
-
     public CollisionListener(PlayScreen screen) {
         this.screen = screen;
 

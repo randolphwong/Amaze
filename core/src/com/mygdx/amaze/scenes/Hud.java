@@ -17,8 +17,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.amaze.components.Earthquake;
 
-import sun.font.EAttribute;
-
 
 /**
  * Created by Randolph on 13/3/2016.
