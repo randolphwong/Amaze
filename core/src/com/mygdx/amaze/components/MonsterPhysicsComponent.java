@@ -73,9 +73,6 @@ public class MonsterPhysicsComponent {
      */
     private void chase() {
         Player player = monster.player;
-        Vector2 target;
-        Vector2 newVelocity = new Vector2(0, 0);
-
         // translate the player position on to the imaginary centre line of the isle
         Vector2 translatedPlayerPosition = new Vector2(player.x, player.y);
         if (Math.abs(player.x - monster.spawnLocation.x) <= (1.5f * Player.SIZE)) {
@@ -89,19 +86,23 @@ public class MonsterPhysicsComponent {
         boolean monsterCloserToPlayer = translatedPlayerPosition.dst2(monster.position) <= translatedPlayerPosition.dst2(monster.spawnLocation);
         boolean monsterVeryCloseToJunction = monster.position.dst2(monster.spawnLocation) < 3;
         if (monsterCloserToPlayer || monsterVeryCloseToJunction) {
-            target = translatedPlayerPosition;
+            monster.target = translatedPlayerPosition;
         } else {
-            target = monster.spawnLocation;
+            monster.target = monster.spawnLocation;
         }
+    }
+
+    private void moveTowardsTarget() {
+        Vector2 newVelocity = new Vector2(0, 0);
 
         // move the monster when it has not yet reached the target position (within an error margin of 2 pixels)
-        if (target.x - monster.position.x < -2) {
+        if (monster.target.x - monster.position.x < -2) {
             newVelocity.x = -110;
-        } else if (target.x - monster.position.x > 2) {
+        } else if (monster.target.x - monster.position.x > 2) {
             newVelocity.x = 110;
-        } else if (target.y - monster.position.y < -2) {
+        } else if (monster.target.y - monster.position.y < -2) {
             newVelocity.y = -110;
-        } else if (target.y - monster.position.y > 2) {
+        } else if (monster.target.y - monster.position.y > 2) {
             newVelocity.y = 110;
         }
         monster.velocity.set(newVelocity);
@@ -110,9 +111,8 @@ public class MonsterPhysicsComponent {
     public void update(float delta) {
         if (monster.chasingPlayer) {
             chase();
-        } else {
-            monster.velocity.set(0, 0);
         }
+        moveTowardsTarget();
 
         body.setLinearVelocity(monster.velocity);
         monster.position.set(body.getPosition());

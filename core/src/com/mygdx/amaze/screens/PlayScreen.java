@@ -225,19 +225,31 @@ public class PlayScreen implements Screen {
                 Gdx.app.log("PlayScreen", "Remote client disconnected.");
             } else {
                 friend.update(delta, gameData);
+                for (Monster monster : monsters)
+                    monster.update(delta, gameData);
             }
         }
 
         player.update(delta);
         hud.update(delta);
 
-        for (Monster monster : monsters)
-            monster.update(delta);
 
         // send GameData from remote client
+        // TODO create a utility class that provides method to configure GameData
         GameData dataToSend = new GameData();
         dataToSend.msgType = Const.INGAME;
         dataToSend.playerPosition = new Coord((short)player.x, (short)player.y);
+        dataToSend.monsterPosition = new Coord[monsters.size];
+        for (int i = 0; i < monsters.size; i++) {
+            // specify whether each monster is chasing the Player or not
+            if (monsters.get(i).chasingPlayer) {
+                dataToSend.monsterChasing |= 1 << i;
+            }
+            dataToSend.monsterPosition[i] = new Coord((short)monsters.get(i).position.x, (short)monsters.get(i).position.y);
+        }
+        dataToSend.itemTaken |= healthPotion.isDestroyed() ? 1 : 0;
+        dataToSend.itemTaken |= laserGun.isDestroyed() ? 2 : 0;
+        dataToSend.itemTaken |= shield.isDestroyed() ? 4 : 0;
         game.networkClient.sendGameData(dataToSend);
 
         //update items

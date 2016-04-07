@@ -9,12 +9,16 @@ import com.mygdx.amaze.components.MonsterGraphicsComponent;
 import com.mygdx.amaze.components.MonsterInputComponent;
 import com.mygdx.amaze.components.MonsterPhysicsComponent;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.screens.PlayScreen;
 
 /**
  * Created by Randolph on 12/3/2016.
  */
 public class Monster {
+
+    private static int monsterIdTracker = 0;
+    private int id;
 
     private PlayScreen screen;
 
@@ -26,6 +30,9 @@ public class Monster {
 
     public Vector2 velocity;
 
+    // target position that the monster will always move towards
+    public Vector2 target;
+
     public boolean chasingPlayer;
     public Player player;
 
@@ -35,14 +42,21 @@ public class Monster {
     public MonsterGraphicsComponent graphics;
 
     public Monster(PlayScreen screen, Vector2 spawnLocation) {
+        id = ++monsterIdTracker;
+
         this.spawnLocation = spawnLocation;
         position = spawnLocation.cpy();
+        target = spawnLocation.cpy();
 
         this.velocity = new Vector2(0, 0);
 
-        //input = new MonsterInputComponent(this);
+        input = new MonsterInputComponent(this);
         physics = new MonsterPhysicsComponent(this, screen.world);
         graphics = new MonsterGraphicsComponent(this);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public Body getBody() {
@@ -58,8 +72,8 @@ public class Monster {
         chasingPlayer = false;
     }
 
-    public void update(float delta) {
-        //input.update(delta);
+    public void update(float delta, GameData gameData) {
+        input.update(delta, gameData);
         physics.update(delta);
         graphics.update(delta);
     }
