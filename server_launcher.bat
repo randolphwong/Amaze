@@ -2,6 +2,6 @@
 CD core\build\classes\main\
 
 ECHO Starting server... 
-ECHO If there's not exception, then the server has started.
+ECHO **Note** Remember to change the server IP address in AmazeClient accordingly.
 
 java com.mygdx.amaze.networking.ServerApp

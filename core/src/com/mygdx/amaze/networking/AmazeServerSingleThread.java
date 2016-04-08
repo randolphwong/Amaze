@@ -46,7 +46,7 @@ public class AmazeServerSingleThread {
             if (receiveGameData == null) continue;
 
             // DEBUG PRINT
-            System.out.println("received packet");
+            //System.out.println("received packet");
             
             switch (receiveGameData.msgType) {
                 case Const.PREGAME: handlePreGameMessage(); break;
@@ -77,7 +77,7 @@ public class AmazeServerSingleThread {
     private void handlePreGameMessage() {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
         // DEBUG PRINT
-        System.out.println("handling pre game message from: " + senderAddress);
+        System.out.println(senderAddress + " is attempting to join game.");
         if (room.containsKey(senderAddress)) return; // ignore if a client is already in game
 
         // ignore if the client is already waiting
@@ -101,11 +101,11 @@ public class AmazeServerSingleThread {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
         if (!room.containsKey(senderAddress)) {
             // DEBUG PRINT
-            System.out.println("Client not in room yet: " + senderAddress);
+            //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
             return;
         }
         // DEBUG PRINT
-        System.out.println("handling in game message from: " + senderAddress);
+        //System.out.println("handling in game message from: " + senderAddress);
         send(room.get(senderAddress), receiveGameData);
     }
 
@@ -113,11 +113,12 @@ public class AmazeServerSingleThread {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
         if (!room.containsKey(senderAddress)) {
             // DEBUG PRINT
-            System.out.println("Client not in room yet: " + senderAddress);
+            //System.out.println(senderAddress + " is not in game room, but POSTGAME message received.");
             return;
         }
         // DEBUG PRINT
-        System.out.println("handling post game message from: " + senderAddress);
+        System.out.println(senderAddress + " has left the game room.");
+        System.out.println((room.get(senderAddress)) + " removed from game room.");
         send(room.get(senderAddress), receiveGameData);
         room.remove(room.get(senderAddress));
         room.remove(senderAddress);
