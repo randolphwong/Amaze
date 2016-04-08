@@ -13,7 +13,6 @@ public class GameData implements Serializable {
     public byte msgType;
 
     // player
-    public byte playerType; // MAIN or OTHER
     public Coord playerPosition;
     public byte playerStatus;
 
@@ -26,6 +25,7 @@ public class GameData implements Serializable {
     public Coord[] itemPosition;
 
     // for networking
+    public byte clientType;
     public String ipAddress;
     public int port;
     public long clientTimeStamp;

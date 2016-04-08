@@ -135,9 +135,9 @@ public class AmazeServerSingleThread {
         System.out.println("Sending confirmation to " + clientA);
         System.out.println("Sending confirmation to " + clientB);
         // assuming that these packets don't get lost!
-        newGameData.playerType = Const.MAIN_PLAYER;
+        newGameData.clientType = Const.MASTER_CLIENT;
         send(clientA, newGameData);
-        newGameData.playerType = Const.OTHER_PLAYER;
+        newGameData.clientType = Const.SLAVE_CLIENT;
         send(clientB, newGameData);
     }
 

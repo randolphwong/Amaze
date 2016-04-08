@@ -41,7 +41,7 @@ public class PlayScreen implements Screen {
     // players
     public Player player;
     public Friend friend;
-    public byte playerType;
+    public byte clientType;
     public static final String[] playerTypeString = {"playerA", "playerB"};
     public static final String[] friendTypeString = {"playerB", "playerA"};
 
@@ -85,10 +85,10 @@ public class PlayScreen implements Screen {
     // networking
     private NetworkData networkData;
 
-    public PlayScreen(AmazeGame game, byte playerType, int level) {
+    public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
         this.level = level;
-        this.playerType = playerType;
+        this.clientType = clientType;
 
         gameState = GameState.RUNNING;
 
@@ -120,11 +120,11 @@ public class PlayScreen implements Screen {
                 true /* draw contacts */);
 
         // create player
-        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerTypeString[playerType - 1] + "_location", map).get(0);
+        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerTypeString[clientType - 1] + "_location", map).get(0);
         player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
         // create friend
-        Vector2 friendSpawnLocation = MapPhysicsBuilder.getSpawnLocation(friendTypeString[playerType - 1] + "_location", map).get(0);
+        Vector2 friendSpawnLocation = MapPhysicsBuilder.getSpawnLocation(friendTypeString[clientType - 1] + "_location", map).get(0);
         friend = new Friend(this, friendSpawnLocation.x, friendSpawnLocation.y);
 
         // create monster
@@ -213,7 +213,7 @@ public class PlayScreen implements Screen {
                 // pause for about 2 seconds before to transit to next level
                 if ((elapsedTime - winTime) > 2) {
                     dispose();
-                    game.setScreen(new PlayScreen(game, playerType, level + 1));
+                    game.setScreen(new PlayScreen(game, clientType, level + 1));
                 }
                 return;
 

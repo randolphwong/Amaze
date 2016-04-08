@@ -65,8 +65,8 @@ public class NetworkData {
         return gameData.msgType;
     }
 
-    public byte playerType() {
-        return gameData.playerType;
+    public byte clientType() {
+        return gameData.clientType;
     }
 
     public Coord playerPosition() {

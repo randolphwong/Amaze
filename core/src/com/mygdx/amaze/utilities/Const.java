@@ -12,10 +12,8 @@ public class Const {
     public static final byte INGAME = 2;
     public static final byte POSTGAME = 3;
 
-    // When game starts, this will determine whether the client is the main or
-    // 'other' player
-    public static final byte MAIN_PLAYER = 1;
-    public static final byte OTHER_PLAYER = 2;
+    public static final byte MASTER_CLIENT = 1;
+    public static final byte SLAVE_CLIENT = 2;
 
     // player status
     public static final byte ATTACKED = 1;
