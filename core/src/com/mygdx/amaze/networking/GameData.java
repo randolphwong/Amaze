@@ -15,6 +15,7 @@ public class GameData implements Serializable {
     // player
     public byte playerType; // MAIN or OTHER
     public Coord playerPosition;
+    public byte playerStatus;
 
     // monster
     public byte monsterChasing; // bit manipulation

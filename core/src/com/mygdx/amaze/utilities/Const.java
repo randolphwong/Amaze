@@ -17,6 +17,11 @@ public class Const {
     public static final byte MAIN_PLAYER = 1;
     public static final byte OTHER_PLAYER = 2;
 
+    // player status
+    public static final byte ATTACKED = 1;
+    public static final byte SHIELDED = 2;
+    public static final byte DEAD = 4;
+
     public static final int MAX_MONSTER = 4;
     public static final int MAX_ITEM = 4;
 }

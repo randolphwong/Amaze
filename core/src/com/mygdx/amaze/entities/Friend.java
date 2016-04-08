@@ -22,6 +22,8 @@ public class Friend {
     public float y;
 
     public int health = 99;
+    public boolean attacked = false;
+    public boolean shielded = false;
 
     //inventory
     public Item[] Inventory;

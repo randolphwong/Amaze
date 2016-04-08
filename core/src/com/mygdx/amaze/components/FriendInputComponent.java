@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.networking.GameData;
+import com.mygdx.amaze.utilities.Const;
 
 /**
  * Created by Randolph on 13/3/2016.
@@ -23,6 +24,14 @@ public class FriendInputComponent {
         if (gameData != null) {
             friend.x = gameData.playerPosition.x;
             friend.y = gameData.playerPosition.y;
+
+            switch (gameData.playerStatus) {
+            case Const.ATTACKED: friend.attacked = true; break;
+            case Const.SHIELDED: friend.shielded = true; break;
+            default:
+                friend.attacked = false;
+                friend.shielded = false;
+            }
         }
     }
 }

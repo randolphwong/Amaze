@@ -36,7 +36,6 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     private TextureRegion normal;
     private TextureRegion white;
     private Animation blinkAnimation;
-
     private Sprite shieldGlowSprite;
 
     private MovementState movementState;
@@ -94,6 +93,7 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         moveRightAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
+        // attacked animation (blink)
         normal = new TextureRegion();
         white = new TextureRegion();
         regions.add(normal);

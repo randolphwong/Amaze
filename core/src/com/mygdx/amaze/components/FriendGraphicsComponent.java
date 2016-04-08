@@ -1,6 +1,7 @@
 package com.mygdx.amaze.components;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -31,6 +32,11 @@ public class FriendGraphicsComponent extends GraphicsComponent {
     private Animation moveUpAnimation;
     private Animation moveDownAnimation;
 
+    private TextureRegion normal;
+    private TextureRegion white;
+    private Animation blinkAnimation;
+    private Sprite shieldGlowSprite;
+
     private MovementState movementState;
     private float previousX;
     private float previousY;
@@ -45,6 +51,11 @@ public class FriendGraphicsComponent extends GraphicsComponent {
         friendSprite = new Sprite(friendAtlas.findRegion("Luke_down_stationary"));
         friendSprite.setCenter(friend.x, friend.y);
         friendSprite.setSize(friend.SIZE, friend.SIZE);
+
+        shieldGlowSprite = new Sprite(new Texture("player/glow.png"));
+        shieldGlowSprite.setCenter(friend.x, friend.y);
+
+        setUpAnimation();
 
         previousX = friend.x;
         previousY = friend.y;
@@ -82,6 +93,14 @@ public class FriendGraphicsComponent extends GraphicsComponent {
         regions.add(friendAtlas.findRegion("Luke_right_stationary"));
         moveRightAnimation = new Animation(1 / 5f, regions);
         regions.clear();
+
+        // attacked animation (blink)
+        normal = new TextureRegion();
+        white = new TextureRegion();
+        regions.add(normal);
+        regions.add(white);
+        blinkAnimation = new Animation(1 / 5f, regions);
+        regions.clear();
     }
 
     private void updateMovementState() {
@@ -116,6 +135,16 @@ public class FriendGraphicsComponent extends GraphicsComponent {
                 break;
         }
 
+        if (friend.attacked) {
+            if (blinkAnimation.getKeyFrame(elapsedTime, true) == white) {
+                friendSprite.setColor(0, 0, 0, 0.5f);
+            } else {
+                friendSprite.setColor(1, 1, 1, 1);
+            }
+        } else {
+            friendSprite.setColor(1, 1, 1, 1);
+        }
+
         // update elapsedTime for animation
         elapsedTime += Gdx.graphics.getDeltaTime();
 
@@ -132,11 +161,17 @@ public class FriendGraphicsComponent extends GraphicsComponent {
     @Override
     public void draw(SpriteBatch batch) {
         friendSprite.draw(batch);
+
+        if (friend.shielded) {
+            shieldGlowSprite.setCenter(friend.x, friend.y);
+            shieldGlowSprite.draw(batch);
+        }
     }
 
     @Override
     public void dispose() {
         friendSprite.getTexture().dispose();
+        shieldGlowSprite.getTexture().dispose();
         friendAtlas.dispose();
     }
 }

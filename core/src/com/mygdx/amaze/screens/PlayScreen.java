@@ -238,7 +238,11 @@ public class PlayScreen implements Screen {
         // TODO create a utility class that provides method to configure GameData
         GameData dataToSend = new GameData();
         dataToSend.msgType = Const.INGAME;
+        // player
         dataToSend.playerPosition = new Coord((short)player.x, (short)player.y);
+        dataToSend.playerStatus |= player.attacked ? Const.ATTACKED : 0;
+        dataToSend.playerStatus |= player.shielded ? Const.SHIELDED : 0;
+        // monster
         dataToSend.monsterPosition = new Coord[monsters.size];
         for (int i = 0; i < monsters.size; i++) {
             // specify whether each monster is chasing the Player or not
@@ -247,6 +251,7 @@ public class PlayScreen implements Screen {
             }
             dataToSend.monsterPosition[i] = new Coord((short)monsters.get(i).position.x, (short)monsters.get(i).position.y);
         }
+        // items
         dataToSend.itemTaken |= healthPotion.isDestroyed() ? 1 : 0;
         dataToSend.itemTaken |= laserGun.isDestroyed() ? 2 : 0;
         dataToSend.itemTaken |= shield.isDestroyed() ? 4 : 0;
