@@ -24,6 +24,7 @@ import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.networking.GameData;
+import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.screens.SplashScreen;
 import com.mygdx.amaze.utilities.Coord;
@@ -81,6 +82,9 @@ public class PlayScreen implements Screen {
     // HUD
     public Hud hud;
 
+    // networking
+    private NetworkData networkData;
+
     public PlayScreen(AmazeGame game, byte playerType, int level) {
         this.game = game;
         this.level = level;
@@ -124,6 +128,7 @@ public class PlayScreen implements Screen {
         friend = new Friend(this, friendSpawnLocation.x, friendSpawnLocation.y);
 
         // create monster
+        Monster.resetIdTracker(); // need this to prevent crash since ID tracker is static
         monsters = new Array<Monster>();
         Array<Vector2> monsterSpawnLocations = MapPhysicsBuilder.getSpawnLocation("monster_location", map);
         for (Vector2 monsterSpawnLocation : monsterSpawnLocations) {
@@ -147,6 +152,7 @@ public class PlayScreen implements Screen {
 
         // for networking
         game.networkClient.startMultiplayerGame();
+        networkData = new NetworkData(game.networkClient);
 
         // door for level1/2
         level1DoorRect = new Rectangle(304, 1600 - 128, 192, 128);
@@ -218,49 +224,43 @@ public class PlayScreen implements Screen {
                 return;
         }
 
-        // get GameData from remote client
-        GameData gameData = game.networkClient.getGameData();
-        if (gameData != null) {
-            if (gameData.msgType == Const.POSTGAME) {
+        // get RawNetworkData from remote client
+        networkData.getFromServer();
+        if (networkData.isAvailable()) {
+            if (networkData.messageType() == Const.POSTGAME) {
                 Gdx.app.log("PlayScreen", "Remote client disconnected.");
             } else {
-                friend.update(delta, gameData);
+                friend.update(delta, networkData);
                 for (Monster monster : monsters)
-                    monster.update(delta, gameData);
+                    monster.update(delta, networkData);
             }
+        } else {
+            networkData.createDummyData();
         }
 
         player.update(delta);
         hud.update(delta);
 
+        //update items
+        healthPotion.update(delta, networkData);
+        laserGun.update(delta, networkData);
+        shield.update(delta, networkData);
 
         // send GameData from remote client
-        // TODO create a utility class that provides method to configure GameData
-        GameData dataToSend = new GameData();
-        dataToSend.msgType = Const.INGAME;
+        networkData.resetGameData();
+        networkData.setMessageType(Const.INGAME);
         // player
-        dataToSend.playerPosition = new Coord((short)player.x, (short)player.y);
-        dataToSend.playerStatus |= player.attacked ? Const.ATTACKED : 0;
-        dataToSend.playerStatus |= player.shielded ? Const.SHIELDED : 0;
+        networkData.setPlayerData(player);
         // monster
-        dataToSend.monsterPosition = new Coord[monsters.size];
-        for (int i = 0; i < monsters.size; i++) {
-            // specify whether each monster is chasing the Player or not
-            if (monsters.get(i).chasingPlayer) {
-                dataToSend.monsterChasing |= 1 << i;
-            }
-            dataToSend.monsterPosition[i] = new Coord((short)monsters.get(i).position.x, (short)monsters.get(i).position.y);
+        for (Monster monster : monsters) {
+            networkData.setMonsterData(monster);
         }
         // items
-        dataToSend.itemTaken |= healthPotion.isDestroyed() ? 1 : 0;
-        dataToSend.itemTaken |= laserGun.isDestroyed() ? 2 : 0;
-        dataToSend.itemTaken |= shield.isDestroyed() ? 4 : 0;
-        game.networkClient.sendGameData(dataToSend);
+        networkData.setItemData(healthPotion);
+        networkData.setItemData(laserGun);
+        networkData.setItemData(shield);
+        networkData.sendToServer();
 
-        //update items
-        healthPotion.update(delta, gameData);
-        laserGun.update(delta, gameData);
-        shield.update(delta, gameData);
 
         if(hud.earthquake.time>0){
             hud.earthquake.tick(delta, this, player);

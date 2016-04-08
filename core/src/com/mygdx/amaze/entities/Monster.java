@@ -9,7 +9,7 @@ import com.mygdx.amaze.components.MonsterGraphicsComponent;
 import com.mygdx.amaze.components.MonsterInputComponent;
 import com.mygdx.amaze.components.MonsterPhysicsComponent;
 import com.mygdx.amaze.entities.Player;
-import com.mygdx.amaze.networking.GameData;
+import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.screens.PlayScreen;
 
 /**
@@ -72,8 +72,8 @@ public class Monster {
         chasingPlayer = false;
     }
 
-    public void update(float delta, GameData gameData) {
-        input.update(delta, gameData);
+    public void update(float delta, NetworkData networkData) {
+        input.update(delta, networkData);
         physics.update(delta);
         graphics.update(delta);
     }
@@ -82,7 +82,12 @@ public class Monster {
         graphics.draw(batch);
     }
 
+    public static void resetIdTracker() {
+        monsterIdTracker = 0;
+    }
+
     public void dispose() {
+        monsterIdTracker -= 1;
         graphics.dispose();
     }
 }

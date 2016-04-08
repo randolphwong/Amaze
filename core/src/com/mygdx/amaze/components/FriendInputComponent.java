@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.scenes.Hud;
-import com.mygdx.amaze.networking.GameData;
+import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.utilities.Const;
 
 /**
@@ -20,18 +20,12 @@ public class FriendInputComponent {
         this.friend = friend;
     }
 
-    public void update(float delta, GameData gameData) {
-        if (gameData != null) {
-            friend.x = gameData.playerPosition.x;
-            friend.y = gameData.playerPosition.y;
-
-            switch (gameData.playerStatus) {
-            case Const.ATTACKED: friend.attacked = true; break;
-            case Const.SHIELDED: friend.shielded = true; break;
-            default:
-                friend.attacked = false;
-                friend.shielded = false;
-            }
+    public void update(float delta, NetworkData networkData) {
+        if (networkData.isAvailable()) {
+            friend.x = networkData.playerPosition().x;
+            friend.y = networkData.playerPosition().y;
+            friend.attacked = networkData.isPlayerAttacked();
+            friend.shielded = networkData.isPlayerShielded();
         }
     }
 }

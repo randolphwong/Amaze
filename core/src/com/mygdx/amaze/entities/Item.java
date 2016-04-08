@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.amaze.components.ItemGraphicsComponent;
 import com.mygdx.amaze.components.ItemPhysicsComponent;
-import com.mygdx.amaze.networking.GameData;
+import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.screens.PlayScreen;
 
 /**
@@ -44,12 +44,10 @@ public class Item {
         return physics.getBody();
     }
 
-    public void update(float delta, GameData gameData) {
-        if (gameData != null) {
-            switch (type) {
-            case HEALTH_POTION: todestroy |= ((gameData.itemTaken & 1) == 1); break;
-            case LASER_GUN: todestroy |= ((gameData.itemTaken & 2) == 2); break;
-            case SHIELD: todestroy |= ((gameData.itemTaken & 4) == 4); break;
+    public void update(float delta, NetworkData networkData) {
+        if (networkData.isAvailable()) {
+            if (networkData.isItemTaken(this)) {
+                todestroy = true;
             }
         }
 //        physics.update(delta);
