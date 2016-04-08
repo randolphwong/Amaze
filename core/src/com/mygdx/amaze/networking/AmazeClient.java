@@ -100,6 +100,7 @@ public class AmazeClient {
     private void sender() {
         while (true) {
             if (Thread.interrupted()) return;
+            if (clientSocket.isClosed()) return;
 
             try {
                 sendGameDataBlocking(sendQueue.take());
@@ -123,6 +124,7 @@ public class AmazeClient {
     private void receiver() {
         while (true) {
             if (Thread.interrupted()) return;
+            if (clientSocket.isClosed()) return;
 
             try {
                 GameData gameData = getGameDataBlocking();
@@ -159,6 +161,7 @@ public class AmazeClient {
     private void join() {
         while (true) {
             if (Thread.interrupted()) return;
+            if (clientSocket.isClosed()) return;
 
             GameData data = new GameData();
             data.msgType = Const.PREGAME;
