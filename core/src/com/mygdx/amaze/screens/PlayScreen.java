@@ -25,6 +25,7 @@ import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.networking.NetworkData;
+import com.mygdx.amaze.networking.RequestManager;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.screens.SplashScreen;
 import com.mygdx.amaze.utilities.Coord;
@@ -84,6 +85,7 @@ public class PlayScreen implements Screen {
 
     // networking
     private NetworkData networkData;
+    private RequestManager requestManager;
 
     public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
@@ -156,6 +158,7 @@ public class PlayScreen implements Screen {
         if (clientType == Const.MASTER_CLIENT) {
             networkData.initialiseLevel(healthPotion, laserGun, shield, monsters);
         }
+        requestManager = RequestManager.getInstance();
 
         // door for level1/2
         level1DoorRect = new Rectangle(304, 1600 - 128, 192, 128);
@@ -227,12 +230,23 @@ public class PlayScreen implements Screen {
                 return;
         }
 
-        // get RawNetworkData from remote client
+        // update physics world
+        world.step(1 / 60f, 6, 2);
+
+        // send requests to server if any
+        requestManager.makeRequest(networkData);
+
+        // get RawNetworkData from server
         networkData.getFromServer();
         if (networkData.isAvailable()) {
-            if (networkData.messageType() == Const.POSTGAME) {
+            switch (networkData.messageType()) {
+            case Const.POSTGAME:
                 Gdx.app.log("PlayScreen", "Remote client disconnected.");
-            } else {
+                break;
+            case Const.REQUEST:
+                requestManager.resolve(networkData);
+                break;
+            default:
                 friend.update(delta, networkData);
                 for (Monster monster : monsters)
                     monster.update(delta, networkData);
@@ -249,16 +263,13 @@ public class PlayScreen implements Screen {
         laserGun.update(delta, networkData);
         shield.update(delta, networkData);
 
-        // send GameData from remote client
+        // send GameData to remote client
         networkData.resetGameData();
         networkData.setMessageType(Const.INGAME);
-        // player
         networkData.setPlayerData(player);
-        // monster
         for (Monster monster : monsters) {
             networkData.setMonsterData(monster);
         }
-        // items
         networkData.setItemData(healthPotion);
         networkData.setItemData(laserGun);
         networkData.setItemData(shield);
@@ -273,7 +284,7 @@ public class PlayScreen implements Screen {
             camera.position.x = player.x;
             camera.position.y = player.y;
         }
-        world.step(1 / 60f, 6, 2);
+
         camera.update();
         mapRenderer.setView(camera);
     }

@@ -33,7 +33,7 @@ public class Monster {
     // target position that the monster will always move towards
     public Vector2 target;
 
-    public boolean chasingPlayer;
+    private boolean chasingPlayer;
     public Player player;
 
     // components
@@ -70,6 +70,10 @@ public class Monster {
 
     public void stopChase() {
         chasingPlayer = false;
+    }
+
+    public boolean isChasing() {
+        return chasingPlayer;
     }
 
     public void update(float delta, NetworkData networkData) {

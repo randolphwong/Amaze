@@ -55,6 +55,7 @@ public class AmazeServerSingleThread {
                 case Const.INGAME: handleInGameMessage(); break;
                 case Const.POSTGAME: handlePostGameMessage(); break;
                 case Const.INITIALISE: handleInitialisationMessage(); break;
+                case Const.REQUEST: handleRequestMessage(); break;
             }
         }
     }
@@ -140,6 +141,58 @@ public class AmazeServerSingleThread {
         // DEBUG PRINT
         System.out.println("handling initialiseLevel message from: " + senderAddress);
         roomData.put(senderAddress, receiveGameData);
+    }
+
+    private void handleRequestMessage() {
+        InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
+        if (!room.containsKey(senderAddress)) {
+            // DEBUG PRINT
+            //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
+            return;
+        }
+        // DEBUG PRINT
+        evaluateRequest(senderAddress);
+    }
+
+    private void evaluateRequest(InetSocketAddress senderAddress) {
+        GameData currentRoomData = roomData.get(senderAddress);
+        if (currentRoomData == null) currentRoomData = roomData.get(room.get(senderAddress));
+
+        switch(receiveGameData.requestType) {
+        case Const.ITEM_REQUEST:
+            System.out.println("handling item request from: " + senderAddress);
+            /*
+             * By default, itemTaken bit field will be 0 for each item. A request will have the
+             * corresponding bit set as 1. As a result, if an item has no yet been taken, the
+             * conjunction will result in 0. Hence, the requestOutcome is set to true when the
+             * conjunction is 0.
+             */
+            receiveGameData.requestOutcome = (receiveGameData.itemTaken & currentRoomData.itemTaken) == 0;
+            currentRoomData.itemTaken |= receiveGameData.itemTaken;
+            break;
+        case Const.MONSTER_CHASE_REQUEST:
+            System.out.println("handling monster chasing request from: " + senderAddress);
+            System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
+            System.out.println("requested monster chasing status: " + receiveGameData.monsterChasing);
+            /*
+             * By default, monsterChasing bit field will be 0 for each monster. A request will have
+             * the corresponding bit set as 1. As a result, if the monster is not chasing yet, the
+             * conjunction will result in 0. Hence, the requestOutcome is set to true when the
+             * conjunction is 0.
+             */
+            receiveGameData.requestOutcome = (receiveGameData.monsterChasing & currentRoomData.monsterChasing) == 0;
+            currentRoomData.monsterChasing |= receiveGameData.monsterChasing;
+            break;
+        case Const.MONSTER_STOP_CHASE_REQUEST:
+            System.out.println("handling monster stop chasing request from: " + senderAddress);
+            System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
+            System.out.println("requested monster stop chasing status: " + receiveGameData.monsterChasing);
+            receiveGameData.requestOutcome = true;
+            currentRoomData.monsterChasing -= receiveGameData.monsterChasing;
+            break;
+        }
+        System.out.println("request outcome: " + receiveGameData.requestOutcome);
+        send(senderAddress, receiveGameData);
     }
 
     private void createPairing(InetSocketAddress clientA, InetSocketAddress clientB) {

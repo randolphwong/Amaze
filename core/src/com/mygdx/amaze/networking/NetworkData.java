@@ -12,10 +12,12 @@ public class NetworkData {
 
     private AmazeClient networkClient;
     private GameData gameData;
+    private static int requestIdTracker;
 
     public NetworkData(AmazeClient networkClient) {
         this.networkClient = networkClient;
         gameData = new GameData();
+        requestIdTracker = 0;
     }
 
     public boolean isAvailable() {
@@ -69,7 +71,9 @@ public class NetworkData {
             gameData.monsterPosition = new Coord[Const.MAX_MONSTER];
         }
         gameData.monsterPosition[monsterIndex] = new Coord((short) monster.position.x, (short) monster.position.y);
-        gameData.monsterChasing |= 1 << monsterIndex;
+        if (monster.isChasing()) {
+            gameData.monsterChasing |= 1 << monsterIndex;
+        }
     }
 
     public void setItemData(Item item) {
@@ -115,5 +119,41 @@ public class NetworkData {
 
     public boolean isItemTaken(Item item) {
         return (gameData.itemTaken & (1 << item.type.ordinal())) != 0;
+    }
+
+    public int getRequestId() {
+        return gameData.requestId;
+    }
+
+    public boolean getRequestOutcome() {
+        return gameData.requestOutcome;
+    }
+
+    public int requestItem(Item item) {
+        gameData.itemTaken |= 1 << item.type.ordinal();
+        makeRequest();
+        gameData.requestType = Const.ITEM_REQUEST;
+        return gameData.requestId;
+    }
+
+    public int requestMonsterChase(Monster monster) {
+        gameData.monsterChasing |= 1 << (monster.getId() - 1);
+        makeRequest();
+        gameData.requestType = Const.MONSTER_CHASE_REQUEST;
+        return gameData.requestId;
+    }
+
+    public int requestMonsterStopChase(Monster monster) {
+        gameData.monsterChasing |= 1 << (monster.getId() - 1);
+        makeRequest();
+        gameData.requestType = Const.MONSTER_STOP_CHASE_REQUEST;
+        return gameData.requestId;
+    }
+
+    private void makeRequest() {
+        if (gameData.msgType != Const.REQUEST) {
+            gameData.msgType = Const.REQUEST;
+            gameData.requestId = ++requestIdTracker;
+        }
     }
 }

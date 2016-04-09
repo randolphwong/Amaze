@@ -31,5 +31,8 @@ public class GameData implements Serializable {
     public long clientTimeStamp;
     public long ServerTimeStamp;
     public long acknowledgement;
+    public int requestId;
+    public byte requestType;
+    public boolean requestOutcome;
 }
 

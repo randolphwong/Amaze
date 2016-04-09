@@ -56,7 +56,6 @@ public class MonsterPhysicsComponent {
         radarShape.setRadius(DETECTION_RANGE);
         FixtureDef radarFixtureDef = new FixtureDef();
         radarFixtureDef.shape = radarShape;
-        radarFixtureDef.isSensor = true; // make the fixture non solid
         radarFixtureDef.filter.categoryBits = CollisionListener.MONSTER_RADAR_BIT;
         radarFixtureDef.filter.maskBits = CollisionListener.PLAYER_BIT;
 
@@ -109,7 +108,7 @@ public class MonsterPhysicsComponent {
     }
 
     public void update(float delta) {
-        if (monster.chasingPlayer) {
+        if (monster.isChasing()) {
             chase();
         }
         moveTowardsTarget();

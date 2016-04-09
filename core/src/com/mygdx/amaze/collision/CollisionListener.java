@@ -10,6 +10,9 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.screens.PlayScreen;
+import com.mygdx.amaze.networking.MonsterChaseRequest;
+import com.mygdx.amaze.networking.MonsterStopChaseRequest;
+import com.mygdx.amaze.networking.RequestManager;
 
 /**
  * Created by Randolph on 13/3/2016.
@@ -65,11 +68,20 @@ public class CollisionListener implements ContactListener {
         } else {
             monster = (Monster) fixtureB.getUserData();
         }
-        monster.startChase(screen.player);
+        
+        // request server for permission for monster to chase local player
+        if (!monster.isChasing()) {
+            RequestManager.getInstance().newRequest(new MonsterChaseRequest(screen.player, monster));
+        }
     }
 
     private void onMonsterRadarCollisionEnded(Fixture monsterFixture) {
-        ((Monster) monsterFixture.getUserData()).stopChase();
+        Monster monster = (Monster) monsterFixture.getUserData();
+
+        // request server for permission for monster to stop chasing local player
+        if (monster.isChasing()) {
+            RequestManager.getInstance().newRequest(new MonsterStopChaseRequest(monster));
+        }
     }
 
     @Override
@@ -120,11 +132,16 @@ public class CollisionListener implements ContactListener {
         int collidedEntities = fixtureA.getFilterData().categoryBits |
                                fixtureB.getFilterData().categoryBits;
 
-        if (collidedEntities == (PLAYER_BIT | MONSTER_BIT)) {
+        switch (collidedEntities) {
+        case PLAYER_BIT | MONSTER_RADAR_BIT:
+            contact.setEnabled(false); // allow player and monster radar to move through each other
+            //onMonsterRadarCollision(fixtureA, fixtureB);
+        case PLAYER_BIT | MONSTER_BIT:
             contact.setEnabled(false); // allow player and monster to move through each other
             if (!screen.player.shielded) {
                 screen.player.health -= 0.5f;
             }
+            break;
         }
     }
 
