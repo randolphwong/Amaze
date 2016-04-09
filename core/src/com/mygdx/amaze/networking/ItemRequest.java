@@ -18,6 +18,6 @@ public class ItemRequest extends Request {
     }
 
     public void execute() {
-    
+        player.obtainItem(item);
     }
 }

@@ -10,6 +10,7 @@ import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.screens.PlayScreen;
+import com.mygdx.amaze.networking.ItemRequest;
 import com.mygdx.amaze.networking.MonsterChaseRequest;
 import com.mygdx.amaze.networking.MonsterStopChaseRequest;
 import com.mygdx.amaze.networking.RequestManager;
@@ -44,7 +45,7 @@ public class CollisionListener implements ContactListener {
             item = (Item) fixtureB.getUserData();
         }
 
-        screen.player.obtainItem(item);
+        RequestManager.getInstance().newRequest(new ItemRequest(screen.player, item));
     }
 
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
