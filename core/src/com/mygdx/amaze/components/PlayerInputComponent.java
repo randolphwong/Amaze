@@ -47,5 +47,9 @@ public class PlayerInputComponent extends InputComponent {
         }
 
         player.velocity.set(newVelocity);
+
+        if (player.attacked && !player.shielded) {
+            player.health -= 0.5f;
+        }
     }
 }

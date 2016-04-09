@@ -142,9 +142,6 @@ public class CollisionListener implements ContactListener {
         switch (collidedEntities) {
         case PLAYER_BIT | MONSTER_BIT:
             contact.setEnabled(false); // allow player and monster to move through each other
-            if (!screen.player.shielded) {
-                screen.player.health -= 0.5f;
-            }
         case PLAYER_BIT | MONSTER_RADAR_BIT:
             contact.setEnabled(false); // allow player and monster radar to move through each other
             //onMonsterRadarCollision(fixtureA, fixtureB);
