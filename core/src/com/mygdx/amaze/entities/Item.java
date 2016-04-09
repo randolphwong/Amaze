@@ -52,7 +52,6 @@ public class Item {
             case SHIELD: todestroy |= gameData.shieldDestroyed; break;
             }
         }
-//        physics.update(delta);
         graphics.update(delta);
         if(todestroy && !destroyed){
             screen.world.destroyBody(getBody());

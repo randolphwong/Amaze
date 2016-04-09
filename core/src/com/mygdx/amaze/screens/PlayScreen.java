@@ -21,6 +21,7 @@ import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.entities.Projectile;
 import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
@@ -36,8 +37,10 @@ public class PlayScreen implements Screen {
     public Player player;
     public Friend friend;
     public String playerType;
-
+    public Projectile projectile;
+    public boolean projectileFired;
     public Monster monster;
+
 
     //Items
     public Item healthPotion;
@@ -139,6 +142,11 @@ public class PlayScreen implements Screen {
 
         // for networking
         game.networkClient.startMultiplayerGame();
+        this.projectileFired =false;
+//        if(projectileFired) {
+//            projectile = new Projectile(this, player.x, player.y);
+//        }
+//        projectile = new Projectile(this, player.x, player.y);
     }
 
     public void openDoor() {
@@ -197,7 +205,10 @@ public class PlayScreen implements Screen {
 
         player.update(delta);
         monster.update(delta);
-
+        if(projectileFired) {
+            projectile.update(delta);
+        }
+//        projectile.update(delta);
         // send GameData from remote client
         GameData dataToSend = new GameData();
         dataToSend.msgType = GameData.MessageType.INGAME;
@@ -240,6 +251,9 @@ public class PlayScreen implements Screen {
         player.draw(game.batch);
         friend.draw(game.batch);
         monster.draw(game.batch);
+        if(projectileFired) {
+            projectile.draw(game.batch);
+        }
 
         //draw items
         healthPotion.draw(game.batch);

@@ -68,7 +68,9 @@ public class MainMenuScreen implements Screen, AmazeNetworkListener {
 
     public void buttonClicked() {
         textButton.setText("Waiting ...");
-        game.networkClient.joinRoom();
+//        game.networkClient.joinRoom();
+        game.setScreen(new PlayScreen(game,"playerA",1));
+        dispose();
     }
 
     public void update(float delta) {

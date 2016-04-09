@@ -33,6 +33,7 @@ public class CollisionListener implements ContactListener {
         Body monsterBody = screen.monster.getBody();
         Body potionitemBody = screen.healthPotion.getBody();
         Body shielditemBody = screen.shield.getBody();
+        Body lasergunBody = screen.laserGun.getBody();
 
         if ((bodyA == playerBody && bodyB == monsterBody) ||
                 (bodyB == playerBody && bodyA == monsterBody)) {
@@ -57,6 +58,13 @@ public class CollisionListener implements ContactListener {
             System.out.println("Shield obtained");
             playerBody.setUserData(true);
             screen.shield.destroy();
+        }else if ((bodyA == playerBody && bodyB == lasergunBody) ||
+                (bodyB == playerBody && bodyA == lasergunBody)) {
+            screen.player.gunequipped = true;
+            screen.player.shotsLeft+=1000;
+            System.out.println("Laser gun obtained");
+            playerBody.setUserData(true);
+            screen.laserGun.destroy();
         }
 
         //Check if player picks up item
