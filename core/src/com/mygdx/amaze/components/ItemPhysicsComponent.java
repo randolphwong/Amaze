@@ -49,7 +49,7 @@ public class ItemPhysicsComponent extends PhysicsComponent{
         itemFixtureDef.filter.categoryBits = CollisionListener.ITEM_BIT;
         itemFixtureDef.filter.maskBits = CollisionListener.PLAYER_BIT;
 
-        body.createFixture(itemFixtureDef);
+        body.createFixture(itemFixtureDef).setUserData(item);
         shape.dispose();
     }
 

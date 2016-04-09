@@ -45,6 +45,10 @@ public class Player {
         graphics = new PlayerGraphicsComponent(this, physics, screen.hud);
     }
 
+    public void obtainItem(Item item) {
+        input.obtainItem(item);
+    }
+
     public Body getBody() {
         return physics.getBody();
     }

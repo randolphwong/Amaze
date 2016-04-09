@@ -6,7 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-
+import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.screens.PlayScreen;
@@ -36,22 +36,15 @@ public class CollisionListener implements ContactListener {
     }
 
     private void onItemCollision(Fixture fixtureA, Fixture fixtureB) {
-        Body bodyA = fixtureA.getBody();
-        Body bodyB = fixtureB.getBody();
-        Body potionitemBody = screen.healthPotion.getBody();
-        Body shielditemBody = screen.shield.getBody();
+        Item item;
 
-        if ((bodyA == potionitemBody) || (bodyB == potionitemBody)) {
-            if(screen.player.health < 99) {
-                screen.player.health = 99;
-            }
-            System.out.println("health: " + screen.player.health);
-            screen.healthPotion.destroy();
-        } else if ((bodyA == shielditemBody) || (bodyB == shielditemBody)) {
-            screen.player.shielded = true;
-            System.out.println("Shield obtained");
-            screen.shield.destroy();
+        if (fixtureA.getFilterData().categoryBits == ITEM_BIT) {
+            item = (Item) fixtureA.getUserData();
+        } else {
+            item = (Item) fixtureB.getUserData();
         }
+
+        screen.player.obtainItem(item);
     }
 
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {

@@ -258,6 +258,7 @@ public class PlayScreen implements Screen {
         player.update(delta);
         hud.update(delta);
 
+
         //update items
         healthPotion.update(delta, networkData);
         laserGun.update(delta, networkData);
