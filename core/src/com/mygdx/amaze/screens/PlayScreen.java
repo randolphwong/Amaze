@@ -153,6 +153,9 @@ public class PlayScreen implements Screen {
         // for networking
         game.networkClient.startMultiplayerGame();
         networkData = new NetworkData(game.networkClient);
+        if (clientType == Const.MASTER_CLIENT) {
+            networkData.initialiseLevel(healthPotion, laserGun, shield, monsters);
+        }
 
         // door for level1/2
         level1DoorRect = new Rectangle(304, 1600 - 128, 192, 128);

@@ -1,5 +1,7 @@
 package com.mygdx.amaze.networking;
 
+import com.badlogic.gdx.utils.Array;
+
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
@@ -38,6 +40,19 @@ public class NetworkData {
         gameData.itemTaken = 0;
     }
 
+    public void initialiseLevel(Item i1, Item i2, Item i3, Array<Monster> monsters) {
+        if (gameData == null) gameData = new GameData();
+
+        setMessageType(Const.INITIALISE);
+        setItemData(i1);
+        setItemData(i2);
+        setItemData(i3);
+        for (Monster monster : monsters) {
+            setMonsterData(monster);
+        }
+        sendToServer();
+    }
+
     public void setMessageType(byte messageType) {
         gameData.msgType = messageType;
     }
@@ -58,7 +73,12 @@ public class NetworkData {
     }
 
     public void setItemData(Item item) {
-        gameData.itemTaken |= item.isDestroyed() ? 1 << item.type.ordinal() : 0;
+        int itemIndex = item.type.ordinal();
+        if (gameData.itemPosition == null) {
+            gameData.itemPosition = new Coord[Const.MAX_ITEM];
+        }
+        gameData.itemPosition[itemIndex] = new Coord((short) item.posX, (short) item.posY);
+        gameData.itemTaken |= item.isDestroyed() ? 1 << itemIndex : 0;
     }
 
     public byte messageType() {

@@ -25,6 +25,7 @@ public class AmazeServerSingleThread {
     private GameData receiveGameData;
 
     private HashMap<InetSocketAddress, InetSocketAddress> room;
+    private HashMap<InetSocketAddress, GameData> roomData;
 
     private InetSocketAddress currentWaiting;
     private long waitingTime;
@@ -33,6 +34,7 @@ public class AmazeServerSingleThread {
     public AmazeServerSingleThread(int port) throws Exception {
         serverSocket = new DatagramSocket(port);
         room = new HashMap<InetSocketAddress, InetSocketAddress>();
+        roomData = new HashMap<InetSocketAddress, GameData>();
         currentWaiting = null;
 
         sendData = new byte[PACKET_SIZE];
@@ -52,6 +54,7 @@ public class AmazeServerSingleThread {
                 case Const.PREGAME: handlePreGameMessage(); break;
                 case Const.INGAME: handleInGameMessage(); break;
                 case Const.POSTGAME: handlePostGameMessage(); break;
+                case Const.INITIALISE: handleInitialisationMessage(); break;
             }
         }
     }
@@ -120,8 +123,23 @@ public class AmazeServerSingleThread {
         System.out.println(senderAddress + " has left the game room.");
         System.out.println((room.get(senderAddress)) + " removed from game room.");
         send(room.get(senderAddress), receiveGameData);
+
+        roomData.remove(room.get(senderAddress));
+        roomData.remove(senderAddress);
         room.remove(room.get(senderAddress));
         room.remove(senderAddress);
+    }
+
+    private void handleInitialisationMessage() {
+        InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
+        if (!room.containsKey(senderAddress)) {
+            // DEBUG PRINT
+            //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
+            return;
+        }
+        // DEBUG PRINT
+        System.out.println("handling initialiseLevel message from: " + senderAddress);
+        roomData.put(senderAddress, receiveGameData);
     }
 
     private void createPairing(InetSocketAddress clientA, InetSocketAddress clientB) {
