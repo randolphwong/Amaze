@@ -5,9 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.mygdx.amaze.networking.AmazeClient;
-import com.mygdx.amaze.screens.PlayScreen;
-import com.mygdx.amaze.screens.MainMenuScreen;
 import com.mygdx.amaze.screens.SplashScreen;
+import com.mygdx.amaze.screens.MainScreen;
 
 public class AmazeGame extends Game {
 
@@ -35,7 +34,7 @@ public class AmazeGame extends Game {
         }
 
 		batch = new SpriteBatch();
-        setScreen(new SplashScreen(this));
+        setScreen(new SplashScreen( this));
 	}
 
 	@Override

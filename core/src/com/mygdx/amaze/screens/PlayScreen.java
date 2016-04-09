@@ -18,17 +18,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.collision.CollisionListener;
-import com.mygdx.amaze.components.Earthquake;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
-import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.networking.RequestManager;
 import com.mygdx.amaze.scenes.Hud;
-import com.mygdx.amaze.screens.SplashScreen;
-import com.mygdx.amaze.utilities.Coord;
 import com.mygdx.amaze.utilities.Const;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
 
@@ -214,7 +210,10 @@ public class PlayScreen implements Screen {
                 break;
 
             case WIN:
-                if (level == game.MAX_LEVEL) return;
+                if (level == game.MAX_LEVEL){
+                    dispose();
+                    game.setScreen(new WinScreen(game));
+                };
 
                 // pause for about 2 seconds before to transit to next level
                 if ((elapsedTime - winTime) > 2) {

@@ -12,72 +12,46 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.mygdx.amaze.AmazeGame;
-import com.mygdx.amaze.networking.GameData;
 
 /**
- * Created by Dhanya on 04/04/2016.
+ * Created by Dhanya on 09/04/2016.
  */
-public class SplashScreen implements Screen {
+public class SplashScreen implements Screen{
+
     private AmazeGame game;
 
-    // stage ui (buttons and etc.)
+    // stage ui
     private Stage stage;
     private BitmapFont font;
-    private Texture buttonTexture, backgroundImg;
+    private Texture backgroundImg;
     private Sprite backgroundSet;
-    private TextButton textButton;
 
-    private int time = 0;
+    private long time;
 
 
     public SplashScreen(AmazeGame game) {
         this.game = game;
-
+        time = TimeUtils.millis();
+        System.out.println("time is: " + time);
         // set up a stage for displaying button
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new FillViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
 
-//        backgroundImg = new Texture(Gdx.files.internal("startScreen/instructions.png"));
-//        backgroundSet = new Sprite(backgroundImg);
-//        backgroundSet.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        // add a button
-        textButton = createButton();
-        stage.addActor(textButton);
+        backgroundImg = new Texture(Gdx.files.internal("startScreen/splashScreen_1.png"));
+        backgroundSet = new Sprite(backgroundImg);
+        backgroundSet.setScale(Gdx.graphics.getWidth() / backgroundImg.getWidth(), Gdx.graphics.getHeight() / backgroundSet.getHeight());
 
 
-    }
 
-    public TextButton createButton() {
-        font = new BitmapFont(Gdx.files.internal("hud/lobster.fnt"));
-        buttonTexture = new Texture(Gdx.files.internal("hud/button.png"));
-
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
-        TextButton textButton = new TextButton("START GAME", buttonStyle);
-        textButton.setPosition(Gdx.graphics.getWidth()/2 - textButton.getWidth()/2, Gdx.graphics.getHeight()/2 - textButton.getHeight()/2);
-        textButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                buttonClicked();
-            }
-
-            ;
-        });
-
-        return textButton;
-    }
-
-    public void buttonClicked() {
-        game.setScreen(new MainMenuScreen(game));
     }
 
     public void update(float delta) {
 
-        }
+    }
+
 
 
     @Override
@@ -87,21 +61,26 @@ public class SplashScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-//        game.batch.begin();
-//        game.batch.draw(backgroundSet, stage.getWidth()/8, stage.getHeight()/8);
-//        game.batch.end();
+        game.batch.begin();
+        game.batch.draw(backgroundImg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.batch.end();
 
         stage.act(delta);
         stage.draw();
+
+        if (TimeUtils.millis()>time + 5000) {
+            game.setScreen(new MainScreen(game));
+            System.out.println("GOING TO MAIN SCREEN");
+        }
     }
 
 
 
     @Override
     public void dispose() {
-        buttonTexture.dispose();
         font.dispose();
         stage.dispose();
+        backgroundImg.dispose();
     }
 
     @Override
@@ -129,4 +108,5 @@ public class SplashScreen implements Screen {
     public void hide() {
     }
 
-    }
+}
+
