@@ -11,6 +11,8 @@ import com.mygdx.amaze.screens.SplashScreen;
 
 public class AmazeGame extends Game {
 
+    public static final boolean SINGLE_PLAYER = false;
+
     // the map is 1600 x 1600
     public static final float VIEW_WIDTH = 1600;
     public static final float VIEW_HEIGHT = 1600;

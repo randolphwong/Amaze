@@ -248,8 +248,6 @@ public class PlayScreen implements Screen {
                 break;
             default:
                 friend.update(delta, networkData);
-                for (Monster monster : monsters)
-                    monster.update(delta, networkData);
             }
         } else {
             networkData.createDummyData();
@@ -258,11 +256,16 @@ public class PlayScreen implements Screen {
         player.update(delta);
         hud.update(delta);
 
+        if (networkData.messageType() != Const.REQUEST) {
+            // update monsters
+            for (Monster monster : monsters)
+                monster.update(delta, networkData);
 
-        //update items
-        healthPotion.update(delta, networkData);
-        laserGun.update(delta, networkData);
-        shield.update(delta, networkData);
+            //update items
+            healthPotion.update(delta, networkData);
+            laserGun.update(delta, networkData);
+            shield.update(delta, networkData);
+        }
 
         // send GameData to remote client
         networkData.resetGameData();

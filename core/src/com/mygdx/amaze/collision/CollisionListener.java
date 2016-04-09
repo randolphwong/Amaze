@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
@@ -45,7 +46,11 @@ public class CollisionListener implements ContactListener {
             item = (Item) fixtureB.getUserData();
         }
 
-        RequestManager.getInstance().newRequest(new ItemRequest(screen.player, item));
+        if (AmazeGame.SINGLE_PLAYER) {
+            screen.player.obtainItem(item);
+        } else {
+            RequestManager.getInstance().newRequest(new ItemRequest(screen.player, item));
+        }
     }
 
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
@@ -65,7 +70,11 @@ public class CollisionListener implements ContactListener {
         
         // request server for permission for monster to chase local player
         if (!monster.isChasing()) {
-            RequestManager.getInstance().newRequest(new MonsterChaseRequest(screen.player, monster));
+            if (AmazeGame.SINGLE_PLAYER) {
+                monster.startChase(screen.player);
+            } else {
+                RequestManager.getInstance().newRequest(new MonsterChaseRequest(screen.player, monster));
+            }
         }
     }
 
@@ -74,7 +83,11 @@ public class CollisionListener implements ContactListener {
 
         // request server for permission for monster to stop chasing local player
         if (monster.isChasing()) {
-            RequestManager.getInstance().newRequest(new MonsterStopChaseRequest(monster));
+            if (AmazeGame.SINGLE_PLAYER) {
+                monster.stopChase();
+            } else {
+                RequestManager.getInstance().newRequest(new MonsterStopChaseRequest(monster));
+            }
         }
     }
 

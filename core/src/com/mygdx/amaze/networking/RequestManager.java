@@ -1,5 +1,6 @@
 package com.mygdx.amaze.networking;
 
+import com.mygdx.amaze.AmazeGame;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
