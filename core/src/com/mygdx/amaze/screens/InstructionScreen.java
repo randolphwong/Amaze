@@ -44,9 +44,6 @@ public class InstructionScreen implements Screen, AmazeNetworkListener {
 
         backgroundImg = new Texture(Gdx.files.internal("startScreen/rsz_instructions.png"));
         backgroundSet = new Sprite(backgroundImg);
-        backgroundSet.setScale(Gdx.graphics.getWidth() / backgroundImg.getWidth(), Gdx.graphics.getHeight() / backgroundSet.getHeight());
-
-//        backgroundSet.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // add a button
         textButton = createButton();
@@ -104,6 +101,7 @@ public class InstructionScreen implements Screen, AmazeNetworkListener {
         Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        game.batch.setProjectionMatrix(stage.getCamera().combined);
         game.batch.begin();
         game.batch.draw(backgroundImg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.end();
