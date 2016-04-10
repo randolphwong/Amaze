@@ -48,10 +48,16 @@ public class FriendPhysicsComponent extends PhysicsComponent {
         float toMoveX = 0;
         float toMoveY = 0;
 
-        if (friend.targetX != 0 || friend.targetY != 0) {
-            float deltaX = friend.targetX - friend.x;
-            float deltaY = friend.targetY - friend.y;
+        float deltaX = friend.targetX - friend.x;
+        float deltaY = friend.targetY - friend.y;
 
+        /*
+         * As long as the absolute difference between current position and the target position (from
+         * networkData) is not greater than 30, we will smoothly move the Friend's sprite to the
+         * target position. Otherwise, it is assumed that Friend has died/somehow teleported to
+         * somewhere far. In that case, we will just set friend position = target position.
+         */
+        if (Math.abs(deltaX) <= 30 && Math.abs(deltaY) <= 30) {
             // 1.67 pixels per frame is about 100 pixels per sec
             if (deltaX < -2) {
                 toMoveX = -1.67f;
@@ -62,11 +68,13 @@ public class FriendPhysicsComponent extends PhysicsComponent {
             } else if (deltaY > 2) {
                 toMoveY = 1.67f;
             }
+            friend.x += toMoveX;
+            friend.y += toMoveY;
+        } else {
+            friend.x = friend.targetX;
+            friend.y = friend.targetY;
         }
 
-        friend.x += toMoveX;
-        friend.y += toMoveY;
-            
     }
 
     public Body getBody() {
