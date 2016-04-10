@@ -1,0 +1,89 @@
+
+friend.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+friend_down
+  rotate: false
+  xy: 1, 1
+  size: 37, 59
+  orig: 37, 59
+  offset: 0, 0
+  index: 0
+friend_down
+  rotate: false
+  xy: 40, 3
+  size: 37, 57
+  orig: 37, 57
+  offset: 0, 0
+  index: 2
+friend_up
+  rotate: false
+  xy: 79, 1
+  size: 35, 59
+  orig: 35, 59
+  offset: 0, 0
+  index: 2
+friend_left
+  rotate: false
+  xy: 116, 6
+  size: 37, 54
+  orig: 37, 54
+  offset: 0, 0
+  index: 0
+friend_left
+  rotate: false
+  xy: 155, 6
+  size: 37, 54
+  orig: 37, 54
+  offset: 0, 0
+  index: 2
+friend_right
+  rotate: false
+  xy: 194, 7
+  size: 38, 53
+  orig: 38, 53
+  offset: 0, 0
+  index: 0
+friend_right
+  rotate: false
+  xy: 234, 7
+  size: 37, 53
+  orig: 37, 53
+  offset: 0, 0
+  index: 1
+friend_right
+  rotate: false
+  xy: 273, 6
+  size: 37, 54
+  orig: 37, 54
+  offset: 0, 0
+  index: 2
+friend_down
+  rotate: false
+  xy: 312, 8
+  size: 37, 52
+  orig: 37, 52
+  offset: 0, 0
+  index: 1
+friend_left
+  rotate: false
+  xy: 351, 8
+  size: 37, 52
+  orig: 37, 52
+  offset: 0, 0
+  index: 1
+friend_up
+  rotate: false
+  xy: 390, 7
+  size: 34, 53
+  orig: 34, 53
+  offset: 0, 0
+  index: 1
+friend_up
+  rotate: false
+  xy: 426, 2
+  size: 33, 58
+  orig: 33, 58
+  offset: 0, 0
+  index: 0

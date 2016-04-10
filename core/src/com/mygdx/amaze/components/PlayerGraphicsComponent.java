@@ -47,8 +47,8 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         this.physics = physics;
         this.hud = hud;
 
-        playerAtlas = new TextureAtlas("player/reyspritesheet.atlas");
-        playerSprite = new Sprite(playerAtlas.findRegion("Rey_down_stationary"));
+        playerAtlas = new TextureAtlas("player/player.atlas");
+        playerSprite = new Sprite(playerAtlas.findRegion("player_down", 1));
         playerSprite.setCenter(player.x, player.y);
         playerSprite.setSize(player.SIZE, player.SIZE);
 
@@ -62,34 +62,34 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         Array<TextureRegion> regions = new Array<TextureRegion>();
 
         // up animation
-        regions.add(playerAtlas.findRegion("Rey_up_walk", 1));
-        regions.add(playerAtlas.findRegion("Rey_up_stationary"));
-        regions.add(playerAtlas.findRegion("Rey_up_walk", 2));
-        regions.add(playerAtlas.findRegion("Rey_up_stationary"));
+        regions.add(playerAtlas.findRegion("player_up", 0));
+        regions.add(playerAtlas.findRegion("player_up", 1));
+        regions.add(playerAtlas.findRegion("player_up", 2));
+        regions.add(playerAtlas.findRegion("player_up", 1));
         moveUpAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // down animation
-        regions.add(playerAtlas.findRegion("Rey_down_walk", 1));
-        regions.add(playerAtlas.findRegion("Rey_down_stationary"));
-        regions.add(playerAtlas.findRegion("Rey_down_walk", 2));
-        regions.add(playerAtlas.findRegion("Rey_down_stationary"));
+        regions.add(playerAtlas.findRegion("player_down", 0));
+        regions.add(playerAtlas.findRegion("player_down", 1));
+        regions.add(playerAtlas.findRegion("player_down", 2));
+        regions.add(playerAtlas.findRegion("player_down", 1));
         moveDownAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // left animation
-        regions.add(playerAtlas.findRegion("Rey_left_walk", 1));
-        regions.add(playerAtlas.findRegion("Rey_left_stationary"));
-        regions.add(playerAtlas.findRegion("Rey_left_walk", 2));
-        regions.add(playerAtlas.findRegion("Rey_left_stationary"));
+        regions.add(playerAtlas.findRegion("player_left", 0));
+        regions.add(playerAtlas.findRegion("player_left", 1));
+        regions.add(playerAtlas.findRegion("player_left", 2));
+        regions.add(playerAtlas.findRegion("player_left", 1));
         moveLeftAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // right animation
-        regions.add(playerAtlas.findRegion("Rey_right_walk", 1));
-        regions.add(playerAtlas.findRegion("Rey_right_stationary"));
-        regions.add(playerAtlas.findRegion("Rey_right_walk", 2));
-        regions.add(playerAtlas.findRegion("Rey_right_stationary"));
+        regions.add(playerAtlas.findRegion("player_right", 0));
+        regions.add(playerAtlas.findRegion("player_right", 1));
+        regions.add(playerAtlas.findRegion("player_right", 2));
+        regions.add(playerAtlas.findRegion("player_right", 1));
         moveRightAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 

@@ -47,8 +47,8 @@ public class FriendGraphicsComponent extends GraphicsComponent {
         this.friend = friend;
         this.physics = physics;
 
-        friendAtlas = new TextureAtlas("friend/lukespritesheet.atlas");
-        friendSprite = new Sprite(friendAtlas.findRegion("Luke_down_stationary"));
+        friendAtlas = new TextureAtlas("friend/friend.atlas");
+        friendSprite = new Sprite(friendAtlas.findRegion("friend_down", 1));
         friendSprite.setCenter(friend.x, friend.y);
         friendSprite.setSize(friend.SIZE, friend.SIZE);
 
@@ -67,30 +67,34 @@ public class FriendGraphicsComponent extends GraphicsComponent {
         Array<TextureRegion> regions = new Array<TextureRegion>();
 
         // up animation
-        regions.add(friendAtlas.findRegion("Luke_up_walk", 1));
-        regions.add(friendAtlas.findRegion("Luke_up_stationary"));
-        regions.add(friendAtlas.findRegion("Luke_up_walk", 2));
-        regions.add(friendAtlas.findRegion("Luke_up_stationary"));
+        regions.add(friendAtlas.findRegion("friend_up", 0));
+        regions.add(friendAtlas.findRegion("friend_up", 1));
+        regions.add(friendAtlas.findRegion("friend_up", 2));
+        regions.add(friendAtlas.findRegion("friend_up", 1));
         moveUpAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // down animation
-        regions.add(friendAtlas.findRegion("Luke_down_walk", 1));
-        regions.add(friendAtlas.findRegion("Luke_down_stationary"));
-        regions.add(friendAtlas.findRegion("Luke_down_walk", 2));
-        regions.add(friendAtlas.findRegion("Luke_down_stationary"));
+        regions.add(friendAtlas.findRegion("friend_down", 0));
+        regions.add(friendAtlas.findRegion("friend_down", 1));
+        regions.add(friendAtlas.findRegion("friend_down", 2));
+        regions.add(friendAtlas.findRegion("friend_down", 1));
         moveDownAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // left animation
-        regions.add(friendAtlas.findRegion("Luke_left_walk", 1));
-        regions.add(friendAtlas.findRegion("Luke_left_stationary"));
+        regions.add(friendAtlas.findRegion("friend_left", 0));
+        regions.add(friendAtlas.findRegion("friend_left", 1));
+        regions.add(friendAtlas.findRegion("friend_left", 2));
+        regions.add(friendAtlas.findRegion("friend_left", 1));
         moveLeftAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // right animation
-        regions.add(friendAtlas.findRegion("Luke_right_walk", 1));
-        regions.add(friendAtlas.findRegion("Luke_right_stationary"));
+        regions.add(friendAtlas.findRegion("friend_right", 0));
+        regions.add(friendAtlas.findRegion("friend_right", 1));
+        regions.add(friendAtlas.findRegion("friend_right", 2));
+        regions.add(friendAtlas.findRegion("friend_right", 1));
         moveRightAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
