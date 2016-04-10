@@ -72,7 +72,7 @@ public class SplashScreen implements Screen{
         backgroundSet.draw(game.batch);
         game.batch.end();
 
-        if (TimeUtils.millis()>time + 5000) {
+        if (TimeUtils.millis()>time + 1000) {
             game.setScreen(new MainScreen(game));
             System.out.println("GOING TO MAIN SCREEN");
         }

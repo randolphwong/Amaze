@@ -83,7 +83,7 @@ public class InstructionScreen implements Screen, AmazeNetworkListener {
     }
 
     public void update(float delta) {
-        System.out.println("Width: " + Gdx.graphics.getWidth() + " Height: " + Gdx.graphics.getHeight());
+        //System.out.println("Width: " + Gdx.graphics.getWidth() + " Height: " + Gdx.graphics.getHeight());
         synchronized(InstructionScreen.class) {
             if (joinedRoom) {
                 joinedRoom = false;

@@ -16,8 +16,8 @@ import com.mygdx.amaze.networking.MonsterChaseRequest;
 import com.mygdx.amaze.networking.MonsterStopChaseRequest;
 import com.mygdx.amaze.networking.RequestManager;
 
-/**
- * Created by Randolph on 13/3/2016.
+/*
+ * ContactListener's methods are executed in UI thread. Hence it is thread-safe.
  */
 public class CollisionListener implements ContactListener {
 

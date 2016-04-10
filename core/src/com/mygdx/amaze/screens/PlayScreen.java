@@ -157,12 +157,11 @@ public class PlayScreen implements Screen {
         requestManager = RequestManager.getInstance();
 
         // door for level1/2
-        level1DoorRect = new Rectangle(304, 1600 - 128, 192, 128);
+        level1DoorRect = new Rectangle(320, 1600 - 144, 175, 144);
         level2DoorRect = new Rectangle(144, 3200 - 128, 192, 128);
     }
 
     public void openDoor() {
-        map.getLayers().get("door").setVisible(false);
         map.getLayers().get("Tile Layer 3").setVisible(true);
     }
 
@@ -218,7 +217,8 @@ public class PlayScreen implements Screen {
                 // pause for about 2 seconds before to transit to next level
                 if ((elapsedTime - winTime) > 2) {
                     dispose();
-                    game.setScreen(new PlayScreen(game, clientType, level + 1));
+                    // temporarily set to repeat level since level 2 map has no monster boundaries
+                    game.setScreen(new PlayScreen(game, clientType, level));
                 }
                 return;
 
