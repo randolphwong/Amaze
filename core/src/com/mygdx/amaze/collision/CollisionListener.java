@@ -23,6 +23,8 @@ public class CollisionListener implements ContactListener {
 
     public PlayScreen screen;
 
+    private byte requestDelay = 1;
+
     // collision filter bits (for identification of collision entities)
     public static final short WALL_BIT              = 1 << 0;
     public static final short PLAYER_BIT            = 1 << 1;
@@ -61,11 +63,12 @@ public class CollisionListener implements ContactListener {
 
     private void onMonsterRadarCollision(Fixture fixtureA, Fixture fixtureB) {
         Monster monster;
+        short categoryBit = fixtureA.getFilterData().categoryBits;
 
-        if (fixtureA.getFilterData().categoryBits == MONSTER_RADAR_BIT) {
-            monster = (Monster) fixtureA.getUserData();
-        } else {
+        if (categoryBit == PLAYER_BIT) {
             monster = (Monster) fixtureB.getUserData();
+        } else {
+            monster = (Monster) fixtureA.getUserData();
         }
         
         // request server for permission for monster to chase local player
@@ -73,9 +76,18 @@ public class CollisionListener implements ContactListener {
             if (AmazeGame.SINGLE_PLAYER) {
                 monster.startChase(screen.player);
             } else {
-                RequestManager.getInstance().newRequest(new MonsterChaseRequest(screen.player, monster));
+                if (requestDelay == 1) {
+                    RequestManager.getInstance().newRequest(new MonsterChaseRequest(screen.player, monster));
+                }
+                // delay the request so as not the flood the server?
+                // send request at every 5th attempt
+                requestDelay <<= 1;
+                if (requestDelay == 32) requestDelay = 1;
             }
         }
+        // prevent collided bodies from sleeping and thus missing a collision!
+        monster.getBody().setAwake(true);
+        screen.player.getBody().setAwake(true);
     }
 
     private void onMonsterRadarCollisionEnded(Fixture monsterFixture) {
@@ -107,7 +119,7 @@ public class CollisionListener implements ContactListener {
             onMonsterCollision(fixtureA, fixtureB);
             break;
         case PLAYER_BIT | MONSTER_RADAR_BIT:
-            onMonsterRadarCollision(fixtureA, fixtureB);
+            //onMonsterRadarCollision(fixtureA, fixtureB);
             break;
         }
     }
@@ -144,7 +156,7 @@ public class CollisionListener implements ContactListener {
             contact.setEnabled(false); // allow player and monster to move through each other
         case PLAYER_BIT | MONSTER_RADAR_BIT:
             contact.setEnabled(false); // allow player and monster radar to move through each other
-            //onMonsterRadarCollision(fixtureA, fixtureB);
+            onMonsterRadarCollision(fixtureA, fixtureB);
         }
     }
 

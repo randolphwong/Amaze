@@ -48,7 +48,7 @@ public class MonsterPhysicsComponent {
                                          CollisionListener.MONSTER_BOUNDARY_BIT | 
                                          CollisionListener.PLAYER_BIT;
 
-        body.createFixture(mainFixtureDef);
+        body.createFixture(mainFixtureDef).setUserData(monster);
         mainShape.dispose();
 
         // fixture for detecting player (radar)
