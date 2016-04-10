@@ -86,6 +86,7 @@ public class PlayScreen implements Screen {
     // networking
     private NetworkData networkData;
     private RequestManager requestManager;
+    private byte networkSendDelay = 1;
 
     public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
@@ -246,8 +247,6 @@ public class PlayScreen implements Screen {
             case Const.REQUEST:
                 requestManager.resolve(networkData);
                 break;
-            default:
-                friend.update(delta, networkData);
             }
         } else {
             networkData.createDummyData();
@@ -257,6 +256,9 @@ public class PlayScreen implements Screen {
         hud.update(delta);
 
         if (networkData.messageType() != Const.REQUEST) {
+            // update friend
+            friend.update(delta, networkData);
+
             // update monsters
             for (Monster monster : monsters)
                 monster.update(delta, networkData);
@@ -267,17 +269,22 @@ public class PlayScreen implements Screen {
             shield.update(delta, networkData);
         }
 
-        // send GameData to remote client
-        networkData.resetGameData();
-        networkData.setMessageType(Const.INGAME);
-        networkData.setPlayerData(player);
-        for (Monster monster : monsters) {
-            networkData.setMonsterData(monster);
+        // send RawNetworkData to remote client
+        if (networkSendDelay == 1) {
+            networkData.resetGameData();
+            networkData.setMessageType(Const.INGAME);
+            networkData.setPlayerData(player);
+            for (Monster monster : monsters) {
+                networkData.setMonsterData(monster);
+            }
+            networkData.setItemData(healthPotion);
+            networkData.setItemData(laserGun);
+            networkData.setItemData(shield);
+            networkData.sendToServer();
         }
-        networkData.setItemData(healthPotion);
-        networkData.setItemData(laserGun);
-        networkData.setItemData(shield);
-        networkData.sendToServer();
+        // send update only at every 3rd frame
+        networkSendDelay <<= 1;
+        if (networkSendDelay == 8) networkSendDelay = 1;
 
 
         if(hud.earthquake.time>0){

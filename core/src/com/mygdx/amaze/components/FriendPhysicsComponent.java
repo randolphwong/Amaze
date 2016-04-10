@@ -29,38 +29,44 @@ public class FriendPhysicsComponent extends PhysicsComponent {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(friend.spawnX, friend.spawnY);
+        body = world.createBody(bodyDef);
 
         CircleShape circle = new CircleShape();
         circle.setRadius(friend.SIZE / 2);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
+        fixtureDef.filter.maskBits = 0; // collides with nothing
 
-        bodyDef.position.set(friend.spawnX, friend.spawnY);
-        body = world.createBody(bodyDef);
         body.createFixture(fixtureDef);
 
         circle.dispose();
     }
 
     public void update(float delta) {
-        // check if collided with monster
-/*
- *        Boolean dead = (Boolean) body.getUserData();
- *        int friendHealth = friend.health;
- *        if (dead != null && dead == true && friendHealth <=0) {
- *            world.destroyBody(body);
- *            createBody();
- *            friend.health = 99;
- *            return;
- *        }
- *
- *        body.setLinearVelocity(friend.velocity);
- *        friend.x = body.getPosition().x;
- *        friend.y = body.getPosition().y;
- */
+        float toMoveX = 0;
+        float toMoveY = 0;
 
+        if (friend.targetX != 0 || friend.targetY != 0) {
+            float deltaX = friend.targetX - friend.x;
+            float deltaY = friend.targetY - friend.y;
 
+            // 1.67 pixels per frame is about 100 pixels per sec
+            if (deltaX < -2) {
+                toMoveX = -1.67f;
+            } else if (deltaX > 2) {
+                toMoveX = 1.67f;
+            } else if (deltaY < -2) {
+                toMoveY = -1.67f;
+            } else if (deltaY > 2) {
+                toMoveY = 1.67f;
+            }
+        }
+
+        friend.x += toMoveX;
+        friend.y += toMoveY;
+            
     }
 
     public Body getBody() {

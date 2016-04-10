@@ -20,6 +20,8 @@ public class Friend {
     public static final float SIZE = 32;
     public float x;
     public float y;
+    public float targetX;
+    public float targetY;
 
     public int health = 99;
     public boolean attacked = false;
@@ -36,8 +38,8 @@ public class Friend {
     public FriendGraphicsComponent graphics;
 
     public Friend(PlayScreen screen, float x, float y) {
-        this.x = spawnX = x;
-        this.y = spawnY = y;
+        this.targetX = this.x = spawnX = x;
+        this.targetY = this.y = spawnY = y;
 
         this.velocity = new Vector2(0, 0);
 
@@ -46,13 +48,13 @@ public class Friend {
         graphics = new FriendGraphicsComponent(this, physics);
     }
 
-    public Body getBody() {
-        return physics.getBody();
-    }
+    //public Body getBody() {
+        //return physics.getBody();
+    //}
 
     public void update(float delta, NetworkData networkData) {
         input.update(delta, networkData);
-        //physics.update(delta);
+        physics.update(delta);
         graphics.update(delta);
     }
 
