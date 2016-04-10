@@ -13,6 +13,7 @@ public class NetworkData {
     private AmazeClient networkClient;
     private GameData gameData;
     private static int requestIdTracker;
+    private long previousServerTimeStamp;
 
     public NetworkData(AmazeClient networkClient) {
         this.networkClient = networkClient;
@@ -26,6 +27,14 @@ public class NetworkData {
 
     public void getFromServer() {
         gameData = networkClient.getGameData();
+        if (gameData == null) return;
+
+        // ignore old packets
+        if (gameData.ServerTimeStamp <= previousServerTimeStamp) {
+            gameData = null;
+        } else {
+            previousServerTimeStamp = gameData.ServerTimeStamp;
+        }
     }
 
     public void sendToServer() {

@@ -212,12 +212,13 @@ public class AmazeServerSingleThread {
         send(clientB, newGameData);
     }
 
-    private void send(InetSocketAddress sockAddr, Serializable obj) {
+    private void send(InetSocketAddress sockAddr, GameData gameData) {
         Arrays.fill(sendData, (byte) 0);
+        gameData.ServerTimeStamp = System.currentTimeMillis();
         try {
             ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objOutputStream = new ObjectOutputStream(arrayOutputStream);
-            objOutputStream.writeObject(obj);
+            objOutputStream.writeObject(gameData);
             sendData = arrayOutputStream.toByteArray();
 
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, sockAddr);
