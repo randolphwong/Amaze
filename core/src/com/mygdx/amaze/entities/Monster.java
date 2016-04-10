@@ -22,6 +22,8 @@ public class Monster {
 
     public float spawnX;
     public float spawnY;
+    public boolean todestroy;
+    public boolean destroyed;
 
     public Vector2 velocity;
 
@@ -33,7 +35,7 @@ public class Monster {
     public Monster(PlayScreen screen, float x, float y) {
         this.x = spawnX = x;
         this.y = spawnY = y;
-
+        this.destroyed =false;
         this.velocity = new Vector2(0, 0);
 
         input = new MonsterInputComponent(this);
@@ -46,13 +48,26 @@ public class Monster {
     }
 
     public void update(float delta) {
-        input.update(delta);
-        physics.update(delta);
-        graphics.update(delta);
+        if(!destroyed) {
+            input.update(delta);
+            physics.update(delta);
+            graphics.update(delta);
+        }
+        if(todestroy && !destroyed){
+            screen.world.destroyBody(getBody());
+            destroyed = true;
+        }
     }
 
+    public void destroy(){
+        todestroy =true;
+    }
+
+
     public void draw(SpriteBatch batch) {
-        graphics.draw(batch);
+        if(!destroyed) {
+            graphics.draw(batch);
+        }
     }
 
     public void dispose() {

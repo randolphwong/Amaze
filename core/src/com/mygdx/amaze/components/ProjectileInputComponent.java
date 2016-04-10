@@ -14,8 +14,6 @@ public class ProjectileInputComponent {
     public ProjectileInputComponent(Projectile projectile ,PlayScreen screen){
         this.projectile = projectile;
         this.screen = screen;
-    }
-    public void update(float delta){
         if(screen.player.faceState == 0){
             projectile.velocity.y = 500;
             projectile.velocity.x = 0;
@@ -29,5 +27,8 @@ public class ProjectileInputComponent {
             projectile.velocity.x = -500;
             projectile.velocity.y = 0;
         }
+    }
+    public void update(float delta){
+
     }
 }

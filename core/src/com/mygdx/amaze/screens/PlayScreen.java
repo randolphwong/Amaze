@@ -26,6 +26,8 @@ import com.mygdx.amaze.networking.GameData;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
 
+import java.util.ArrayList;
+
 /**
  * Created by Randolph on 12/3/2016.
  */
@@ -37,8 +39,8 @@ public class PlayScreen implements Screen {
     public Player player;
     public Friend friend;
     public String playerType;
-    public Projectile projectile;
-    public boolean projectileFired;
+    public ArrayList<Projectile> projectiles;
+//    public boolean projectileFired;
     public Monster monster;
 
 
@@ -112,7 +114,7 @@ public class PlayScreen implements Screen {
                 false, /* don't draw joints */
                 false, /* don't draw aabbs */
                 true, /* draw inactive bodies */
-                false, /* don't draw velocities */
+                true, /* don't draw velocities */
                 true /* draw contacts */);
 
         // create player
@@ -141,12 +143,9 @@ public class PlayScreen implements Screen {
         Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, 1, world);
 
         // for networking
+        projectiles = new ArrayList<Projectile>();
         game.networkClient.startMultiplayerGame();
-        this.projectileFired =false;
-//        if(projectileFired) {
-//            projectile = new Projectile(this, player.x, player.y);
-//        }
-//        projectile = new Projectile(this, player.x, player.y);
+//        this.projectileFired =false;
     }
 
     public void openDoor() {
@@ -204,9 +203,13 @@ public class PlayScreen implements Screen {
         }
 
         player.update(delta);
-        monster.update(delta);
-        if(projectileFired) {
-            projectile.update(delta);
+        if(!monster.destroyed) {
+            monster.update(delta);
+        }
+        for(Projectile projectile : projectiles){
+            if(projectile.projectileFired){
+                projectile.update(delta);
+            }
         }
 //        projectile.update(delta);
         // send GameData from remote client
@@ -250,9 +253,12 @@ public class PlayScreen implements Screen {
         game.batch.begin();
         player.draw(game.batch);
         friend.draw(game.batch);
-        monster.draw(game.batch);
-        if(projectileFired) {
-            projectile.draw(game.batch);
+        if(!monster.destroyed)
+            monster.draw(game.batch);
+        for(Projectile projectile : projectiles){
+            if(projectile.projectileFired){
+                projectile.draw(game.batch);
+            }
         }
 
         //draw items
@@ -278,7 +284,9 @@ public class PlayScreen implements Screen {
         healthPotion.dispose();
         laserGun.dispose();
         shield.dispose();
-
+        for(Projectile p : projectiles){
+            p.dispose();
+        }
         map.dispose();
         hud.dispose();
         debugRenderer.dispose();

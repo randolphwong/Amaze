@@ -42,7 +42,7 @@ public class ProjectilePhysicsComponent extends PhysicsComponent {
         bodyDef.position.set(playScreen.player.x, playScreen.player.y);
 
         CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(projectile.LENGTH/2);
+        circleShape.setRadius(10);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;

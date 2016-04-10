@@ -15,11 +15,12 @@ public class Projectile {
 
     private PlayScreen screen;
 
-    public static final float THICKNESS = 2;
-    public static final float LENGTH = 9;
+    public static final float THICKNESS = 30;
+    public static final float LENGTH = 50;
     public float x;
     public float y;
     public boolean todestroy;
+    public boolean projectileFired;
     public boolean exist;
 
     public float spawnX;
@@ -35,7 +36,8 @@ public class Projectile {
         this.screen =screen;
         this.x = spawnX = x;
         this.y = spawnY = y;
-        this.exist = false;
+        this.exist = true;
+        this.projectileFired  =true;
 
         this.velocity = new Vector2(0,0);
         this.inputComponent =  new ProjectileInputComponent(this,screen);
@@ -45,15 +47,19 @@ public class Projectile {
     }
 
     public void update(float delta){
-
-        graphicsComponent.update(delta);
-        physicsComponent.update(delta);
-        inputComponent.update(delta);
-
+        if(exist) {
+            graphicsComponent.update(delta);
+            physicsComponent.update(delta);
+            inputComponent.update(delta);
+        }
+        if(todestroy && exist){
+            screen.world.destroyBody(getBody());
+            exist =false;
+        }
     }
 
     public void draw(SpriteBatch spriteBatch){
-        if(exist){
+        if(exist) {
             graphicsComponent.draw(spriteBatch);
         }
     }
@@ -64,9 +70,6 @@ public class Projectile {
         todestroy = true;
     }
 
-    public boolean isDestroyed() {
-        return exist;
-    }
 
     public Body getBody() {
         return physicsComponent.getBody();
