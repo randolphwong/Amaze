@@ -67,7 +67,7 @@ public class PlayScreen implements Screen {
     private Rectangle level2DoorRect;
 
     // states
-    public enum GameState { RUNNING, WIN, TIME_UP };
+    public enum GameState { RUNNING, WIN, SCREEN_CHANGE, TIME_UP };
     public GameState gameState;
     public int level;
 
@@ -210,14 +210,17 @@ public class PlayScreen implements Screen {
                 break;
 
             case WIN:
-                if (level == game.MAX_LEVEL){
-                    dispose();
-                    game.setScreen(new WinScreen(game));
-                };
-
-                // pause for about 2 seconds before to transit to next level
+                // pause for about 1 seconds before to transit to next level
                 if ((elapsedTime - winTime) > 2) {
-                    dispose();
+                    gameState = GameState.SCREEN_CHANGE;
+                }
+                break;
+
+            case SCREEN_CHANGE:
+                dispose();
+                if (level == game.MAX_LEVEL){
+                    game.setScreen(new WinScreen(game));
+                } else {
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
                 }
                 return;
@@ -306,12 +309,13 @@ public class PlayScreen implements Screen {
 
         update(delta);
 
-        // don't render if game ended (or else we will get seg fault!)
-        if (gameState != GameState.RUNNING) return;
-
         viewport.apply();
         mapRenderer.render();
-        debugRenderer.render(world, viewport.getCamera().combined);
+
+        // don't render if game ended (or else we will get seg fault!)
+        if (gameState == GameState.RUNNING) {
+            debugRenderer.render(world, viewport.getCamera().combined);
+        }
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
