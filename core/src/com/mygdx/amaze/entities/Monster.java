@@ -36,6 +36,7 @@ public class Monster {
         this.x = spawnX = x;
         this.y = spawnY = y;
         this.destroyed =false;
+        this.screen =screen;
         this.velocity = new Vector2(0, 0);
 
         input = new MonsterInputComponent(this);
@@ -54,6 +55,7 @@ public class Monster {
             graphics.update(delta);
         }
         if(todestroy && !destroyed){
+            System.out.println(getBody());
             screen.world.destroyBody(getBody());
             destroyed = true;
         }

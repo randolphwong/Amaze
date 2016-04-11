@@ -95,19 +95,19 @@ public class Player {
     public void fireLaser(){
         if(gunequipped || shotsLeft >0){
             if(this.faceState == 0){
-                Projectile p = new Projectile(this.screen,this.x,this.y+100);
+                Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;
             }else if(this.faceState == 1){
-                Projectile p = new Projectile(this.screen,this.x+100,this.y);
+                Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;
             }else if(this.faceState == 2){
-                Projectile p = new Projectile(this.screen,this.x,this.y-100);
+                Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;
             }else if(this.faceState == 3) {
-                Projectile p = new Projectile(this.screen,this.x-100,this.y);
+                Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;
             }

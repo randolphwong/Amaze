@@ -114,7 +114,7 @@ public class PlayScreen implements Screen {
                 false, /* don't draw joints */
                 false, /* don't draw aabbs */
                 true, /* draw inactive bodies */
-                true, /* don't draw velocities */
+                false, /* don't draw velocities */
                 true /* draw contacts */);
 
         // create player
@@ -169,7 +169,6 @@ public class PlayScreen implements Screen {
     }
 
     public void update(float delta) {
-
         elapsedTime += delta;
 
         switch (gameState) {
@@ -203,15 +202,14 @@ public class PlayScreen implements Screen {
         }
 
         player.update(delta);
-        if(!monster.destroyed) {
-            monster.update(delta);
-        }
+
+        monster.update(delta);
+
         for(Projectile projectile : projectiles){
             if(projectile.projectileFired){
                 projectile.update(delta);
             }
         }
-//        projectile.update(delta);
         // send GameData from remote client
         GameData dataToSend = new GameData();
         dataToSend.msgType = GameData.MessageType.INGAME;
@@ -253,7 +251,7 @@ public class PlayScreen implements Screen {
         game.batch.begin();
         player.draw(game.batch);
         friend.draw(game.batch);
-        if(!monster.destroyed)
+        if(monster.getBody()!=null)
             monster.draw(game.batch);
         for(Projectile projectile : projectiles){
             if(projectile.projectileFired){

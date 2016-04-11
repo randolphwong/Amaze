@@ -37,10 +37,6 @@ public class CollisionListener implements ContactListener {
         Body potionitemBody = screen.healthPotion.getBody();
         Body shielditemBody = screen.shield.getBody();
         Body lasergunBody = screen.laserGun.getBody();
-//        ArrayList<Projectile> projectile = new ArrayList<Body>();
-//        for(Projectile p : screen.projectiles){
-//            projectileBodies.add(p.getBody());
-//        }
 
         if ((bodyA == playerBody && bodyB == monsterBody) ||
                 (bodyB == playerBody && bodyA == monsterBody)) {
@@ -68,14 +64,7 @@ public class CollisionListener implements ContactListener {
         }else if ((bodyA == playerBody && bodyB == lasergunBody) ||
                 (bodyB == playerBody && bodyA == lasergunBody)) {
             screen.player.gunequipped = true;
-            screen.player.shotsLeft+=1000;
-            System.out.println("Laser gun obtained");
-            playerBody.setUserData(true);
-            screen.laserGun.destroy();
-        }else if ((bodyA == playerBody && bodyB == lasergunBody) ||
-                (bodyB == playerBody && bodyA == lasergunBody)) {
-            screen.player.gunequipped = true;
-            screen.player.shotsLeft+=1000;
+            screen.player.shotsLeft+=5;
             System.out.println("Laser gun obtained");
             playerBody.setUserData(true);
             screen.laserGun.destroy();
@@ -84,7 +73,7 @@ public class CollisionListener implements ContactListener {
             if ((bodyA == monsterBody && bodyB == projectile.getBody()) ||
                     (bodyB == monsterBody && bodyA == projectile.getBody())) {
                 projectile.destroy();
-//                screen.monster.destroy();
+                screen.monster.destroy();
             }
         }
         //Check if player picks up item
