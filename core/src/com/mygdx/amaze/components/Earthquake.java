@@ -46,7 +46,7 @@ public class Earthquake {
                 y = (random.nextFloat() - 0.5f) * 2 * current_power;
 
                 // Set the camera to this new x/y position
-                screen.camera.translate(-x, -y);
+                screen.camera.position.set(player.x-x, player.y-y, 0);
                 current_time += delta;
             } else {
 //                System.out.println("Shaking over, resume normal functioning");
