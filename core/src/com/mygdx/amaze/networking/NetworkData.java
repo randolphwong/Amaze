@@ -115,6 +115,7 @@ public class NetworkData {
     }
 
     public Coord monsterPosition(Monster monster) {
+        if (gameData.monsterPosition == null) return null;
         return gameData.monsterPosition[monster.getId() - 1];
     }
 
@@ -123,7 +124,8 @@ public class NetworkData {
     }
 
     public Coord itemPosition(Item item) {
-        return gameData.monsterPosition[item.type.ordinal()];
+        if (gameData.itemPosition == null) return null;
+        return gameData.itemPosition[item.type.ordinal()];
     }
 
     public boolean isItemTaken(Item item) {
