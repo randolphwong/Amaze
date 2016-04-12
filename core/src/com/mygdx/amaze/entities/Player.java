@@ -31,6 +31,7 @@ public class Player {
     public boolean collidableWithHole = false;
 
     public int shotsLeft;
+    public int shotsDone;
     public boolean gunequipped;
 
     //inventory
@@ -93,9 +94,6 @@ public class Player {
     public void gunState(){
         if(shotsLeft<=0){
             gunequipped =false;
-            for(Projectile p : screen.projectiles) {
-                p.projectileFired = false;
-            }
         }
     }
 
@@ -113,9 +111,9 @@ public class Player {
 
     public void fireLaser(){
         if(gunequipped || shotsLeft >0){
-            Projectile p = new Projectile(this.screen,this.x,this.y);
+            Projectile p = new Projectile(this.screen,this.x,this.y, faceState);
             this.screen.projectiles.add(p);
-            p.projectileFired =true;
+            shotsDone += 1;
             shotsLeft--;
         }
     }

@@ -21,7 +21,7 @@ public class ProjectileGraphicsComponent extends GraphicsComponent {
 
         this.projectile = projectile;
 
-        switch (screen.player.faceState) {
+        switch (projectile.playerFaceState) {
         case UP:
         case DOWN:
             laserSprite = new Sprite(new Texture("Laser/laser-vertical.png"));

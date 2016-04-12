@@ -174,8 +174,6 @@ public class PlayScreen implements Screen {
         level1DoorRect = new Rectangle(320, 1600 - 144, 175, 144);
         level2DoorRect = new Rectangle(144, 3200 - 128, 192, 128);
 
-//        this.projectileFired =false;
-
     }
 
     public void openDoor() {
@@ -273,9 +271,7 @@ public class PlayScreen implements Screen {
         player.update(delta);
         hud.update(delta);
         for(Projectile projectile : projectiles){
-            if(projectile.projectileFired){
-                projectile.update(delta);
-            }
+            projectile.update(delta);
         }
 
         if (networkData.messageType() != Const.REQUEST) {
@@ -349,9 +345,7 @@ public class PlayScreen implements Screen {
 
         // draw projectiles
         for(Projectile projectile : projectiles){
-            if(projectile.projectileFired){
-                projectile.draw(game.batch);
-            }
+            projectile.draw(game.batch);
         }
 
         //draw items

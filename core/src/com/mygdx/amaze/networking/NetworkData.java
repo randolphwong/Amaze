@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.entities.Player.FaceState;
 import com.mygdx.amaze.utilities.Const;
 import com.mygdx.amaze.utilities.Coord;
 
@@ -14,6 +15,8 @@ public class NetworkData {
     private GameData gameData;
     private static int requestIdTracker;
     private long previousServerTimeStamp;
+
+    private int playerShotsDone;
 
     public NetworkData(AmazeClient networkClient) {
         this.networkClient = networkClient;
@@ -70,8 +73,18 @@ public class NetworkData {
 
     public void setPlayerData(Player player) {
         gameData.playerPosition = new Coord((short)player.x, (short)player.y);
+        switch(player.faceState) {
+        case UP: gameData.playerStatus |= Const.FACE_UP; break;
+        case DOWN: gameData.playerStatus |= Const.FACE_DOWN; break;
+        case LEFT: gameData.playerStatus |= Const.FACE_LEFT; break;
+        case RIGHT: gameData.playerStatus |= Const.FACE_RIGHT; break;
+        }
         gameData.playerStatus |= player.attacked ? Const.ATTACKED : 0;
         gameData.playerStatus |= player.shielded ? Const.SHIELDED : 0;
+        if (player.shotsDone > playerShotsDone) {
+            playerShotsDone = player.shotsDone;
+            gameData.playerStatus |= Const.SHOOTING;
+        }
     }
 
     public void setMonsterData(Monster monster) {
@@ -106,12 +119,32 @@ public class NetworkData {
         return gameData.playerPosition;
     }
 
+    public FaceState playerFaceState() {
+        FaceState faceState = null;
+        byte faceStateBits = Const.FACE_UP | Const.FACE_DOWN | Const.FACE_LEFT | Const.FACE_RIGHT;
+        switch (gameData.playerStatus & faceStateBits) {
+        case Const.FACE_UP: faceState = FaceState.UP; break;
+        case Const.FACE_DOWN: faceState = FaceState.DOWN; break;
+        case Const.FACE_LEFT: faceState = FaceState.LEFT; break;
+        case Const.FACE_RIGHT: faceState = FaceState.RIGHT; break;
+        }
+        return faceState;
+    }
+
     public boolean isPlayerAttacked() {
-        return gameData.playerStatus == Const.ATTACKED;
+        return (gameData.playerStatus & Const.ATTACKED) != 0;
     }
 
     public boolean isPlayerShielded() {
-        return gameData.playerStatus == Const.SHIELDED;
+        return (gameData.playerStatus & Const.SHIELDED) != 0;
+    }
+
+    public boolean isPlayerShooting() {
+        return (gameData.playerStatus & Const.SHOOTING) != 0;
+    }
+
+    public boolean isPlayerDead() {
+        return (gameData.playerStatus & Const.DEAD) != 0;
     }
 
     public Coord monsterPosition(Monster monster) {

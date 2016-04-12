@@ -15,7 +15,7 @@ public class ProjectileInputComponent {
         this.projectile = projectile;
         this.screen = screen;
 
-        switch (screen.player.faceState) {
+        switch (projectile.playerFaceState) {
         case UP: projectile.velocity.y = 500; break;
         case DOWN: projectile.velocity.y = -500; break;
         case LEFT: projectile.velocity.x = -500; break;

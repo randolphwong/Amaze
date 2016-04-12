@@ -14,6 +14,8 @@ import com.mygdx.amaze.screens.PlayScreen;
  */
 public class Friend {
 
+    private PlayScreen screen;
+
     public float spawnX;
     public float spawnY;
 
@@ -38,12 +40,13 @@ public class Friend {
     public FriendGraphicsComponent graphics;
 
     public Friend(PlayScreen screen, float x, float y) {
+        this.screen = screen;
         this.targetX = this.x = spawnX = x;
         this.targetY = this.y = spawnY = y;
 
         this.velocity = new Vector2(0, 0);
 
-        input = new FriendInputComponent(this);
+        input = new FriendInputComponent(this, screen);
         physics = new FriendPhysicsComponent(this, screen.world);
         graphics = new FriendGraphicsComponent(this, physics);
     }

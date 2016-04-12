@@ -18,9 +18,14 @@ public class Const {
     public static final byte SLAVE_CLIENT = 2;
 
     // player status
-    public static final byte ATTACKED = 1;
-    public static final byte SHIELDED = 2;
-    public static final byte DEAD = 4;
+    public static final byte ATTACKED    = 1 << 0;
+    public static final byte SHIELDED    = 1 << 1;
+    public static final byte SHOOTING    = 1 << 2;
+    public static final byte DEAD        = 1 << 3;
+    public static final byte FACE_LEFT   = 1 << 4;
+    public static final byte FACE_RIGHT  = 1 << 5;
+    public static final byte FACE_UP     = 1 << 6;
+    public static final byte FACE_DOWN   = (byte) 128;
 
     // request types
     public static final byte ITEM_REQUEST = 1;

@@ -2,8 +2,11 @@ package com.mygdx.amaze.components;
 
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.amaze.entities.Friend;
+import com.mygdx.amaze.entities.Projectile;
+import com.mygdx.amaze.entities.Player.FaceState;
 import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.utilities.Const;
+import com.mygdx.amaze.screens.PlayScreen;
 
 /**
  * Created by Randolph on 13/3/2016.
@@ -11,9 +14,11 @@ import com.mygdx.amaze.utilities.Const;
 public class FriendInputComponent {
 
     private Friend friend;
+    private PlayScreen screen;
 
-    public FriendInputComponent(Friend friend) {
+    public FriendInputComponent(Friend friend, PlayScreen screen) {
         this.friend = friend;
+        this.screen = screen;
     }
 
     public void update(float delta, NetworkData networkData) {
@@ -23,6 +28,11 @@ public class FriendInputComponent {
                 friend.targetY = networkData.playerPosition().y;
                 friend.attacked = networkData.isPlayerAttacked();
                 friend.shielded = networkData.isPlayerShielded();
+                //friend.faceState = networkData.playerFaceState();
+            }
+            if (networkData.isPlayerShooting()) {
+                Projectile p = new Projectile(this.screen,friend.x,friend.y,networkData.playerFaceState());
+                this.screen.projectiles.add(p);
             }
         }
 

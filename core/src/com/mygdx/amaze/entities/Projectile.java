@@ -7,6 +7,7 @@ import com.mygdx.amaze.components.ProjectileGraphicsComponent;
 import com.mygdx.amaze.components.ProjectileInputComponent;
 import com.mygdx.amaze.components.ProjectilePhysicsComponent;
 import com.mygdx.amaze.screens.PlayScreen;
+import com.mygdx.amaze.entities.Player.FaceState;
 
 /**
  * Created by Loo Yi on 3/31/2016.
@@ -20,8 +21,8 @@ public class Projectile {
     public float x;
     public float y;
     public boolean todestroy;
-    public boolean projectileFired;
     public boolean exist;
+    public FaceState playerFaceState;
 
     public float spawnX;
     public float spawnY;
@@ -32,17 +33,17 @@ public class Projectile {
     public ProjectilePhysicsComponent physicsComponent;
     public ProjectileInputComponent inputComponent;
 
-    public Projectile(PlayScreen screen,float x,float y){
+    public Projectile(PlayScreen screen,float x,float y, FaceState playerFaceState){
         this.screen =screen;
         this.x = spawnX = x;
         this.y = spawnY = y;
         this.exist = true;
-        this.projectileFired  =true;
+        this.playerFaceState = playerFaceState;
 
         this.velocity = new Vector2(0,0);
         this.inputComponent =  new ProjectileInputComponent(this,screen);
         this.graphicsComponent = new ProjectileGraphicsComponent(this,screen);
-        this.physicsComponent = new ProjectilePhysicsComponent(screen.world,this,screen);
+        this.physicsComponent = new ProjectilePhysicsComponent(screen.world,this);
 
     }
 

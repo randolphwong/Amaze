@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Projectile;
-import com.mygdx.amaze.screens.PlayScreen;
 
 import com.mygdx.amaze.collision.CollisionListener;
 
@@ -16,15 +15,13 @@ import com.mygdx.amaze.collision.CollisionListener;
  */
 public class ProjectilePhysicsComponent extends PhysicsComponent {
     private Projectile projectile;
-    private PlayScreen playScreen;
 
     private World world;
     private Body body;
 
-    public ProjectilePhysicsComponent(World world,Projectile projectile,PlayScreen screen){
+    public ProjectilePhysicsComponent(World world,Projectile projectile){
         this.world =world;
         this.projectile = projectile;
-        this.playScreen =screen;
 
         createBody();
     }
@@ -41,7 +38,7 @@ public class ProjectilePhysicsComponent extends PhysicsComponent {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(playScreen.player.x, playScreen.player.y);
+        bodyDef.position.set(projectile.x, projectile.y);
         body = world.createBody(bodyDef);
 
         CircleShape circleShape = new CircleShape();
