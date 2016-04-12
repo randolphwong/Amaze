@@ -88,6 +88,7 @@ public class Monster {
         }
         if(todestroy && !destroyed){
             screen.world.destroyBody(getBody());
+            position.set(-1f, -1f);
             destroyed = true;
         }
     }
