@@ -14,18 +14,12 @@ public class ProjectileInputComponent {
     public ProjectileInputComponent(Projectile projectile ,PlayScreen screen){
         this.projectile = projectile;
         this.screen = screen;
-        if(screen.player.faceState == 0){
-            projectile.velocity.y = 500;
-            projectile.velocity.x = 0;
-        }else if(screen.player.faceState == 1){
-            projectile.velocity.x = 500;
-            projectile.velocity.y = 0;
-        }else if(screen.player.faceState == 2){
-            projectile.velocity.y = -500;
-            projectile.velocity.x = 0;
-        }else if(screen.player.faceState == 3){
-            projectile.velocity.x = -500;
-            projectile.velocity.y = 0;
+
+        switch (screen.player.faceState) {
+        case UP: projectile.velocity.y = 500; break;
+        case DOWN: projectile.velocity.y = -500; break;
+        case LEFT: projectile.velocity.x = -500; break;
+        case RIGHT: projectile.velocity.x = 500; break;
         }
     }
     public void update(float delta){

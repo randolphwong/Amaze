@@ -20,15 +20,20 @@ public class ProjectileGraphicsComponent extends GraphicsComponent {
     public ProjectileGraphicsComponent(Projectile projectile,PlayScreen screen) {
 
         this.projectile = projectile;
-        if(screen.player.faceState == 0 || screen.player.faceState ==2){
+
+        switch (screen.player.faceState) {
+        case UP:
+        case DOWN:
             laserSprite = new Sprite(new Texture("Laser/laser-vertical.png"));
             laserSprite.setSize(Projectile.THICKNESS,Projectile.LENGTH);
-        }else if(screen.player.faceState == 1 || screen.player.faceState == 3){
+            break;
+        case LEFT:
+        case RIGHT:
             laserSprite = new Sprite(new Texture("Laser/laser-horizontal.png"));
             laserSprite.setSize(Projectile.LENGTH,Projectile.THICKNESS);
+            break;
         }
 //        laserSprite.setCenter(projectile.x,projectile.y);
-
 
     }
 

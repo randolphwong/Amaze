@@ -13,6 +13,9 @@ import com.mygdx.amaze.screens.PlayScreen;
  */
 public class Player {
 
+    public enum FaceState { UP, DOWN, LEFT, RIGHT }
+    public FaceState faceState;
+
     public float spawnX;
     public float spawnY;
 
@@ -26,7 +29,6 @@ public class Player {
     public boolean shielded = false;
     public boolean attacked = false;
     public boolean collidableWithHole = false;
-    public int faceState;
 
     public int shotsLeft;
     public boolean gunequipped;
@@ -47,7 +49,7 @@ public class Player {
         this.screen =screen;
 
         this.velocity = new Vector2(0, 0);
-        this.faceState = 2;
+        this.faceState = FaceState.DOWN;
 
         input = new PlayerInputComponent(this, screen.hud);
         physics = new PlayerPhysicsComponent(this, screen.world);
@@ -99,36 +101,21 @@ public class Player {
 
     public void faceState (){
         if(this.velocity.x>0 && this.velocity.y==0){
-            this.faceState = 1;
+            this.faceState = FaceState.RIGHT;
         }else if(this.velocity.x<0 && this.velocity.y==0){
-            this.faceState = 3;
+            this.faceState = FaceState.LEFT;
         }else if(this.velocity.x==0 && this.velocity.y>0){
-            this.faceState = 0;
+            this.faceState = FaceState.UP;
         }else if(this.velocity.x ==0 && this.velocity.y<0) {
-            this.faceState = 2;
+            this.faceState = FaceState.DOWN;
         }
     }
 
     public void fireLaser(){
         if(gunequipped || shotsLeft >0){
-            if(this.faceState == 0){
-                Projectile p = new Projectile(this.screen,this.x,this.y);
-                this.screen.projectiles.add(p);
-                p.projectileFired =true;
-            }else if(this.faceState == 1){
-                Projectile p = new Projectile(this.screen,this.x,this.y);
-                this.screen.projectiles.add(p);
-                p.projectileFired =true;
-            }else if(this.faceState == 2){
-                Projectile p = new Projectile(this.screen,this.x,this.y);
-                this.screen.projectiles.add(p);
-                p.projectileFired =true;
-            }else if(this.faceState == 3) {
-                Projectile p = new Projectile(this.screen,this.x,this.y);
-                this.screen.projectiles.add(p);
-                p.projectileFired =true;
-            }
-
+            Projectile p = new Projectile(this.screen,this.x,this.y);
+            this.screen.projectiles.add(p);
+            p.projectileFired =true;
             shotsLeft--;
         }
     }
