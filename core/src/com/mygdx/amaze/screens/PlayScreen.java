@@ -36,6 +36,10 @@ public class PlayScreen implements Screen {
 
     private AmazeGame game;
 
+    // constants for earthquake
+    public static final int TIME_TILL_GROUND_CRACK = 200;
+    public static final int TIME_TILL_GROUND_BREAK = 100;
+
     // players
     public Player player;
     public Friend friend;
@@ -152,6 +156,9 @@ public class PlayScreen implements Screen {
         // make walls
         Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, CollisionListener.WALL_BIT, world);
 
+        // make ground holes
+        Array<Body> holes = MapPhysicsBuilder.buildShapes("obj_hole", map, CollisionListener.HOLE_BIT, world);
+
         // make monster boundaries
         Array<Body> monster_boundaries = MapPhysicsBuilder.buildShapes("monster_boundary", map, CollisionListener.MONSTER_BOUNDARY_BIT, world);
 
@@ -206,10 +213,11 @@ public class PlayScreen implements Screen {
                     gameState = GameState.WIN;
                     winTime = elapsedTime;
                 }
-                else if(hud.timer == 200){
+                else if(hud.timer == TIME_TILL_GROUND_CRACK){
                     map.getLayers().get("Tile Layer 4").setVisible(true);
                 }
-                else if(hud.timer == 100){
+                else if(hud.timer == TIME_TILL_GROUND_BREAK){
+                    player.makeCollidableWithHole();
                     map.getLayers().get("Tile Layer 5").setVisible(true);
                 }
                 else if(hud.isTimeUp()){

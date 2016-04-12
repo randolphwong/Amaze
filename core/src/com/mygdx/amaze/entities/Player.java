@@ -20,9 +20,12 @@ public class Player {
     public float x;
     public float y;
 
+    public boolean todestroy;
+
     public int health = 99;
     public boolean shielded = false;
     public boolean attacked = false;
+    public boolean collidableWithHole = false;
     public int faceState;
 
     public int shotsLeft;
@@ -69,12 +72,20 @@ public class Player {
 
     }
 
+    public void destroy() {
+        todestroy = true;
+    }
+
     public void draw(SpriteBatch batch) {
         graphics.draw(batch);
     }
 
     public void dispose() {
         graphics.dispose();
+    }
+
+    public void makeCollidableWithHole() {
+        physics.makeCollidableWithHole();
     }
 
     public void gunState(){
