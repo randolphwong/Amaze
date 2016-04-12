@@ -27,6 +27,8 @@ public class Monster {
 
     public Vector2 position;
     public Vector2 spawnLocation;
+    public boolean todestroy;
+    public boolean destroyed;
 
     public Vector2 velocity;
 
@@ -42,6 +44,8 @@ public class Monster {
     public MonsterGraphicsComponent graphics;
 
     public Monster(PlayScreen screen, Vector2 spawnLocation) {
+        this.destroyed =false;
+        this.screen =screen;
         id = ++monsterIdTracker;
 
         this.spawnLocation = spawnLocation;
@@ -77,13 +81,26 @@ public class Monster {
     }
 
     public void update(float delta, NetworkData networkData) {
-        input.update(delta, networkData);
-        physics.update(delta);
-        graphics.update(delta);
+        if(!destroyed) {
+            input.update(delta, networkData);
+            physics.update(delta);
+            graphics.update(delta);
+        }
+        if(todestroy && !destroyed){
+            screen.world.destroyBody(getBody());
+            destroyed = true;
+        }
     }
 
+    public void destroy(){
+        todestroy =true;
+    }
+
+
     public void draw(SpriteBatch batch) {
-        graphics.draw(batch);
+        if(!destroyed) {
+            graphics.draw(batch);
+        }
     }
 
     public static void resetIdTracker() {

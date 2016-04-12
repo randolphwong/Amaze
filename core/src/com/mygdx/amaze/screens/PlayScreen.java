@@ -24,6 +24,7 @@ import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.networking.RequestManager;
+import com.mygdx.amaze.entities.Projectile;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.utilities.Const;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
@@ -42,7 +43,9 @@ public class PlayScreen implements Screen {
     public static final String[] playerTypeString = {"playerA", "playerB"};
     public static final String[] friendTypeString = {"playerB", "playerA"};
 
+    public Array<Projectile> projectiles;
     private Array<Monster> monsters;
+
 
     //Items
     public Item healthPotion;
@@ -143,6 +146,9 @@ public class PlayScreen implements Screen {
         laserGun = new Item(this, Item.Type.LASER_GUN, laserSpawnLocation.x, laserSpawnLocation.y);
         shield = new Item(this, Item.Type.SHIELD, shieldSpawnLocation.x, shieldSpawnLocation.y);
 
+        // create projectiles
+        projectiles = new Array<Projectile>();
+
         // make walls
         Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, CollisionListener.WALL_BIT, world);
 
@@ -160,6 +166,9 @@ public class PlayScreen implements Screen {
         // door for level1/2
         level1DoorRect = new Rectangle(320, 1600 - 144, 175, 144);
         level2DoorRect = new Rectangle(144, 3200 - 128, 192, 128);
+
+//        this.projectileFired =false;
+
     }
 
     public void openDoor() {
@@ -255,6 +264,11 @@ public class PlayScreen implements Screen {
 
         player.update(delta);
         hud.update(delta);
+        for(Projectile projectile : projectiles){
+            if(projectile.projectileFired){
+                projectile.update(delta);
+            }
+        }
 
         if (networkData.messageType() != Const.REQUEST) {
             // update friend
@@ -319,9 +333,18 @@ public class PlayScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
         // draw monsters
-        for (Monster monster : monsters)
+        for (Monster monster : monsters) {
             monster.draw(game.batch);
+        }
+
+        // draw projectiles
+        for(Projectile projectile : projectiles){
+            if(projectile.projectileFired){
+                projectile.draw(game.batch);
+            }
+        }
 
         //draw items
         healthPotion.draw(game.batch);
@@ -351,7 +374,9 @@ public class PlayScreen implements Screen {
         healthPotion.dispose();
         laserGun.dispose();
         shield.dispose();
-
+        for(Projectile p : projectiles){
+            p.dispose();
+        }
         map.dispose();
         hud.dispose();
         debugRenderer.dispose();

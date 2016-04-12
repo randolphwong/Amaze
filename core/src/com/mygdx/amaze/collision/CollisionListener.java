@@ -10,6 +10,7 @@ import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.entities.Projectile;
 import com.mygdx.amaze.screens.PlayScreen;
 import com.mygdx.amaze.networking.ItemRequest;
 import com.mygdx.amaze.networking.MonsterChaseRequest;
@@ -32,6 +33,7 @@ public class CollisionListener implements ContactListener {
     public static final short MONSTER_RADAR_BIT     = 1 << 3;
     public static final short MONSTER_BOUNDARY_BIT  = 1 << 4;
     public static final short ITEM_BIT              = 1 << 5;
+    public static final short PROJECTILE_BIT        = 1 << 6;
 
     public CollisionListener(PlayScreen screen) {
         this.screen = screen;
@@ -103,6 +105,34 @@ public class CollisionListener implements ContactListener {
         }
     }
 
+    private void onProjectileHitMonster(Fixture fixtureA, Fixture fixtureB) {
+        Projectile projectile;
+        Monster monster;
+
+        if (fixtureA.getFilterData().categoryBits == MONSTER_BIT) {
+            monster = (Monster) fixtureA.getUserData();
+            projectile = (Projectile) fixtureB.getUserData();
+        } else {
+            monster = (Monster) fixtureB.getUserData();
+            projectile = (Projectile) fixtureA.getUserData();
+        }
+
+        projectile.destroy();
+        monster.destroy();
+    }
+
+    private void onProjectileHitWall(Fixture fixtureA, Fixture fixtureB) {
+        Projectile projectile;
+
+        if (fixtureA.getFilterData().categoryBits == PROJECTILE_BIT) {
+            projectile = (Projectile) fixtureA.getUserData();
+        } else {
+            projectile = (Projectile) fixtureB.getUserData();
+        }
+
+        projectile.destroy();
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Fixture fixtureA = contact.getFixtureA();
@@ -118,8 +148,12 @@ public class CollisionListener implements ContactListener {
         case PLAYER_BIT | MONSTER_BIT:
             onMonsterCollision(fixtureA, fixtureB);
             break;
-        case PLAYER_BIT | MONSTER_RADAR_BIT:
-            //onMonsterRadarCollision(fixtureA, fixtureB);
+        case MONSTER_BIT | PROJECTILE_BIT:
+            onProjectileHitMonster(fixtureA, fixtureB);
+            break;
+        case PROJECTILE_BIT | WALL_BIT:
+            System.out.println("hit wall");
+            onProjectileHitWall(fixtureA, fixtureB);
             break;
         }
     }

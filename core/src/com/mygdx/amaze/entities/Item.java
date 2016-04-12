@@ -50,7 +50,6 @@ public class Item {
                 todestroy = true;
             }
         }
-//        physics.update(delta);
         graphics.update(delta);
         if(todestroy && !destroyed){
             screen.world.destroyBody(getBody());

@@ -46,7 +46,8 @@ public class MonsterPhysicsComponent {
         mainFixtureDef.filter.categoryBits = CollisionListener.MONSTER_BIT;
         mainFixtureDef.filter.maskBits = CollisionListener.WALL_BIT |
                                          CollisionListener.MONSTER_BOUNDARY_BIT | 
-                                         CollisionListener.PLAYER_BIT;
+                                         CollisionListener.PLAYER_BIT |
+                                         CollisionListener.PROJECTILE_BIT;
 
         body.createFixture(mainFixtureDef).setUserData(monster);
         mainShape.dispose();
