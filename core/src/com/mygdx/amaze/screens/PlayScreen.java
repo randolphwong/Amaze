@@ -55,6 +55,7 @@ public class PlayScreen implements Screen {
     public Item healthPotion;
     public Item laserGun;
     public Item shield;
+    public Array<Vector2> availableItemPositions;
 
     // camera and viewport
     public OrthographicCamera camera;
@@ -142,13 +143,13 @@ public class PlayScreen implements Screen {
         }
 
         // create items
-        Vector2 healthSpawnLocation = MapPhysicsBuilder.getSpawnLocation("health_location", map).get(0);
-        Vector2 laserSpawnLocation = MapPhysicsBuilder.getSpawnLocation("laser_location", map).get(0);
-        Vector2 shieldSpawnLocation = MapPhysicsBuilder.getSpawnLocation("shield_location", map).get(0);
-
-        healthPotion = new Item(this, Item.Type.HEALTH_POTION, healthSpawnLocation.x, healthSpawnLocation.y);
-        laserGun = new Item(this, Item.Type.LASER_GUN, laserSpawnLocation.x, laserSpawnLocation.y);
-        shield = new Item(this, Item.Type.SHIELD, shieldSpawnLocation.x, shieldSpawnLocation.y);
+        availableItemPositions = MapPhysicsBuilder.getSpawnLocation("obj_item", map);
+        Vector2 nextItemPosition = getRandomItemPosition();
+        healthPotion = new Item(this, Item.Type.HEALTH_POTION, nextItemPosition.x, nextItemPosition.y);
+        nextItemPosition = getRandomItemPosition();
+        laserGun = new Item(this, Item.Type.LASER_GUN, nextItemPosition.x, nextItemPosition.y);
+        nextItemPosition = getRandomItemPosition();
+        shield = new Item(this, Item.Type.SHIELD, nextItemPosition.x, nextItemPosition.y);
 
         // create projectiles
         projectiles = new Array<Projectile>();
@@ -173,7 +174,20 @@ public class PlayScreen implements Screen {
         // door for level1/2
         level1DoorRect = new Rectangle(320, 1600 - 144, 175, 144);
         level2DoorRect = new Rectangle(144, 3200 - 128, 192, 128);
+    }
 
+    public Vector2 getRandomItemPosition() {
+        Vector2 nextItemPosition = availableItemPositions.random();
+        if (nextItemPosition != null) {
+            availableItemPositions.removeValue(nextItemPosition, true);
+        }
+        return nextItemPosition;
+    }
+
+    public void addAvailableItemPosition(Vector2 position) {
+        if (position != null) {
+            availableItemPositions.add(position);
+        }
     }
 
     public void openDoor() {
