@@ -5,9 +5,11 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.entities.Player.FaceState;
 import com.mygdx.amaze.utilities.Const;
 import com.mygdx.amaze.utilities.Coord;
+import com.mygdx.amaze.utilities.ItemType;
 
 public class NetworkData {
 
@@ -54,7 +56,7 @@ public class NetworkData {
         gameData.itemTaken = 0;
     }
 
-    public void initialiseLevel(Array<Item> items, Array<Monster> monsters) {
+    public void initialiseLevel(Array<Item> items, Array<Monster> monsters, Player player, Friend friend) {
         if (gameData == null) gameData = new GameData();
 
         setMessageType(Const.INITIALISE);
@@ -64,7 +66,21 @@ public class NetworkData {
         for (Monster monster : monsters) {
             setMonsterData(monster);
         }
+        setPlayerData(player);
+        gameData.friendPosition = new Coord((short)friend.x, (short)friend.y);
         sendToServer();
+    }
+
+    public void getInitialisationData() {
+        setMessageType(Const.GET_INITIALISE);
+        sendToServer();
+
+        while (true) {
+            getFromServer();
+            if (gameData != null) {
+                if (gameData.msgType == Const.INITIALISE) return;
+            }
+        }
     }
 
     public void setMessageType(byte messageType) {
@@ -119,6 +135,10 @@ public class NetworkData {
         return gameData.playerPosition;
     }
 
+    public Coord friendPosition() {
+        return gameData.friendPosition;
+    }
+
     public FaceState playerFaceState() {
         FaceState faceState = null;
         byte faceStateBits = Const.FACE_UP | Const.FACE_DOWN | Const.FACE_LEFT | Const.FACE_RIGHT;
@@ -159,6 +179,11 @@ public class NetworkData {
     public Coord itemPosition(Item item) {
         if (gameData.itemPosition == null) return null;
         return gameData.itemPosition[item.type.getValue()];
+    }
+
+    public Coord itemPosition(ItemType type) {
+        if (gameData.itemPosition == null) return null;
+        return gameData.itemPosition[type.getValue()];
     }
 
     public boolean isItemTaken(Item item) {

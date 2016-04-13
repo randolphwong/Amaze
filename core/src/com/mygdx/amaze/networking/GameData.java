@@ -16,6 +16,9 @@ public class GameData implements Serializable {
     public Coord playerPosition;
     public byte playerStatus;
 
+    // only for initialisation for remote client
+    public Coord friendPosition;
+
     // monster
     public byte monsterChasing; // bit manipulation
     public Coord[] monsterPosition;

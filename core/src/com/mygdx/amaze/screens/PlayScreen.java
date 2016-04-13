@@ -96,6 +96,7 @@ public class PlayScreen implements Screen {
         this.game = game;
         this.level = level;
         this.clientType = clientType;
+        items = new Array<Item>();
 
         gameState = GameState.RUNNING;
 
@@ -116,7 +117,25 @@ public class PlayScreen implements Screen {
 
         collisionListener = new CollisionListener(this);
 
+        if (clientType == Const.MASTER_CLIENT) {
+            // create player
+            availablePlayerPositions = MapPhysicsBuilder.getSpawnLocation("obj_player", map);
+            Vector2 playerSpawnLocation = availablePlayerPositions.random();
+            availablePlayerPositions.removeValue(playerSpawnLocation, true);
+            player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
+            // create friend
+            playerSpawnLocation = availablePlayerPositions.random();
+            friend = new Friend(this, playerSpawnLocation.x, playerSpawnLocation.y);
+
+            // create items
+            availableItemPositions = MapPhysicsBuilder.getSpawnLocation("obj_item", map);
+            Vector2 nextItemPosition;
+            for (int i = 0; i < Const.MAX_ITEM; i++) {
+                nextItemPosition = getRandomItemPosition();
+                items.add(new Item(this, ItemType.valueOf(i), nextItemPosition.x, nextItemPosition.y));
+            }
+        }
 
         debugRenderer = new Box2DDebugRenderer(
                 true, /* draw bodies */
@@ -126,31 +145,12 @@ public class PlayScreen implements Screen {
                 false, /* don't draw velocities */
                 true /* draw contacts */);
 
-        // create player
-        availablePlayerPositions = MapPhysicsBuilder.getSpawnLocation("obj_player", map);
-        Vector2 playerSpawnLocation = availablePlayerPositions.random();
-        availablePlayerPositions.removeValue(playerSpawnLocation, true);
-        player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
-
-        // create friend
-        playerSpawnLocation = availablePlayerPositions.random();
-        friend = new Friend(this, playerSpawnLocation.x, playerSpawnLocation.y);
-
         // create monster
         Monster.resetIdTracker(); // need this to prevent crash since ID tracker is static
         monsters = new Array<Monster>();
         Array<Vector2> monsterSpawnLocations = MapPhysicsBuilder.getSpawnLocation("monster_location", map);
         for (Vector2 monsterSpawnLocation : monsterSpawnLocations) {
             monsters.add(new Monster(this, monsterSpawnLocation));
-        }
-
-        // create items
-        items = new Array<Item>();
-        availableItemPositions = MapPhysicsBuilder.getSpawnLocation("obj_item", map);
-        Vector2 nextItemPosition;
-        for (int i = 0; i < Const.MAX_ITEM; i++) {
-            nextItemPosition = getRandomItemPosition();
-            items.add(new Item(this, ItemType.valueOf(i), nextItemPosition.x, nextItemPosition.y));
         }
 
         // create projectiles
@@ -169,7 +169,18 @@ public class PlayScreen implements Screen {
         game.networkClient.startMultiplayerGame();
         networkData = new NetworkData(game.networkClient);
         if (clientType == Const.MASTER_CLIENT) {
-            networkData.initialiseLevel(items, monsters);
+            networkData.initialiseLevel(items, monsters, player, friend);
+        } else {
+            // this will busy wait
+            // TODO: maybe should timeout?
+            networkData.getInitialisationData();
+            player = new Player(this, networkData.friendPosition().x, networkData.friendPosition().y);
+            friend = new Friend(this, networkData.playerPosition().x, networkData.playerPosition().y);
+
+            for (int i = 0; i < Const.MAX_ITEM; i++) {
+                ItemType type = ItemType.valueOf(i);
+                items.add(new Item(this, type, networkData.itemPosition(type).x, networkData.itemPosition(type).y));
+            }
         }
         requestManager = RequestManager.getInstance();
 

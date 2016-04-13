@@ -12,7 +12,8 @@ public class Const {
     public static final byte INGAME = 2;
     public static final byte POSTGAME = 3;
     public static final byte INITIALISE = 4;
-    public static final byte REQUEST = 5;
+    public static final byte GET_INITIALISE = 5;
+    public static final byte REQUEST = 6;
 
     public static final byte MASTER_CLIENT = 1;
     public static final byte SLAVE_CLIENT = 2;

@@ -54,7 +54,8 @@ public class AmazeServerSingleThread {
                 case Const.PREGAME: handlePreGameMessage(); break;
                 case Const.INGAME: handleInGameMessage(); break;
                 case Const.POSTGAME: handlePostGameMessage(); break;
-                case Const.INITIALISE: handleInitialisationMessage(); break;
+                case Const.INITIALISE:
+                case Const.GET_INITIALISE: handleInitialisationMessage(); break;
                 case Const.REQUEST: handleRequestMessage(); break;
             }
         }
@@ -138,9 +139,28 @@ public class AmazeServerSingleThread {
             //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
             return;
         }
-        // DEBUG PRINT
-        System.out.println("handling initialiseLevel message from: " + senderAddress);
-        roomData.put(senderAddress, receiveGameData);
+        /*
+         * If slave client sends GET_INITILISE message before master sends INITIALISE, then we will
+         * set the roomData temporarily with the GET_INITIALISE message to let the future handling
+         * know that the the slave already asked for INITIALISE message.
+         */
+        if (receiveGameData.msgType == Const.INITIALISE) {
+            System.out.println("handling INITIALISE message from: " + senderAddress);
+            if (roomData.get(senderAddress) != null) {
+                send(room.get(senderAddress), receiveGameData);
+            }
+            roomData.put(senderAddress, receiveGameData);
+            roomData.put(room.get(senderAddress), receiveGameData);
+        } else {
+            System.out.println("handling GET_INITIALISE message from: " + senderAddress);
+            GameData initGameData = roomData.get(senderAddress);
+            if (initGameData == null) {
+                roomData.put(senderAddress, receiveGameData);
+                roomData.put(room.get(senderAddress), receiveGameData);
+            } else {
+                send(senderAddress, roomData.get(senderAddress));
+            }
+        }
     }
 
     private void handleRequestMessage() {
