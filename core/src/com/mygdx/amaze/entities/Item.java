@@ -7,6 +7,7 @@ import com.mygdx.amaze.components.ItemGraphicsComponent;
 import com.mygdx.amaze.components.ItemPhysicsComponent;
 import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.screens.PlayScreen;
+import com.mygdx.amaze.utilities.ItemType;
 
 /**
  * Created by Dhanya on 22/03/2016.
@@ -17,10 +18,7 @@ public class Item {
     public static final float ITEM_SIZE = 32;
 
     private PlayScreen screen;
-    public enum Type{
-        HEALTH_POTION, LASER_GUN, SHIELD;
-    }
-    public Type type;
+    public ItemType type;
     private boolean todestroy;
     private boolean destroyed;
     private float respawnTimer;
@@ -33,7 +31,7 @@ public class Item {
     public ItemPhysicsComponent physics;
     public ItemGraphicsComponent graphics;
 
-    public Item(PlayScreen screen, Type type, float x, float y) {
+    public Item(PlayScreen screen, ItemType type, float x, float y) {
         this.screen = screen;
         this.type = type;
         this.posX = x;
@@ -70,7 +68,6 @@ public class Item {
                 posY = newPosition.y;
                 physics.createBody();
                 destroyed = false;
-                System.out.println(type + " has respawned at " + newPosition);
             }
         }
     }

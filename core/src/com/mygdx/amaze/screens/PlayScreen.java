@@ -28,6 +28,7 @@ import com.mygdx.amaze.entities.Projectile;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.utilities.Const;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
+import com.mygdx.amaze.utilities.ItemType;
 
 /**
  * Created by Randolph on 12/3/2016.
@@ -53,9 +54,7 @@ public class PlayScreen implements Screen {
 
 
     //Items
-    public Item healthPotion;
-    public Item laserGun;
-    public Item shield;
+    public Array<Item> items;
     public Array<Vector2> availableItemPositions;
 
     // camera and viewport
@@ -146,13 +145,13 @@ public class PlayScreen implements Screen {
         }
 
         // create items
+        items = new Array<Item>();
         availableItemPositions = MapPhysicsBuilder.getSpawnLocation("obj_item", map);
-        Vector2 nextItemPosition = getRandomItemPosition();
-        healthPotion = new Item(this, Item.Type.HEALTH_POTION, nextItemPosition.x, nextItemPosition.y);
-        nextItemPosition = getRandomItemPosition();
-        laserGun = new Item(this, Item.Type.LASER_GUN, nextItemPosition.x, nextItemPosition.y);
-        nextItemPosition = getRandomItemPosition();
-        shield = new Item(this, Item.Type.SHIELD, nextItemPosition.x, nextItemPosition.y);
+        Vector2 nextItemPosition;
+        for (int i = 0; i < Const.MAX_ITEM; i++) {
+            nextItemPosition = getRandomItemPosition();
+            items.add(new Item(this, ItemType.valueOf(i), nextItemPosition.x, nextItemPosition.y));
+        }
 
         // create projectiles
         projectiles = new Array<Projectile>();
@@ -170,7 +169,7 @@ public class PlayScreen implements Screen {
         game.networkClient.startMultiplayerGame();
         networkData = new NetworkData(game.networkClient);
         if (clientType == Const.MASTER_CLIENT) {
-            networkData.initialiseLevel(healthPotion, laserGun, shield, monsters);
+            networkData.initialiseLevel(items, monsters);
         }
         requestManager = RequestManager.getInstance();
 
@@ -300,9 +299,8 @@ public class PlayScreen implements Screen {
                 monster.update(delta, networkData);
 
             //update items
-            healthPotion.update(delta, networkData);
-            laserGun.update(delta, networkData);
-            shield.update(delta, networkData);
+            for (Item item : items)
+                item.update(delta, networkData);
         }
 
         // send RawNetworkData to remote client
@@ -313,9 +311,9 @@ public class PlayScreen implements Screen {
             for (Monster monster : monsters) {
                 networkData.setMonsterData(monster);
             }
-            networkData.setItemData(healthPotion);
-            networkData.setItemData(laserGun);
-            networkData.setItemData(shield);
+            for (Item item : items) {
+                networkData.setItemData(item);
+            }
             networkData.sendToServer();
         }
         // send update only at every 3rd frame
@@ -366,9 +364,9 @@ public class PlayScreen implements Screen {
         }
 
         //draw items
-        healthPotion.draw(game.batch);
-        laserGun.draw(game.batch);
-        shield.draw(game.batch);
+        for (Item item : items) {
+            item.draw(game.batch);
+        }
 
         // draw players
         friend.draw(game.batch);
@@ -390,9 +388,8 @@ public class PlayScreen implements Screen {
             monster.dispose();
         player.dispose();
         friend.dispose();
-        healthPotion.dispose();
-        laserGun.dispose();
-        shield.dispose();
+        for (Item item : items)
+            item.dispose();
         for(Projectile p : projectiles){
             p.dispose();
         }

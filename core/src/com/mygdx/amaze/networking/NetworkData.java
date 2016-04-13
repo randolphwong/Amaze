@@ -54,13 +54,13 @@ public class NetworkData {
         gameData.itemTaken = 0;
     }
 
-    public void initialiseLevel(Item i1, Item i2, Item i3, Array<Monster> monsters) {
+    public void initialiseLevel(Array<Item> items, Array<Monster> monsters) {
         if (gameData == null) gameData = new GameData();
 
         setMessageType(Const.INITIALISE);
-        setItemData(i1);
-        setItemData(i2);
-        setItemData(i3);
+        for (Item item : items) {
+            setItemData(item);
+        }
         for (Monster monster : monsters) {
             setMonsterData(monster);
         }
@@ -99,7 +99,7 @@ public class NetworkData {
     }
 
     public void setItemData(Item item) {
-        int itemIndex = item.type.ordinal();
+        int itemIndex = item.type.getValue();
         if (gameData.itemPosition == null) {
             gameData.itemPosition = new Coord[Const.MAX_ITEM];
         }
@@ -158,11 +158,11 @@ public class NetworkData {
 
     public Coord itemPosition(Item item) {
         if (gameData.itemPosition == null) return null;
-        return gameData.itemPosition[item.type.ordinal()];
+        return gameData.itemPosition[item.type.getValue()];
     }
 
     public boolean isItemTaken(Item item) {
-        return (gameData.itemTaken & (1 << item.type.ordinal())) != 0;
+        return (gameData.itemTaken & (1 << item.type.getValue())) != 0;
     }
 
     public int getRequestId() {
@@ -174,7 +174,7 @@ public class NetworkData {
     }
 
     public int requestItem(Item item) {
-        gameData.itemTaken |= 1 << item.type.ordinal();
+        gameData.itemTaken |= 1 << item.type.getValue();
         makeRequest();
         gameData.requestType = Const.ITEM_REQUEST;
         return gameData.requestId;
