@@ -46,6 +46,7 @@ public class PlayScreen implements Screen {
     public byte clientType;
     public static final String[] playerTypeString = {"playerA", "playerB"};
     public static final String[] friendTypeString = {"playerB", "playerA"};
+    public Array<Vector2> availablePlayerPositions;
 
     public Array<Projectile> projectiles;
     private Array<Monster> monsters;
@@ -127,12 +128,14 @@ public class PlayScreen implements Screen {
                 true /* draw contacts */);
 
         // create player
-        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerTypeString[clientType - 1] + "_location", map).get(0);
+        availablePlayerPositions = MapPhysicsBuilder.getSpawnLocation("obj_player", map);
+        Vector2 playerSpawnLocation = availablePlayerPositions.random();
+        availablePlayerPositions.removeValue(playerSpawnLocation, true);
         player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
         // create friend
-        Vector2 friendSpawnLocation = MapPhysicsBuilder.getSpawnLocation(friendTypeString[clientType - 1] + "_location", map).get(0);
-        friend = new Friend(this, friendSpawnLocation.x, friendSpawnLocation.y);
+        playerSpawnLocation = availablePlayerPositions.random();
+        friend = new Friend(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
         // create monster
         Monster.resetIdTracker(); // need this to prevent crash since ID tracker is static
