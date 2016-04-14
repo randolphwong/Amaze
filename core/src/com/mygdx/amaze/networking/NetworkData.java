@@ -172,9 +172,6 @@ public class NetworkData {
             gameData.monsterPosition = new Coord[Const.MAX_MONSTER];
         }
         gameData.monsterPosition[monsterIndex] = new Coord((short) monster.position.x, (short) monster.position.y);
-        if (monster.isChasing()) {
-            gameData.monsterChasing |= 1 << monsterIndex;
-        }
     }
 
     public void setItemData(Item item) {
@@ -183,7 +180,6 @@ public class NetworkData {
             gameData.itemPosition = new Coord[Const.MAX_ITEM];
         }
         gameData.itemPosition[itemIndex] = new Coord((short) item.posX, (short) item.posY);
-        gameData.itemTaken |= item.isDestroyed() ? 1 << itemIndex : 0;
     }
 
     public byte messageType() {

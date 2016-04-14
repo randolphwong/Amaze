@@ -111,6 +111,11 @@ public class AmazeServerSingleThread {
         }
         // DEBUG PRINT
         //System.out.println("handling in game message from: " + senderAddress);
+        /*
+         * Server being the authority here. Item picking and spawning and monster chasing/unchasing
+         * will be finalised by the server. Clients cannot bypass the server to notify each other on
+         * these information.
+         */
         GameData currentRoomData = roomData.get(senderAddress);
         receiveGameData.itemTaken = currentRoomData.itemTaken;
         receiveGameData.monsterChasing = currentRoomData.monsterChasing;
