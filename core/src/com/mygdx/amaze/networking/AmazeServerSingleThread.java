@@ -111,6 +111,9 @@ public class AmazeServerSingleThread {
         }
         // DEBUG PRINT
         //System.out.println("handling in game message from: " + senderAddress);
+        GameData currentRoomData = roomData.get(senderAddress);
+        receiveGameData.itemTaken = currentRoomData.itemTaken;
+        receiveGameData.monsterChasing = currentRoomData.monsterChasing;
         send(room.get(senderAddress), receiveGameData);
     }
 
@@ -189,6 +192,13 @@ public class AmazeServerSingleThread {
              */
             receiveGameData.requestOutcome = (receiveGameData.itemTaken & currentRoomData.itemTaken) == 0;
             currentRoomData.itemTaken |= receiveGameData.itemTaken;
+            break;
+        case Const.ITEM_RESPAWN_REQUEST:
+            System.out.println("handling item respawn request from: " + senderAddress);
+            System.out.println("current item status: " + currentRoomData.itemTaken);
+            System.out.println("requested item respawn status: " + currentRoomData.itemTaken);
+            currentRoomData.itemTaken &= ~receiveGameData.itemTaken;
+            receiveGameData.requestOutcome = true;
             break;
         case Const.MONSTER_CHASE_REQUEST:
             System.out.println("handling monster chasing request from: " + senderAddress);

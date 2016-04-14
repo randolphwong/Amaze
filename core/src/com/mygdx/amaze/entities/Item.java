@@ -8,6 +8,9 @@ import com.mygdx.amaze.components.ItemPhysicsComponent;
 import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.screens.PlayScreen;
 import com.mygdx.amaze.utilities.ItemType;
+import com.mygdx.amaze.utilities.Const;
+import com.mygdx.amaze.networking.ItemRespawnRequest;
+import com.mygdx.amaze.networking.RequestManager;
 
 /**
  * Created by Dhanya on 22/03/2016.
@@ -22,7 +25,8 @@ public class Item {
     private boolean todestroy;
     private boolean destroyed;
     private float respawnTimer;
-//    private Body body;
+    private boolean isRespawning;
+
     public float posX;
     public float posY;
 
@@ -47,10 +51,29 @@ public class Item {
         return physics.getBody();
     }
 
+    // TODO: move networking code into ItemInputComponent
+    // TODO: move others into ItemPhysicsComponent
     public void update(float delta, NetworkData networkData) {
         if (networkData.isAvailable()) {
             if (networkData.isItemTaken(this)) {
-                todestroy = true;
+                /*
+                 * checking isRespawning is required in order to prevent scenario where master
+                 * client make a item respawn request, and at the same time it receives a message
+                 * from server indicating that the item has been taken (which is actually old info).
+                 */
+                if (!destroyed && !isRespawning) {
+                    todestroy = true;
+                }
+            } else if (destroyed) {
+                if (screen.clientType == Const.SLAVE_CLIENT && networkData.itemPosition(this) != null) {
+                    if (respawnTimer >= RESPAWN_TIME) {
+                        respawnTimer = 0;
+                        posX = networkData.itemPosition(this).x;
+                        posY = networkData.itemPosition(this).y;
+                        physics.createBody();
+                        destroyed = false;
+                    }
+                }
             }
         }
         graphics.update(delta);
@@ -58,18 +81,28 @@ public class Item {
             todestroy = false;
             screen.world.destroyBody(getBody());
             destroyed = true;
-            screen.addAvailableItemPosition(new Vector2(posX, posY));
+            if (screen.clientType == Const.MASTER_CLIENT) {
+                screen.addAvailableItemPosition(new Vector2(posX, posY));
+            }
         } else if (destroyed) {
             respawnTimer += delta;
-            if (respawnTimer >= RESPAWN_TIME) {
-                respawnTimer = 0;
-                Vector2 newPosition = screen.getRandomItemPosition();
-                posX = newPosition.x;
-                posY = newPosition.y;
-                physics.createBody();
-                destroyed = false;
+            if (screen.clientType == Const.MASTER_CLIENT) {
+                if (respawnTimer >= RESPAWN_TIME) {
+                    respawnTimer = 0;
+                    Vector2 newPosition = screen.getRandomItemPosition();
+                    posX = newPosition.x;
+                    posY = newPosition.y;
+                    physics.createBody();
+                    destroyed = false;
+                    isRespawning = true;
+                    RequestManager.getInstance().newRequest(new ItemRespawnRequest(this));
+                }
             }
         }
+    }
+
+    public void respawned() {
+        isRespawning = false;
     }
 
     public void destroy(){

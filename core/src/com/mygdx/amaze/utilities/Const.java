@@ -30,8 +30,9 @@ public class Const {
 
     // request types
     public static final byte ITEM_REQUEST = 1;
-    public static final byte MONSTER_CHASE_REQUEST = 2;
-    public static final byte MONSTER_STOP_CHASE_REQUEST = 3;
+    public static final byte ITEM_RESPAWN_REQUEST = 2;
+    public static final byte MONSTER_CHASE_REQUEST = 3;
+    public static final byte MONSTER_STOP_CHASE_REQUEST = 4;
 
     public static final int MAX_MONSTER = 4;
     public static final int MAX_ITEM = 3;

@@ -26,6 +26,65 @@ public class NetworkData {
         requestIdTracker = 0;
     }
 
+    public GameData weaklyCloneGameData(GameData gameData) {
+        GameData cloned = new GameData();
+
+        cloned.msgType = gameData.msgType;
+        cloned.playerStatus = gameData.playerStatus;
+        cloned.monsterChasing = gameData.monsterChasing;
+        cloned.itemTaken = gameData.itemTaken;
+        cloned.clientTimeStamp = gameData.clientTimeStamp;
+        cloned.ServerTimeStamp = gameData.ServerTimeStamp;
+        cloned.acknowledgement = gameData.acknowledgement;
+        cloned.requestId = gameData.requestId;
+        cloned.requestType = gameData.requestType;
+        cloned.requestOutcome = gameData.requestOutcome;
+
+        return cloned;
+    }
+
+    public GameData cloneGameData(GameData gameData) {
+        GameData cloned = new GameData();
+
+        if (gameData.playerPosition != null) {
+            cloned.playerPosition = new Coord(gameData.playerPosition.x, gameData.playerPosition.y);
+        }
+        if (gameData.friendPosition != null) {
+            cloned.friendPosition = new Coord(gameData.friendPosition.x, gameData.friendPosition.y);
+        }
+        if (gameData.monsterPosition != null) {
+            cloned.monsterPosition = new Coord[gameData.monsterPosition.length];
+            for (int i = 0; i < gameData.monsterPosition.length; i++) {
+                if (gameData.monsterPosition[i] != null) {
+                    cloned.monsterPosition[i] = new Coord(gameData.monsterPosition[i].x, gameData.monsterPosition[i].y);
+                }
+            }
+        }
+        if (gameData.itemPosition != null) {
+            cloned.itemPosition = new Coord[gameData.itemPosition.length];
+            for (int i = 0; i < gameData.itemPosition.length; i++) {
+                if (gameData.itemPosition[i] != null) {
+                    cloned.itemPosition[i] = new Coord(gameData.itemPosition[i].x, gameData.itemPosition[i].y);
+                }
+            }
+        }
+
+        cloned.msgType = gameData.msgType;
+        cloned.playerStatus = gameData.playerStatus;
+        cloned.monsterChasing = gameData.monsterChasing;
+        cloned.itemTaken = gameData.itemTaken;
+        cloned.ipAddress = gameData.ipAddress;
+        cloned.port = gameData.port;
+        cloned.clientTimeStamp = gameData.clientTimeStamp;
+        cloned.ServerTimeStamp = gameData.ServerTimeStamp;
+        cloned.acknowledgement = gameData.acknowledgement;
+        cloned.requestId = gameData.requestId;
+        cloned.requestType = gameData.requestType;
+        cloned.requestOutcome = gameData.requestOutcome;
+
+        return cloned;
+    }
+
     public boolean isAvailable() {
         return gameData != null;
     }
@@ -44,6 +103,10 @@ public class NetworkData {
 
     public void sendToServer() {
         networkClient.sendGameData(gameData);
+    }
+
+    public long timeStamp() {
+        return gameData.ServerTimeStamp;
     }
 
     public void createDummyData() {
@@ -202,6 +265,13 @@ public class NetworkData {
         gameData.itemTaken |= 1 << item.type.getValue();
         makeRequest();
         gameData.requestType = Const.ITEM_REQUEST;
+        return gameData.requestId;
+    }
+
+    public int requestItemRespawn(Item item) {
+        gameData.itemTaken |= 1 << item.type.getValue();
+        makeRequest();
+        gameData.requestType = Const.ITEM_RESPAWN_REQUEST;
         return gameData.requestId;
     }
 
