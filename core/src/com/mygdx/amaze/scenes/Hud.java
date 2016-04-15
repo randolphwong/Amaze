@@ -1,7 +1,6 @@
 package com.mygdx.amaze.scenes;
 
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.amaze.components.Earthquake;
+import com.mygdx.amaze.screens.PlayScreen;
 
 
 /**
@@ -54,13 +54,13 @@ public class Hud implements Disposable {
 
     private Healthbar healthbar;
     private InventoryTest inventory;
-
+    private PlayScreen screen;
     //earthquake
     public Earthquake earthquake;
 
-    public Hud(SpriteBatch batch) {
+    public Hud(SpriteBatch batch, PlayScreen screen) {
         this.batch = batch;
-
+        this.screen =screen;
         // define the constants for the left and right gutters/pane
         gutterWidth = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2;
         centerOfLeftGutter = gutterWidth / 2;
@@ -73,7 +73,7 @@ public class Hud implements Disposable {
         makeTouchpad();
 
         // healthbar
-        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.1f);
+        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.9f);
         stage.addActor(healthbar);
 
         //firebutton
@@ -124,45 +124,47 @@ public class Hud implements Disposable {
 
         stage.addActor(touchpad);
     }
-    public void makeFirebutton(){
+
+    public void makeFirebutton() {
         Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
-        actor.setSize(gutterWidth/2,gutterWidth/2);
+        actor.setSize(gutterWidth / 2, gutterWidth / 2);
         Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
-        accept.setSize(gutterWidth/2,gutterWidth/2);
+        accept.setSize(gutterWidth / 2, gutterWidth / 2);
         ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
         imageButtonStyle.up = new TextureRegionDrawable(new Sprite(actor));
 
         imageButtonStyle.imageUp = new TextureRegionDrawable(new Sprite(accept));
+
         firebutton = new ImageButton(imageButtonStyle);
 
         Table table = new Table();
-        table.add(firebutton).size(gutterWidth/2,gutterWidth/2);
-        table.setPosition(centerOfRightGutter,50);
+        table.add(firebutton).size(gutterWidth / 2, gutterWidth / 2);
+        table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.2f);
         stage.addActor(table);
     }
 
-    public boolean isTimeUp() { return timeUp; }
+    public boolean isTimeUp() {
+        return timeUp;
+    }
 
-    public void update(float delta){
+    public void update(float delta) {
         timeCount += delta;
-        if(timeCount >= 1){
+        if (timeCount >= 1) {
             if (timer > 0) {
                 timer--;
-                if(timer == 200 || timer == 150 || timer == 125 ||
+                if (timer == 200 || timer == 150 || timer == 125 ||
                         timer == 100 || timer == 75 || timer == 50 ||
                         timer == 25 || timer == 12 || timer == 10 ||
-                        timer == 5){
+                        timer == 5) {
                     earthquake.rumble(15.0f, 4f);
                 }
-            }
-            else {
+            } else {
                 timeUp = true;
             }
             countdownLabel.setText(String.format("TIME: %2d", timer));
             timeCount = 0;
         }
     }
-
 
 
     public Touchpad getTouchpad() {
@@ -173,7 +175,9 @@ public class Hud implements Disposable {
         return healthbar;
     }
 
-    public ImageButton getFirebutton() {return firebutton; }
+    public ImageButton getFirebutton() {
+        return firebutton;
+    }
 
     @Override
     public void dispose() {

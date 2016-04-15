@@ -105,7 +105,7 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(AmazeGame.VIEW_WIDTH / 4, AmazeGame.VIEW_HEIGHT / 4, camera);
 
         // Hud
-        hud = new Hud(game.batch);
+        hud = new Hud(game.batch,this);
 
         // map
         mapLoader = new TmxMapLoader();
