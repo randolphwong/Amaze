@@ -1,6 +1,7 @@
 package com.mygdx.amaze.components;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -12,11 +13,15 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.scenes.Healthbar;
 import com.mygdx.amaze.scenes.Hud;
+import com.mygdx.amaze.entities.Friend;
+import com.mygdx.amaze.screens.PlayScreen;
+import com.badlogic.gdx.math.MathUtils;
+
 
 /**
  * Created by Randolph on 13/3/2016.
  */
-public class PlayerGraphicsComponent extends GraphicsComponent {
+public class PlayerGraphicsComponent {
 
     private enum MovementState { MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, STATIONARY };
 
@@ -37,8 +42,12 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
     private TextureRegion white;
     private Animation blinkAnimation;
     private Sprite shieldGlowSprite;
+    private Sprite doorCompassSprite;
+    private Sprite friendCompassSprite;
 
     private MovementState movementState;
+    private Rectangle level1DoorRect;
+    private Vector2 level1DoorPos;
 
     private float elapsedTime = 0;
 
@@ -54,6 +63,16 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
 
         shieldGlowSprite = new Sprite(new Texture("player/glow.png"));
         shieldGlowSprite.setCenter(player.x, player.y);
+
+        friendCompassSprite = new Sprite(new Texture("player/red_compass.png"));
+        friendCompassSprite.setCenter(player.x, player.y);
+        friendCompassSprite.setSize(player.SIZE + 30, player.SIZE + 30);
+        friendCompassSprite.setOriginCenter();
+
+        doorCompassSprite = new Sprite(new Texture("player/green_compass.png"));
+        doorCompassSprite.setCenter(player.x, player.y);
+        doorCompassSprite.setSize(player.SIZE + 30, player.SIZE + 30);
+        doorCompassSprite.setOriginCenter();
 
         setUpAnimation();
     }
@@ -153,28 +172,42 @@ public class PlayerGraphicsComponent extends GraphicsComponent {
         hud.getHealthbar().setHealth(player.health);
     }
 
-    @Override
-    public void update(float delta) {
+    public void updateCompass(Friend friend) {
+        int level = player.screen.level;
+        doorCompassSprite.setCenter(player.x, player.y);
+        doorCompassSprite.setOriginCenter();
+        float toRotate = -MathUtils.atan2(PlayScreen.doorRect[level-1].x - player.x, PlayScreen.doorRect[level-1].y - player.y);
+        doorCompassSprite.rotate(MathUtils.radiansToDegrees * toRotate - doorCompassSprite.getRotation());
+
+        friendCompassSprite.setCenter(player.x, player.y);
+        friendCompassSprite.setOriginCenter();
+        toRotate = -MathUtils.atan2(friend.x - player.x, friend.y - player.y);
+        friendCompassSprite.rotate(MathUtils.radiansToDegrees * toRotate - friendCompassSprite.getRotation());
+    }
+
+    public void update(float delta, Friend friend) {
 
         updateMovementState();
         updatePlayerSprite();
         updateHealthBar();
+        updateCompass(friend);
+        shieldGlowSprite.setCenter(player.x, player.y);
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         playerSprite.draw(batch);
-
+        doorCompassSprite.draw(batch);
+        friendCompassSprite.draw(batch);
         if (player.shielded) {
-            shieldGlowSprite.setCenter(player.x, player.y);
             shieldGlowSprite.draw(batch);
         }
     }
 
-    @Override
     public void dispose() {
         playerSprite.getTexture().dispose();
         shieldGlowSprite.getTexture().dispose();
+        doorCompassSprite.getTexture().dispose();
+        friendCompassSprite.getTexture().dispose();
         playerAtlas.dispose();
     }
 }

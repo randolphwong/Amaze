@@ -48,7 +48,6 @@ public class Player {
         this.x = spawnX = x;
         this.y = spawnY = y;
         this.screen =screen;
-
         this.velocity = new Vector2(0, 0);
         this.faceState = FaceState.DOWN;
 
@@ -65,13 +64,12 @@ public class Player {
         return physics.getBody();
     }
 
-    public void update(float delta) {
+    public void update(float delta, Friend friend) {
         input.update(delta);
         physics.update(delta);
-        graphics.update(delta);
+        graphics.update(delta, friend);
         faceState();
         gunState();
-//        System.out.println(faceState);
 
     }
 

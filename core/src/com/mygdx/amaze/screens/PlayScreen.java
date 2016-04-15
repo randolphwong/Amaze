@@ -71,8 +71,8 @@ public class PlayScreen implements Screen {
     public World world;
     private CollisionListener collisionListener;
 
-    private Rectangle level1DoorRect;
-    private Rectangle level2DoorRect;
+    public static final Rectangle[] doorRect = new Rectangle[] {new Rectangle(320, 1600 - 144, 175, 144),
+                                                                new Rectangle(144, 3200 - 128, 192, 128)};
 
     // states
     public enum GameState { RUNNING, WIN, SCREEN_CHANGE, TIME_UP };
@@ -183,10 +183,6 @@ public class PlayScreen implements Screen {
             }
         }
         requestManager = RequestManager.getInstance();
-
-        // door for level1/2
-        level1DoorRect = new Rectangle(320, 1600 - 144, 175, 144);
-        level2DoorRect = new Rectangle(144, 3200 - 128, 192, 128);
     }
 
     public Vector2 getRandomItemPosition() {
@@ -209,19 +205,9 @@ public class PlayScreen implements Screen {
 
     public boolean checkWinState() {
         //to check if p1 and p2 are in the area of the door
-        switch (level) {
-        case 1:
-            if (level1DoorRect.contains(player.x, player.y) && 
-                level1DoorRect.contains(friend.x, friend.y)) {
-                return true;
-            }
-            break;
-        case 2:
-            if (level2DoorRect.contains(player.x, player.y) && 
-                level2DoorRect.contains(friend.x, friend.y)) {
-                return true;
-            }
-            break;
+        if (doorRect[level-1].contains(player.x, player.y) && 
+            doorRect[level-1].contains(friend.x, friend.y)) {
+            return true;
         }
         return false;
     }
@@ -295,7 +281,7 @@ public class PlayScreen implements Screen {
             networkData.createDummyData();
         }
 
-        player.update(delta);
+        player.update(delta, friend);
         hud.update(delta);
         for(Projectile projectile : projectiles){
             projectile.update(delta);
