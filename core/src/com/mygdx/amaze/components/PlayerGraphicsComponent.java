@@ -152,7 +152,7 @@ public class PlayerGraphicsComponent {
                 break;
         }
 
-        if (player.attacked) {
+        if (player.attacked && !player.shielded) {
             if (blinkAnimation.getKeyFrame(elapsedTime, true) == white) {
                 playerSprite.setColor(0, 0, 0, 0.5f);
             } else {
