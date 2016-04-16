@@ -202,6 +202,9 @@ public class AmazeServerSingleThread {
             System.out.println("handling item respawn request from: " + senderAddress);
             System.out.println("current item status: " + currentRoomData.itemTaken);
             System.out.println("requested item respawn status: " + currentRoomData.itemTaken);
+            /*
+             * Reset the itemTaken flag by masking
+             */
             currentRoomData.itemTaken &= ~receiveGameData.itemTaken;
             receiveGameData.requestOutcome = true;
             break;
@@ -222,8 +225,11 @@ public class AmazeServerSingleThread {
             System.out.println("handling monster stop chasing request from: " + senderAddress);
             System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
             System.out.println("requested monster stop chasing status: " + receiveGameData.monsterChasing);
+            /*
+             * Reset the monsterChasing flag by masking
+             */
+            currentRoomData.monsterChasing &= ~receiveGameData.monsterChasing;
             receiveGameData.requestOutcome = true;
-            currentRoomData.monsterChasing -= receiveGameData.monsterChasing;
             break;
         }
         System.out.println("request outcome: " + receiveGameData.requestOutcome);
