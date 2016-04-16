@@ -22,8 +22,8 @@ public class Monster {
 
     private PlayScreen screen;
 
-    public static final float WIDTH = 48;
-    public static final float HEIGHT = 72;
+    public static final float WIDTH = 90;
+    public static final float HEIGHT = 90;
 
     public Vector2 position;
     public Vector2 spawnLocation;

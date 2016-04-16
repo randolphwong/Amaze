@@ -25,9 +25,19 @@ public class MonsterPhysicsComponent {
     private World world;
     private Body body;
 
+    private Vector2 playerPosition;
+    private Vector2 previousPlayerPosition;
+    private int isPlayerMoveVertically;
+    private int isPlayerMoveHorizontally;
+    private static final int playerMovementBufferSize = 20;
+
     public MonsterPhysicsComponent(Monster monster, World world) {
         this.monster = monster;
         this.world = world;
+        this.playerPosition = new Vector2();
+        this.previousPlayerPosition = new Vector2();
+        this.isPlayerMoveVertically = 0;
+        this.isPlayerMoveHorizontally = 0;
 
         createBody();
     }
@@ -40,8 +50,8 @@ public class MonsterPhysicsComponent {
         body = world.createBody(bodyDef);
 
         // fixture for main body
-        PolygonShape mainShape = new PolygonShape();
-        mainShape.setAsBox(monster.WIDTH / 2, monster.HEIGHT / 2);
+        CircleShape mainShape = new CircleShape();
+        mainShape.setRadius(monster.WIDTH / 2);
         FixtureDef mainFixtureDef = new FixtureDef();
         mainFixtureDef.shape = mainShape;
         mainFixtureDef.filter.categoryBits = CollisionListener.MONSTER_BIT;
@@ -73,32 +83,105 @@ public class MonsterPhysicsComponent {
      * turning towards to the player.
      */
     private void chase() {
-        Player player = monster.player;
-        // translate the player position on to the imaginary centre line of the isle
-        Vector2 translatedPlayerPosition = new Vector2(player.x, player.y);
-        if (Math.abs(player.x - monster.spawnLocation.x) <= (1.5f * Player.SIZE)) {
-            translatedPlayerPosition.x = monster.spawnLocation.x;
-        }
-        if (Math.abs(player.y - monster.spawnLocation.y) <= (1.5f * Player.SIZE)) {
-            translatedPlayerPosition.y = monster.spawnLocation.y;
-        }
+        Vector2 translatedPlayerPosition = getTranslatedPlayerPosition();
 
         // set the target to be the player when the monster is closer to the player than to the junction
         boolean monsterCloserToPlayer = translatedPlayerPosition.dst2(monster.position) <= translatedPlayerPosition.dst2(monster.spawnLocation);
         boolean monsterVeryCloseToJunction = monster.position.dst2(monster.spawnLocation) < 3;
         if (monsterCloserToPlayer || monsterVeryCloseToJunction) {
-            monster.target = translatedPlayerPosition;
+            monster.target.set(translatedPlayerPosition);
         } else {
-            monster.target = monster.spawnLocation;
+            monster.target.set(monster.spawnLocation);
         }
         /*
          * If target is too far (eg. player died and respawned), set target = current position. This
          * is required to prevent mosnter from continuously chasing while client is awaiting
          * server's confirmation on stopping chase
          */
-        if (monster.target.dst2(monster.position) > DETECTION_RANGE_SQUARED) {
+        if (monster.position.dst2(playerPosition) > DETECTION_RANGE_SQUARED) {
             monster.target.set(monster.position);
         }
+    }
+
+    /*
+     * translate/map current player position on to the imaginary centre line of the isle
+     * 
+     * post-condition: return value has either of the following properties:
+     * 1. translatedPlayerPosition.x = monster.spawnLocation.x
+     * 2. translatedPlayerPosition.y = monster.spawnLocation.y
+     */
+    private Vector2 getTranslatedPlayerPosition() {
+        Vector2 translatedPlayerPosition = new Vector2(playerPosition.x, playerPosition.y);
+        float deltaX = Math.abs(playerPosition.x - monster.spawnLocation.x);
+        float deltaY = Math.abs(playerPosition.y - monster.spawnLocation.y);
+
+        if ((deltaX > (1.8f * Player.SIZE)) && (deltaY > (1.8f * Player.SIZE))) { // player not within monster boundary
+            translatedPlayerPosition.set(monster.position);
+        } else {
+            if (deltaX <= (1.8f * Player.SIZE)) {
+                translatedPlayerPosition.x = monster.spawnLocation.x;
+            }
+            if (deltaY <= (1.8f * Player.SIZE)) {
+                translatedPlayerPosition.y = monster.spawnLocation.y;
+            }
+        }
+
+        if (playerMovingHorizontally()) {
+            if (deltaY <= (1.8f * Player.SIZE)) {
+                translatedPlayerPosition.x = playerPosition.x;
+            }
+        } else if (playerMovingVertically()) {
+            if (deltaX <= (1.8f * Player.SIZE)) {
+                translatedPlayerPosition.y = playerPosition.y;
+            }
+        }
+        return translatedPlayerPosition;
+    }
+
+    /*
+     * determines whether player appears to be moving horizontally by using buffer to keep track of
+     * previous movements
+     */
+    private boolean playerMovingHorizontally() {
+        if (previousPlayerPosition.x == 0 && previousPlayerPosition.y == 0) {
+            previousPlayerPosition.set(playerPosition);
+            return false;
+        }
+        if (playerPosition.dst2(previousPlayerPosition) > 1) {
+            if (playerPosition.x != previousPlayerPosition.x) {
+                if (isPlayerMoveHorizontally < playerMovementBufferSize) {
+                    isPlayerMoveHorizontally++;
+                }
+            } else {
+                if (isPlayerMoveHorizontally > 0) {
+                    isPlayerMoveHorizontally--;
+                }
+            }
+            previousPlayerPosition.set(playerPosition);
+        }
+
+        return isPlayerMoveHorizontally == playerMovementBufferSize;
+    }
+
+    private boolean playerMovingVertically() {
+        if (previousPlayerPosition.x == 0 && previousPlayerPosition.y == 0) {
+            previousPlayerPosition.set(playerPosition);
+            return false;
+        }
+        if (playerPosition.dst2(previousPlayerPosition) > 1) {
+            if (playerPosition.x != previousPlayerPosition.x) {
+                if (isPlayerMoveVertically < playerMovementBufferSize) {
+                    isPlayerMoveVertically++;
+                }
+            } else {
+                if (isPlayerMoveVertically > 0) {
+                    isPlayerMoveVertically--;
+                }
+            }
+            previousPlayerPosition.set(playerPosition);
+        }
+
+        return isPlayerMoveVertically == playerMovementBufferSize;
     }
 
     private void moveTowardsTarget() {
@@ -106,20 +189,24 @@ public class MonsterPhysicsComponent {
 
         // move the monster when it has not yet reached the target position (within an error margin of 2 pixels)
         if (monster.target.x - monster.position.x < -2) {
-            newVelocity.x = -110;
+            newVelocity.x = -90;
         } else if (monster.target.x - monster.position.x > 2) {
-            newVelocity.x = 110;
+            newVelocity.x = 90;
         } else if (monster.target.y - monster.position.y < -2) {
-            newVelocity.y = -110;
+            newVelocity.y = -90;
         } else if (monster.target.y - monster.position.y > 2) {
-            newVelocity.y = 110;
+            newVelocity.y = 90;
         }
         monster.velocity.set(newVelocity);
     }
 
     public void update(float delta) {
         if (monster.isChasing()) {
+            playerPosition.set(monster.player.x, monster.player.y);
             chase();
+        } else {
+            isPlayerMoveVertically = 0;
+            isPlayerMoveHorizontally = 0;
         }
         moveTowardsTarget();
         body.setLinearVelocity(monster.velocity);
