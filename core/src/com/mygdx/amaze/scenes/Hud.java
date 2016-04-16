@@ -43,6 +43,7 @@ public class Hud implements Disposable {
 
     private SpriteBatch batch;
 
+
     public Stage stage;
 
     private Viewport viewport;
@@ -73,7 +74,7 @@ public class Hud implements Disposable {
         makeTouchpad();
 
         // healthbar
-        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.1f);
+        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.6f);
         stage.addActor(healthbar);
 
         //firebutton
@@ -137,7 +138,7 @@ public class Hud implements Disposable {
 
         Table table = new Table();
         table.add(firebutton).size(gutterWidth/2,gutterWidth/2);
-        table.setPosition(centerOfRightGutter,50);
+        table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.1f);
         stage.addActor(table);
     }
 
@@ -152,7 +153,8 @@ public class Hud implements Disposable {
                         timer == 100 || timer == 75 || timer == 50 ||
                         timer == 25 || timer == 12 || timer == 10 ||
                         timer == 5){
-                    earthquake.rumble(15.0f, 4f);
+                    earthquake.rumble(15.0f, 3f);
+                    Gdx.input.vibrate(2700);
                 }
             }
             else {

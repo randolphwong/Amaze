@@ -2,6 +2,7 @@ package com.mygdx.amaze.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -38,8 +39,8 @@ public class PlayScreen implements Screen {
     private AmazeGame game;
 
     // constants for earthquake
-    public static final int TIME_TILL_GROUND_CRACK = 200;
-    public static final int TIME_TILL_GROUND_BREAK = 100;
+    public static final int TIME_TILL_GROUND_CRACK = 150;
+    public static final int TIME_TILL_GROUND_BREAK = 50;
 
     // players
     public Player player;
@@ -91,6 +92,11 @@ public class PlayScreen implements Screen {
     private NetworkData networkData;
     private RequestManager requestManager;
     private byte networkSendDelay = 1;
+
+
+    //music
+    private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
+    private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
 
     public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
@@ -232,6 +238,8 @@ public class PlayScreen implements Screen {
 
         switch (gameState) {
             case RUNNING:
+                level_1.setLooping(true);
+                level_1.play();
                 if (checkWinState()) {
                     Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
                     openDoor();
@@ -261,16 +269,24 @@ public class PlayScreen implements Screen {
             case SCREEN_CHANGE:
                 dispose();
                 if (level == game.MAX_LEVEL){
+                    level_2.stop();
+                    level_2.dispose();
                     game.setScreen(new WinScreen(game, this));
                 } else {
+                    level_1.stop();
+                    level_1.dispose();
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
                 }
                 return;
 
             case TIME_UP:
+                level_1.stop();
+                level_1.dispose();
                 dispose();
-                // TODO this is just a placeholder to prevent exception
-                game.setScreen(new SplashScreen(game));
+                if(elapsedTime -winTime >2){
+                    // TODO this is just a placeholder to prevent exception
+                    game.setScreen(new SplashScreen(game));
+                }
                 return;
         }
 

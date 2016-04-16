@@ -199,11 +199,11 @@ public class MainScreen implements Screen {
         buttonTexture = new Texture(250, 60, Pixmap.Format.Alpha);
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
-        buttonStyle.font.getData().setScale(3.8f, 3.5f);
+        buttonStyle.font.getData().setScale(Gdx.graphics.getWidth()/400, Gdx.graphics.getHeight()/320);
         buttonStyle.fontColor = Color.WHITE;
         buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
         TextButton textButton = new TextButton("Press to Continue", buttonStyle);
-        textButton.setPosition(Gdx.graphics.getWidth()/2 - textButton.getWidth()/2, Gdx.graphics.getHeight()/2 - textButton.getHeight()/2);
+        textButton.setPosition(Gdx.graphics.getWidth()/2 - textButton.getWidth()/2, Gdx.graphics.getHeight()/2 - 4*textButton.getHeight());
         textButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

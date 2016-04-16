@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
  */
 public class Healthbar extends Image {
 
-    private Sprite healthbarBar;
+    private Sprite healthbarBar, healthbarHealth;
     private static float healthBarWidth = Hud.gutterWidth * 0.75f;
     private static float healthBarHeight = healthBarWidth * 0.25f;
 
@@ -24,10 +24,14 @@ public class Healthbar extends Image {
         //healthbarBackground = new Sprite(new Texture("health/healthbar-background.png"));
         healthbarBar = new Sprite(new Texture("health/healthbar-bar.png"));
 
+
         setDrawable(new SpriteDrawable(healthbarBar));
+//        setDrawable(new SpriteDrawable(healthbarHealth));
 
         setSize(healthBarWidth, healthBarHeight);
         setPosition(x - (healthBarWidth / 2), y - (healthBarHeight / 2));
+
+        healthbarHealth = new Sprite(new Texture("health/healthbar-health.png"));
     }
 
     public void setHealth(float health) {

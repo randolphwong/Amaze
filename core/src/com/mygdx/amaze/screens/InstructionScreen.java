@@ -225,8 +225,8 @@ public class InstructionScreen implements Screen, AmazeNetworkListener {
         buttonStyle.font.getData().setScale(2.8f, 2.5f);
         buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
         TextButton textButton = new TextButton("START GAME", buttonStyle);
-        textButton.setSize(300,60);
-        textButton.setPosition(Gdx.graphics.getWidth()/2 + textButton.getWidth(), 45);
+        textButton.setSize(Gdx.graphics.getWidth()/512, Gdx.graphics.getHeight()/512);
+        textButton.setPosition(4*Gdx.graphics.getWidth()/5, 45);
         textButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
