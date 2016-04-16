@@ -18,6 +18,7 @@ import com.mygdx.amaze.entities.Player;
 public class MonsterPhysicsComponent {
 
     public static final float DETECTION_RANGE = Player.SIZE * 5;
+    public static final float DETECTION_RANGE_SQUARED = DETECTION_RANGE * DETECTION_RANGE;
 
     private Monster monster;
 
@@ -90,6 +91,14 @@ public class MonsterPhysicsComponent {
         } else {
             monster.target = monster.spawnLocation;
         }
+        /*
+         * If target is too far (eg. player died and respawned), set target = current position. This
+         * is required to prevent mosnter from continuously chasing while client is awaiting
+         * server's confirmation on stopping chase
+         */
+        if (monster.target.dst2(monster.position) > DETECTION_RANGE_SQUARED) {
+            monster.target.set(monster.position);
+        }
     }
 
     private void moveTowardsTarget() {
@@ -113,7 +122,6 @@ public class MonsterPhysicsComponent {
             chase();
         }
         moveTowardsTarget();
-
         body.setLinearVelocity(monster.velocity);
         monster.position.set(body.getPosition());
     }

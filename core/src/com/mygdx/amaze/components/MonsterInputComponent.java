@@ -25,7 +25,7 @@ public class MonsterInputComponent {
                 }
 
                 // set the target here only if the monster is chasing the remote player
-                if (networkData.isMonsterChasing(monster)) {
+                if (networkData.isMonsterChasing(monster) && !monster.isChasing()) {
                     monster.target.x = remoteMonsterPosition.x;
                     monster.target.y = remoteMonsterPosition.y;
                 }
