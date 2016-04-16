@@ -23,6 +23,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.amaze.components.Earthquake;
+import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.screens.PlayScreen;
 
 
 /**
@@ -43,6 +45,7 @@ public class Hud implements Disposable {
 
     private SpriteBatch batch;
 
+    private PlayScreen playScreen;
 
     public Stage stage;
 
@@ -56,10 +59,13 @@ public class Hud implements Disposable {
     private Healthbar healthbar;
     private InventoryTest inventory;
 
+    //gun stuff
+    private boolean hasGun = false;
+
     //earthquake
     public Earthquake earthquake;
 
-    public Hud(SpriteBatch batch) {
+    public Hud(SpriteBatch batch, PlayScreen playScreen) {
         this.batch = batch;
 
         // define the constants for the left and right gutters/pane
@@ -74,17 +80,21 @@ public class Hud implements Disposable {
         makeTouchpad();
 
         // healthbar
-        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.6f);
+        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.8f);
         stage.addActor(healthbar);
 
         //firebutton
         makeFirebutton();
 
+        //playscreen
+        this.playScreen = playScreen;
+
         // input
         Gdx.input.setInputProcessor(stage);
 
         //timer
-        timer = 300;
+        if(playScreen.level == 1){timer = 200;}
+        else{timer = 300;}
         timeCount = 0;
         countdownLabel = new Label(String.format("Time: %2d", timer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         countdownLabel.setFontScale(4.5f);
@@ -101,6 +111,8 @@ public class Hud implements Disposable {
 
         //add table to the stage
         stage.addActor(table);
+
+
 
 
         //earthquake
@@ -128,23 +140,36 @@ public class Hud implements Disposable {
     public void makeFirebutton(){
         Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
         actor.setSize(gutterWidth/2,gutterWidth/2);
-        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
-        accept.setSize(gutterWidth/2,gutterWidth/2);
         ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
         imageButtonStyle.up = new TextureRegionDrawable(new Sprite(actor));
 
-        imageButtonStyle.imageUp = new TextureRegionDrawable(new Sprite(accept));
-        firebutton = new ImageButton(imageButtonStyle);
+        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
+        accept.setSize(gutterWidth/2,gutterWidth/2);
+
+
+        if(hasGun){
+            imageButtonStyle.imageUp = new TextureRegionDrawable(new Sprite(accept));
+            firebutton = new ImageButton(imageButtonStyle);
+        }
+        else{
+            firebutton = new ImageButton(imageButtonStyle);
+        }
+
 
         Table table = new Table();
         table.add(firebutton).size(gutterWidth/2,gutterWidth/2);
-        table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.1f);
+        table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.19f);
         stage.addActor(table);
     }
 
     public boolean isTimeUp() { return timeUp; }
 
     public void update(float delta){
+        if(playScreen.player.gunequipped){
+            hasGun = true;
+
+        }
+
         timeCount += delta;
         if(timeCount >= 1){
             if (timer > 0) {

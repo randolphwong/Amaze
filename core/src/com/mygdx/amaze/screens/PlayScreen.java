@@ -68,7 +68,7 @@ public class PlayScreen implements Screen {
     private OrthogonalTiledMapRenderer mapRenderer;
 
     // box2d
-    private Box2DDebugRenderer debugRenderer;
+//    private Box2DDebugRenderer debugRenderer;
     public World world;
     private CollisionListener collisionListener;
 
@@ -95,8 +95,8 @@ public class PlayScreen implements Screen {
 
 
     //music
-    private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
-    private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
+    private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
+    private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
 
     public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
@@ -111,7 +111,7 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(AmazeGame.VIEW_WIDTH / 4, AmazeGame.VIEW_HEIGHT / 4, camera);
 
         // Hud
-        hud = new Hud(game.batch);
+        hud = new Hud(game.batch, this);
 
         // map
         mapLoader = new TmxMapLoader();
@@ -143,13 +143,6 @@ public class PlayScreen implements Screen {
             }
         }
 
-        debugRenderer = new Box2DDebugRenderer(
-                true, /* draw bodies */
-                false, /* don't draw joints */
-                false, /* don't draw aabbs */
-                true, /* draw inactive bodies */
-                false, /* don't draw velocities */
-                true /* draw contacts */);
 
         // create monster
         Monster.resetIdTracker(); // need this to prevent crash since ID tracker is static
@@ -372,10 +365,6 @@ public class PlayScreen implements Screen {
         viewport.apply();
         mapRenderer.render();
 
-        // don't render if game ended (or else we will get seg fault!)
-        if (gameState == GameState.RUNNING) {
-            debugRenderer.render(world, viewport.getCamera().combined);
-        }
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
@@ -422,7 +411,6 @@ public class PlayScreen implements Screen {
         }
         map.dispose();
         hud.dispose();
-        debugRenderer.dispose();
         world.dispose();
     }
 

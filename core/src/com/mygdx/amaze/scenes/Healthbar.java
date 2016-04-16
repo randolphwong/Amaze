@@ -3,6 +3,8 @@ package com.mygdx.amaze.scenes;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
@@ -15,23 +17,26 @@ public class Healthbar extends Image {
     private static float healthBarWidth = Hud.gutterWidth * 0.75f;
     private static float healthBarHeight = healthBarWidth * 0.25f;
 
+
     /**
      *
      * @param x: x coordinate for the centre of the sprite
      * @param y: y coordinate for the centre of the sprite
      */
     public Healthbar(float x, float y) {
-        //healthbarBackground = new Sprite(new Texture("health/healthbar-background.png"));
+//        healthbarBackground = new Sprite(new Texture("health/healthbar-background.png"));
         healthbarBar = new Sprite(new Texture("health/healthbar-bar.png"));
-
-
         setDrawable(new SpriteDrawable(healthbarBar));
-//        setDrawable(new SpriteDrawable(healthbarHealth));
 
         setSize(healthBarWidth, healthBarHeight);
         setPosition(x - (healthBarWidth / 2), y - (healthBarHeight / 2));
 
-        healthbarHealth = new Sprite(new Texture("health/healthbar-health.png"));
+//        healthbarHealth = new Sprite(new Texture("health/healthbar-health.png"));
+//        healthbarHealth.setSize(healthBarWidth, healthBarHeight);
+//        healthbarHealth.setPosition(x - (healthBarWidth / 2), y - (healthBarHeight / 2));
+
+
+
     }
 
     public void setHealth(float health) {
