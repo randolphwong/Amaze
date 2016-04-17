@@ -14,14 +14,16 @@ import com.mygdx.amaze.utilities.ItemType;
 public class NetworkData {
 
     private AmazeClient networkClient;
+    private byte clientType;
     private GameData gameData;
     private static int requestIdTracker;
     private long previousServerTimeStamp;
 
     private int playerShotsDone;
 
-    public NetworkData(AmazeClient networkClient) {
+    public NetworkData(byte clientType, AmazeClient networkClient) {
         this.networkClient = networkClient;
+        this.clientType = clientType;
         gameData = new GameData();
         requestIdTracker = 0;
     }
@@ -232,6 +234,7 @@ public class NetworkData {
     }
 
     public boolean isMonsterChasing(Monster monster) {
+        gameData.monsterChasing |= gameData.monsterChasing >> 8;
         return (gameData.monsterChasing & (1 << (monster.getId() - 1))) != 0;
     }
 
@@ -272,14 +275,24 @@ public class NetworkData {
     }
 
     public int requestMonsterChase(Monster monster) {
-        gameData.monsterChasing |= 1 << (monster.getId() - 1);
+        short request = 0;
+        request = (short) (1 << (monster.getId() - 1));
+        if (clientType == Const.MASTER_CLIENT) {
+            request <<= 8;
+        }
+        gameData.monsterChasing = request;
         makeRequest();
         gameData.requestType = Const.MONSTER_CHASE_REQUEST;
         return gameData.requestId;
     }
 
     public int requestMonsterStopChase(Monster monster) {
-        gameData.monsterChasing |= 1 << (monster.getId() - 1);
+        short request = 0;
+        request = (short) (1 << (monster.getId() - 1));
+        if (clientType == Const.MASTER_CLIENT) {
+            request <<= 8;
+        }
+        gameData.monsterChasing = request;
         makeRequest();
         gameData.requestType = Const.MONSTER_STOP_CHASE_REQUEST;
         return gameData.requestId;

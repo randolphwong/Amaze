@@ -20,7 +20,7 @@ public class GameData implements Serializable {
     public Coord friendPosition;
 
     // monster
-    public byte monsterChasing; // bit manipulation
+    public short monsterChasing; // bit manipulation
     public Coord[] monsterPosition;
 
     // item 
@@ -38,4 +38,3 @@ public class GameData implements Serializable {
     public byte requestType;
     public boolean requestOutcome;
 }
-

@@ -83,6 +83,15 @@ public class MonsterPhysicsComponent {
      * turning towards to the player.
      */
     private void chase() {
+        /*
+         * If target is too far (eg. player died and respawned), set target = current position. This
+         * is required to prevent mosnter from continuously chasing while client is awaiting
+         * server's confirmation on stopping chase
+         */
+        if (monster.position.dst2(playerPosition) > DETECTION_RANGE_SQUARED) {
+            monster.target.set(monster.position);
+            return;
+        }
         Vector2 translatedPlayerPosition = getTranslatedPlayerPosition();
 
         // set the target to be the player when the monster is closer to the player than to the junction
@@ -92,14 +101,6 @@ public class MonsterPhysicsComponent {
             monster.target.set(translatedPlayerPosition);
         } else {
             monster.target.set(monster.spawnLocation);
-        }
-        /*
-         * If target is too far (eg. player died and respawned), set target = current position. This
-         * is required to prevent mosnter from continuously chasing while client is awaiting
-         * server's confirmation on stopping chase
-         */
-        if (monster.position.dst2(playerPosition) > DETECTION_RANGE_SQUARED) {
-            monster.target.set(monster.position);
         }
     }
 

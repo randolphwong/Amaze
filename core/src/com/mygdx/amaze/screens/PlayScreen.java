@@ -167,7 +167,7 @@ public class PlayScreen implements Screen {
 
         // for networking
         game.networkClient.startMultiplayerGame();
-        networkData = new NetworkData(game.networkClient);
+        networkData = new NetworkData(clientType, game.networkClient);
         if (clientType == Const.MASTER_CLIENT) {
             networkData.initialiseLevel(items, monsters, player, friend);
         } else {
