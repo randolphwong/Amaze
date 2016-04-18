@@ -86,7 +86,7 @@ public class Hud implements Disposable {
         timer = 300;
         timeCount = 0;
         countdownLabel = new Label(String.format("Time: %2d", timer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-//        timeLabel = new Label("TIME LEFT", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        countdownLabel.setFontScale(4.5f);
 
         //define a table used to organize hud's labels
         table = new Table();

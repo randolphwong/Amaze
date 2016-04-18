@@ -247,7 +247,7 @@ public class PlayScreen implements Screen {
             case SCREEN_CHANGE:
                 dispose();
                 if (level == game.MAX_LEVEL){
-                    game.setScreen(new WinScreen(game));
+                    game.setScreen(new WinScreen(game, this));
                 } else {
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
                 }
