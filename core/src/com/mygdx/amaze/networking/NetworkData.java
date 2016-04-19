@@ -162,6 +162,7 @@ public class NetworkData {
         }
         gameData.playerStatus |= player.attacked ? Const.ATTACKED : 0;
         gameData.playerStatus |= player.shielded ? Const.SHIELDED : 0;
+        gameData.playerStatus |= player.dead ? Const.DEAD : 0;
         if (player.shotsDone > playerShotsDone) {
             playerShotsDone = player.shotsDone;
             gameData.playerStatus |= Const.SHOOTING;

@@ -108,6 +108,10 @@ public class FriendGraphicsComponent extends GraphicsComponent {
     }
 
     private void updateMovementState() {
+        if (friend.dead) {
+            movementState = MovementState.STATIONARY;
+            return;
+        }
         if (friend.x < previousX) {
             movementState = MovementState.MOVE_LEFT;
         } else if (friend.x > previousX) {
@@ -139,7 +143,9 @@ public class FriendGraphicsComponent extends GraphicsComponent {
                 break;
         }
 
-        if (friend.attacked) {
+        if (friend.dead) {
+            friendSprite.setColor(1, 0, 1, 0.8f);
+        } else if (friend.attacked) {
             if (blinkAnimation.getKeyFrame(elapsedTime, true) == white) {
                 friendSprite.setColor(0, 0, 0, 0.5f);
             } else {
