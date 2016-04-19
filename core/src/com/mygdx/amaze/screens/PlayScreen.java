@@ -231,8 +231,14 @@ public class PlayScreen implements Screen {
 
         switch (gameState) {
             case RUNNING:
-                level_1.setLooping(true);
-                level_1.play();
+                if(level == 1){
+                    level_1.setLooping(true);
+                    level_1.play();
+                }
+                else if(level == 2){
+                    level_2.setLooping(true);
+                    level_2.play();
+                }
                 if (checkWinState()) {
                     Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
                     openDoor();
@@ -276,6 +282,8 @@ public class PlayScreen implements Screen {
                     level_1.stop();
                     level_1.dispose();
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
+                    level_2.setLooping(true);
+                    level_2.play();
                 }
                 return;
 

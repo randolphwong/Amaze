@@ -61,7 +61,6 @@ public class Hud implements Disposable {
 
     private Healthbar healthbar;
     private Image healthbarLabel;
-    private InventoryTest inventory;
 
     //earthquake
     public Earthquake earthquake;
