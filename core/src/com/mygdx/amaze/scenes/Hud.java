@@ -51,9 +51,11 @@ public class Hud implements Disposable {
 
     private Viewport viewport;
 
+
     private Touchpad touchpad;
     private ImageButton firebutton;
-    private Image gunImage;
+
+;
 
     private Sprite touchpadBackground, touchpadKnob;
 
@@ -77,6 +79,8 @@ public class Hud implements Disposable {
 
         // touchpad
         makeTouchpad();
+
+
 
         // healthbar
         healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.8f);
