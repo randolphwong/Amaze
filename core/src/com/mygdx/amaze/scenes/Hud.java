@@ -143,20 +143,17 @@ public class Hud implements Disposable {
     }
 
     public void makeFirebutton() {
-        Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
+        Sprite buttonBackground = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
+        Sprite gun = new Sprite(new Texture(Gdx.files.internal("item/gunButton.png")));
+
         ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
-        imageButtonStyle.up = new TextureRegionDrawable(new Sprite(actor));
+        imageButtonStyle.up = new TextureRegionDrawable(new Sprite(buttonBackground));
+        imageButtonStyle.checked = new TextureRegionDrawable(new Sprite(gun));
+
         firebutton = new ImageButton(imageButtonStyle);
         firebutton.setSize(gutterWidth/2,gutterWidth/2);
         firebutton.setPosition(centerOfRightGutter - (firebutton.getWidth() / 2), Gdx.graphics.getHeight() * 0.1f);
         stage.addActor(firebutton);
-
-        gunImage = new Image(new Texture(Gdx.files.internal("item/LaserGun.png")));
-        gunImage.setSize(firebutton.getWidth() * 0.8f, firebutton.getHeight() * 0.8f);
-        gunImage.setPosition(centerOfRightGutter - (gunImage.getWidth() / 2), 
-                (firebutton.getY() + (firebutton.getHeight() / 2) - (gunImage.getHeight() / 2)));
-        gunImage.setVisible(false);
-        stage.addActor(gunImage);
     }
 
     public boolean isTimeUp() {
@@ -165,8 +162,11 @@ public class Hud implements Disposable {
 
     public void update(float delta){
         if(playScreen.player.gunequipped){
-            gunImage.setVisible(true);
+            firebutton.setChecked(true);
+        } else {
+            firebutton.setChecked(false);
         }
+
         timeCount += delta;
         if (timeCount >= 1) {
             if (timer > 0) {
