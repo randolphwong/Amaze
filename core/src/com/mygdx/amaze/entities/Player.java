@@ -1,5 +1,7 @@
 package com.mygdx.amaze.entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -15,6 +17,7 @@ public class Player {
 
     public float spawnX;
     public float spawnY;
+    private Music fire = Gdx.audio.newMusic(Gdx.files.internal("sound/firesoundeffect.ogg"));
 
     public static final float SIZE = 32;
     public float x;
@@ -42,7 +45,7 @@ public class Player {
         this.x = spawnX = x;
         this.y = spawnY = y;
         this.screen =screen;
-
+        this.fire.setVolume(0.5f);
         this.velocity = new Vector2(0, 0);
         this.faceState = 2;
 
@@ -101,18 +104,22 @@ public class Player {
     public void fireLaser(){
         if(gunequipped || shotsLeft >0){
             if(this.faceState == 0){
+                fire.play();
                 Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;
             }else if(this.faceState == 1){
+                fire.play();
                 Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;
             }else if(this.faceState == 2){
+                fire.play();
                 Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;
             }else if(this.faceState == 3) {
+                fire.play();
                 Projectile p = new Projectile(this.screen,this.x,this.y);
                 this.screen.projectiles.add(p);
                 p.projectileFired =true;

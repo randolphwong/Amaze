@@ -48,6 +48,8 @@ public class Hud implements Disposable {
     private Viewport viewport;
 
     private Touchpad touchpad;
+    private ImageButton.ImageButtonStyle gun;
+    private ImageButton.ImageButtonStyle nogun;
     private ImageButton firebutton;
 
     private Sprite touchpadBackground, touchpadKnob;
@@ -77,6 +79,15 @@ public class Hud implements Disposable {
         stage.addActor(healthbar);
 
         //firebutton
+        Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
+        actor.setSize(gutterWidth / 2, gutterWidth / 2);
+        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
+        accept.setSize(gutterWidth / 2, gutterWidth / 2);
+        this.gun = new ImageButton.ImageButtonStyle();
+        this.nogun = new ImageButton.ImageButtonStyle();
+        gun.up = new TextureRegionDrawable(new Sprite(actor));
+        nogun.up = new TextureRegionDrawable(new Sprite(actor));
+        gun.imageUp = new TextureRegionDrawable(new Sprite(accept));
         makeFirebutton();
 
         // input
@@ -126,17 +137,18 @@ public class Hud implements Disposable {
     }
 
     public void makeFirebutton() {
-        Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
-        actor.setSize(gutterWidth / 2, gutterWidth / 2);
-        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
-        accept.setSize(gutterWidth / 2, gutterWidth / 2);
-        ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
-        imageButtonStyle.up = new TextureRegionDrawable(new Sprite(actor));
-
-        imageButtonStyle.imageUp = new TextureRegionDrawable(new Sprite(accept));
-
-        firebutton = new ImageButton(imageButtonStyle);
-
+//        Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
+//        actor.setSize(gutterWidth / 2, gutterWidth / 2);
+//        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
+//        accept.setSize(gutterWidth / 2, gutterWidth / 2);
+//        ImageButton.ImageButtonStyle imageButtonStylegun = new ImageButton.ImageButtonStyle();
+//        ImageButton.ImageButtonStyle imageButtonStylenogun = new ImageButton.ImageButtonStyle();
+//        imageButtonStylegun.up = new TextureRegionDrawable(new Sprite(actor));
+//        imageButtonStylenogun.up = new TextureRegionDrawable(new Sprite(actor));
+//        imageButtonStylegun.imageUp = new TextureRegionDrawable(new Sprite(accept));
+//        if(screen.player.gunequipped) {
+//            firebutton = new ImageButton(imageButtonStylegun);
+        firebutton = new ImageButton(gun);
         Table table = new Table();
         table.add(firebutton).size(gutterWidth / 2, gutterWidth / 2);
         table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.2f);

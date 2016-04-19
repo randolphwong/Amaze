@@ -1,5 +1,7 @@
 package com.mygdx.amaze.collision;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -23,6 +25,7 @@ import com.mygdx.amaze.networking.RequestManager;
 public class CollisionListener implements ContactListener {
 
     public PlayScreen screen;
+    private Music hit = Gdx.audio.newMusic(Gdx.files.internal("sound/takingdamage.mp3"));
 
     private byte requestDelay = 1;
 
@@ -37,7 +40,6 @@ public class CollisionListener implements ContactListener {
 
     public CollisionListener(PlayScreen screen) {
         this.screen = screen;
-
         screen.world.setContactListener(this);
     }
 
@@ -59,6 +61,7 @@ public class CollisionListener implements ContactListener {
 
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
         if (!screen.player.shielded) {
+            hit.play();
             screen.player.attacked = true;
         }
     }

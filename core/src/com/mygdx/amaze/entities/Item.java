@@ -1,5 +1,7 @@
 package com.mygdx.amaze.entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.amaze.components.ItemGraphicsComponent;
@@ -17,6 +19,10 @@ public class Item {
         HEALTH_POTION, LASER_GUN, SHIELD;
     }
     public Type type;
+    private Music gunpickup = Gdx.audio.newMusic(Gdx.files.internal("sound/gunpickupsound.mp3"));
+    private Music potionpickup = Gdx.audio.newMusic(Gdx.files.internal("sound/potionsound.mp3"));
+    private Music shieldpickup = Gdx.audio.newMusic(Gdx.files.internal("sound/shieldsound.mp3"));
+
     private boolean todestroy;
     private boolean destroyed;
 //    private Body body;
@@ -33,6 +39,10 @@ public class Item {
         this.type = type;
         this.posX = x;
         this.posY = y;
+
+        this.gunpickup.setVolume(0.5f);
+        this.potionpickup.setVolume(0.5f);
+        this.shieldpickup.setVolume(0.5f);
 
         physics = new ItemPhysicsComponent(this, screen.world);
 
@@ -53,6 +63,14 @@ public class Item {
         graphics.update(delta);
         if(todestroy && !destroyed){
             screen.world.destroyBody(getBody());
+            switch(this.type){
+                case LASER_GUN : gunpickup.play();
+                    break;
+                case HEALTH_POTION: potionpickup.play();
+                    break;
+                case SHIELD: shieldpickup.play();
+                    break;
+            }
             destroyed = true;
         }
     }
