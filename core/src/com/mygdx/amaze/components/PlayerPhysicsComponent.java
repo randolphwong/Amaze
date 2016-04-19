@@ -15,10 +15,13 @@ import com.mygdx.amaze.entities.Player;
  */
 public class PlayerPhysicsComponent extends PhysicsComponent {
 
+    public static final float RESPAWN_TIME = 2; // time in seconds
+
     private Player player;
 
     private World world;
     private Body body;
+    private float respawnTimer;
 
     public PlayerPhysicsComponent(Player player, World world) {
         this.player = player;
@@ -65,19 +68,28 @@ public class PlayerPhysicsComponent extends PhysicsComponent {
 
     public void update(float delta) {
         // check if collided with monster
-        if (player.health <= 0 || player.todestroy) {
+        if ((player.health <= 0 || player.todestroy) && !player.dead) {
             player.todestroy = false;
             world.destroyBody(body);
-            createBody();
-            player.health = 99;
+            player.dead = true;
             return;
         }
 
-        body.setLinearVelocity(player.velocity);
-        player.x = body.getPosition().x;
-        player.y = body.getPosition().y;
-
-
+        if (player.dead) {
+            respawnTimer += delta;
+            if (respawnTimer >= RESPAWN_TIME) {
+                player.dead = false;
+                respawnTimer = 0;
+                createBody();
+                player.health = 99;
+                player.x = player.spawnX;
+                player.y = player.spawnY;
+            }
+        } else {
+            body.setLinearVelocity(player.velocity);
+            player.x = body.getPosition().x;
+            player.y = body.getPosition().y;
+        }
     }
 
     public Body getBody() {

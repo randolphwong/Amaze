@@ -28,6 +28,7 @@ public class Player {
     public float y;
 
     public boolean todestroy;
+    public boolean dead;
 
     public float health = 99;
     public boolean shielded = false;
