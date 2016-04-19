@@ -44,6 +44,7 @@ public class PlayerGraphicsComponent {
     private Sprite shieldGlowSprite;
     private Sprite doorCompassSprite;
     private Sprite friendCompassSprite;
+    private Vector2 doorPosition;
 
     private MovementState movementState;
     private Rectangle level1DoorRect;
@@ -73,6 +74,7 @@ public class PlayerGraphicsComponent {
         doorCompassSprite.setCenter(player.x, player.y);
         doorCompassSprite.setSize(player.SIZE + 30, player.SIZE + 30);
         doorCompassSprite.setOriginCenter();
+        doorPosition = new Vector2();
 
         setUpAnimation();
     }
@@ -176,7 +178,8 @@ public class PlayerGraphicsComponent {
         int level = player.screen.level;
         doorCompassSprite.setCenter(player.x, player.y);
         doorCompassSprite.setOriginCenter();
-        float toRotate = -MathUtils.atan2(PlayScreen.doorRect[level-1].x - player.x, PlayScreen.doorRect[level-1].y - player.y);
+        doorPosition = PlayScreen.doorRect[level-1].getCenter(doorPosition);
+        float toRotate = -MathUtils.atan2(doorPosition.x - player.x, doorPosition.y - player.y);
         doorCompassSprite.rotate(MathUtils.radiansToDegrees * toRotate - doorCompassSprite.getRotation());
 
         friendCompassSprite.setCenter(player.x, player.y);
