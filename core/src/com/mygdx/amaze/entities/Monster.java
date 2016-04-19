@@ -1,5 +1,7 @@
 package com.mygdx.amaze.entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -21,6 +23,8 @@ public class Monster {
     private int id;
 
     private PlayScreen screen;
+    private Sound laugh = Gdx.audio.newSound(Gdx.files.internal("sound/kefkalaugh.mp3"));
+    private Sound death = Gdx.audio.newSound(Gdx.files.internal("sound/monsterdeath.mp3"));
 
     public static final float WIDTH = 90;
     public static final float HEIGHT = 90;
@@ -69,6 +73,7 @@ public class Monster {
 
     public void startChase(Player player) {
         this.player = player;
+        laugh.play();
         chasingPlayer = true;
     }
 
@@ -87,6 +92,7 @@ public class Monster {
             graphics.update(delta);
         }
         if(todestroy && !destroyed){
+            death.play();
             screen.world.destroyBody(getBody());
             position.set(-1f, -1f);
             destroyed = true;

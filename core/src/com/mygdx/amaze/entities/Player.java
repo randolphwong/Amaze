@@ -1,5 +1,7 @@
 package com.mygdx.amaze.entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,6 +20,8 @@ public class Player {
 
     public float spawnX;
     public float spawnY;
+    private Sound fire = Gdx.audio.newSound(Gdx.files.internal("sound/firesoundeffect.ogg"));
+    private Sound hit = Gdx.audio.newSound(Gdx.files.internal("sound/takingdamage.mp3"));
 
     public static final float SIZE = 32;
     public float x;
@@ -77,11 +81,18 @@ public class Player {
         todestroy = true;
     }
 
+    public void attacked() {
+        this.attacked = true;
+        hit.play();
+    }
+
     public void draw(SpriteBatch batch) {
         graphics.draw(batch);
     }
 
     public void dispose() {
+        hit.dispose();
+        fire.dispose();
         graphics.dispose();
     }
 
@@ -109,6 +120,7 @@ public class Player {
 
     public void fireLaser(){
         if(gunequipped || shotsLeft >0){
+            fire.play(0.5f);
             Projectile p = new Projectile(this.screen,this.x,this.y, faceState);
             this.screen.projectiles.add(p);
             shotsDone += 1;

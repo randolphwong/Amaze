@@ -39,7 +39,6 @@ public class CollisionListener implements ContactListener {
 
     public CollisionListener(PlayScreen screen) {
         this.screen = screen;
-
         screen.world.setContactListener(this);
     }
 
@@ -81,7 +80,7 @@ public class CollisionListener implements ContactListener {
 
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
         if (!screen.player.shielded) {
-            screen.player.attacked = true;
+            screen.player.attacked();
         }
     }
 
