@@ -179,7 +179,7 @@ public class MainScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage);
 
-        backgroundImg = new Texture(Gdx.files.internal("startScreen/startScreen_converted.png"));
+        backgroundImg = new Texture(Gdx.files.internal("startScreen/rsz_startscreen.png"));
         backgroundSet = new Sprite(backgroundImg);
 //        backgroundSet.setScale(Gdx.graphics.getWidth() / backgroundImg.getWidth(), Gdx.graphics.getHeight() / backgroundSet.getHeight());
 
