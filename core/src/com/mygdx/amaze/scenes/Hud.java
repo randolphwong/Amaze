@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -52,14 +53,12 @@ public class Hud implements Disposable {
 
     private Touchpad touchpad;
     private ImageButton firebutton;
+    private Image gunImage;
 
     private Sprite touchpadBackground, touchpadKnob;
 
     private Healthbar healthbar;
     private InventoryTest inventory;
-
-    //gun stuff
-    private boolean hasGun = false;
 
     //earthquake
     public Earthquake earthquake;
@@ -139,27 +138,19 @@ public class Hud implements Disposable {
 
     public void makeFirebutton() {
         Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
-        actor.setSize(gutterWidth/2,gutterWidth/2);
         ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
         imageButtonStyle.up = new TextureRegionDrawable(new Sprite(actor));
+        firebutton = new ImageButton(imageButtonStyle);
+        firebutton.setSize(gutterWidth/2,gutterWidth/2);
+        firebutton.setPosition(centerOfRightGutter - (firebutton.getWidth() / 2), Gdx.graphics.getHeight() * 0.1f);
+        stage.addActor(firebutton);
 
-        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
-        accept.setSize(gutterWidth/2,gutterWidth/2);
-
-
-        if(hasGun){
-            imageButtonStyle.imageUp = new TextureRegionDrawable(new Sprite(accept));
-            firebutton = new ImageButton(imageButtonStyle);
-        }
-        else{
-            firebutton = new ImageButton(imageButtonStyle);
-        }
-
-
-        Table table = new Table();
-        table.add(firebutton).size(gutterWidth/2,gutterWidth/2);
-        table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.19f);
-        stage.addActor(table);
+        gunImage = new Image(new Texture(Gdx.files.internal("item/LaserGun.png")));
+        gunImage.setSize(firebutton.getWidth() * 0.8f, firebutton.getHeight() * 0.8f);
+        gunImage.setPosition(centerOfRightGutter - (gunImage.getWidth() / 2), 
+                (firebutton.getY() + (firebutton.getHeight() / 2) - (gunImage.getHeight() / 2)));
+        gunImage.setVisible(false);
+        stage.addActor(gunImage);
     }
 
     public boolean isTimeUp() {
@@ -168,8 +159,7 @@ public class Hud implements Disposable {
 
     public void update(float delta){
         if(playScreen.player.gunequipped){
-            hasGun = true;
-
+            gunImage.setVisible(true);
         }
         timeCount += delta;
         if (timeCount >= 1) {
