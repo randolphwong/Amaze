@@ -61,9 +61,11 @@ public class PlayerPhysicsComponent extends PhysicsComponent {
     public void makeCollidableWithHole() {
         // make player collidable with ground holes
         player.collidableWithHole = true;
-        Filter originalMask = player.getBody().getFixtureList().get(0).getFilterData();
-        originalMask.maskBits |= CollisionListener.HOLE_BIT;
-        player.getBody().getFixtureList().get(0).setFilterData(originalMask);
+        if (!player.dead) {
+            Filter originalMask = player.getBody().getFixtureList().get(0).getFilterData();
+            originalMask.maskBits |= CollisionListener.HOLE_BIT;
+            player.getBody().getFixtureList().get(0).setFilterData(originalMask);
+        }
     }
 
     public void update(float delta) {
