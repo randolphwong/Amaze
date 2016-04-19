@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.amaze.entities.Item;
+import com.mygdx.amaze.utilities.ItemType;
 import com.mygdx.amaze.entities.Monster;
 
 
@@ -13,7 +14,7 @@ import com.mygdx.amaze.entities.Monster;
  */
 public class ItemGraphicsComponent extends GraphicsComponent {
     private Item item;
-    private Item.Type type;
+    private ItemType type;
 
     //currently 3 items.
     private Sprite[] itemList = new Sprite[3];

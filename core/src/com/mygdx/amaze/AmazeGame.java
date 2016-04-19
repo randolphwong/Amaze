@@ -10,7 +10,7 @@ import com.mygdx.amaze.screens.MainScreen;
 
 public class AmazeGame extends Game {
 
-    public static final boolean SINGLE_PLAYER = false;
+    public static final boolean SINGLE_PLAYER = true;
 
     // the map is 1600 x 1600
     public static final float VIEW_WIDTH = 1600;

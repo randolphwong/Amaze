@@ -2,6 +2,7 @@ package com.mygdx.amaze.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -24,9 +25,11 @@ import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.networking.NetworkData;
 import com.mygdx.amaze.networking.RequestManager;
+import com.mygdx.amaze.entities.Projectile;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.utilities.Const;
 import com.mygdx.amaze.utilities.MapPhysicsBuilder;
+import com.mygdx.amaze.utilities.ItemType;
 
 /**
  * Created by Randolph on 12/3/2016.
@@ -35,19 +38,25 @@ public class PlayScreen implements Screen {
 
     private AmazeGame game;
 
+    // constants for earthquake
+    public static final int TIME_TILL_GROUND_CRACK = 150;
+    public static final int TIME_TILL_GROUND_BREAK = 50;
+
     // players
     public Player player;
     public Friend friend;
     public byte clientType;
     public static final String[] playerTypeString = {"playerA", "playerB"};
     public static final String[] friendTypeString = {"playerB", "playerA"};
+    public Array<Vector2> availablePlayerPositions;
 
+    public Array<Projectile> projectiles;
     private Array<Monster> monsters;
 
+
     //Items
-    public Item healthPotion;
-    public Item laserGun;
-    public Item shield;
+    public Array<Item> items;
+    public Array<Vector2> availableItemPositions;
 
     // camera and viewport
     public OrthographicCamera camera;
@@ -59,12 +68,12 @@ public class PlayScreen implements Screen {
     private OrthogonalTiledMapRenderer mapRenderer;
 
     // box2d
-    private Box2DDebugRenderer debugRenderer;
+//    private Box2DDebugRenderer debugRenderer;
     public World world;
     private CollisionListener collisionListener;
 
-    private Rectangle level1DoorRect;
-    private Rectangle level2DoorRect;
+    public static final Rectangle[] doorRect = new Rectangle[] {new Rectangle(320, 1600 - 144, 175, 144),
+                                                                new Rectangle(144, 3200 - 128, 192, 128)};
 
     // states
     public enum GameState { RUNNING, WIN, SCREEN_CHANGE, TIME_UP };
@@ -84,10 +93,16 @@ public class PlayScreen implements Screen {
     private RequestManager requestManager;
     private byte networkSendDelay = 1;
 
+
+    //music
+    private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
+    private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
+
     public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
         this.level = level;
         this.clientType = clientType;
+        items = new Array<Item>();
 
         gameState = GameState.RUNNING;
 
@@ -96,7 +111,7 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(AmazeGame.VIEW_WIDTH / 4, AmazeGame.VIEW_HEIGHT / 4, camera);
 
         // Hud
-        hud = new Hud(game.batch);
+        hud = new Hud(game.batch, this);
 
         // map
         mapLoader = new TmxMapLoader();
@@ -108,23 +123,37 @@ public class PlayScreen implements Screen {
 
         collisionListener = new CollisionListener(this);
 
+        /*
+         *debugRenderer = new Box2DDebugRenderer(
+         *        true, [> draw bodies <]
+         *        false, [> don't draw joints <]
+         *        false, [> don't draw aabbs <]
+         *        true, [> draw inactive bodies <]
+         *        false, [> don't draw velocities <]
+         *        true [> draw contacts <]);
+         */
 
 
-        debugRenderer = new Box2DDebugRenderer(
-                true, /* draw bodies */
-                false, /* don't draw joints */
-                false, /* don't draw aabbs */
-                true, /* draw inactive bodies */
-                false, /* don't draw velocities */
-                true /* draw contacts */);
+        if (clientType == Const.MASTER_CLIENT) {
+            // create player
+            availablePlayerPositions = MapPhysicsBuilder.getSpawnLocation("obj_player", map);
+            Vector2 playerSpawnLocation = availablePlayerPositions.random();
+            availablePlayerPositions.removeValue(playerSpawnLocation, true);
+            player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
-        // create player
-        Vector2 playerSpawnLocation = MapPhysicsBuilder.getSpawnLocation(playerTypeString[clientType - 1] + "_location", map).get(0);
-        player = new Player(this, playerSpawnLocation.x, playerSpawnLocation.y);
+            // create friend
+            playerSpawnLocation = availablePlayerPositions.random();
+            friend = new Friend(this, playerSpawnLocation.x, playerSpawnLocation.y);
 
-        // create friend
-        Vector2 friendSpawnLocation = MapPhysicsBuilder.getSpawnLocation(friendTypeString[clientType - 1] + "_location", map).get(0);
-        friend = new Friend(this, friendSpawnLocation.x, friendSpawnLocation.y);
+            // create items
+            availableItemPositions = MapPhysicsBuilder.getSpawnLocation("obj_item", map);
+            Vector2 nextItemPosition;
+            for (int i = 0; i < Const.MAX_ITEM; i++) {
+                nextItemPosition = getRandomItemPosition();
+                items.add(new Item(this, ItemType.valueOf(i), nextItemPosition.x, nextItemPosition.y));
+            }
+        }
+
 
         // create monster
         Monster.resetIdTracker(); // need this to prevent crash since ID tracker is static
@@ -134,32 +163,50 @@ public class PlayScreen implements Screen {
             monsters.add(new Monster(this, monsterSpawnLocation));
         }
 
-        // create items
-        Vector2 healthSpawnLocation = MapPhysicsBuilder.getSpawnLocation("health_location", map).get(0);
-        Vector2 laserSpawnLocation = MapPhysicsBuilder.getSpawnLocation("laser_location", map).get(0);
-        Vector2 shieldSpawnLocation = MapPhysicsBuilder.getSpawnLocation("shield_location", map).get(0);
-
-        healthPotion = new Item(this, Item.Type.HEALTH_POTION, healthSpawnLocation.x, healthSpawnLocation.y);
-        laserGun = new Item(this, Item.Type.LASER_GUN, laserSpawnLocation.x, laserSpawnLocation.y);
-        shield = new Item(this, Item.Type.SHIELD, shieldSpawnLocation.x, shieldSpawnLocation.y);
+        // create projectiles
+        projectiles = new Array<Projectile>();
 
         // make walls
         Array<Body> bodies = MapPhysicsBuilder.buildShapes("wall", map, CollisionListener.WALL_BIT, world);
+
+        // make ground holes
+        Array<Body> holes = MapPhysicsBuilder.buildShapes("obj_hole", map, CollisionListener.HOLE_BIT, world);
 
         // make monster boundaries
         Array<Body> monster_boundaries = MapPhysicsBuilder.buildShapes("monster_boundary", map, CollisionListener.MONSTER_BOUNDARY_BIT, world);
 
         // for networking
         game.networkClient.startMultiplayerGame();
-        networkData = new NetworkData(game.networkClient);
+        networkData = new NetworkData(clientType, game.networkClient);
         if (clientType == Const.MASTER_CLIENT) {
-            networkData.initialiseLevel(healthPotion, laserGun, shield, monsters);
+            networkData.initialiseLevel(items, monsters, player, friend);
+        } else {
+            // this will busy wait
+            // TODO: maybe should timeout?
+            networkData.getInitialisationData();
+            player = new Player(this, networkData.friendPosition().x, networkData.friendPosition().y);
+            friend = new Friend(this, networkData.playerPosition().x, networkData.playerPosition().y);
+
+            for (int i = 0; i < Const.MAX_ITEM; i++) {
+                ItemType type = ItemType.valueOf(i);
+                items.add(new Item(this, type, networkData.itemPosition(type).x, networkData.itemPosition(type).y));
+            }
         }
         requestManager = RequestManager.getInstance();
+    }
 
-        // door for level1/2
-        level1DoorRect = new Rectangle(320, 1600 - 144, 175, 144);
-        level2DoorRect = new Rectangle(144, 3200 - 128, 192, 128);
+    public Vector2 getRandomItemPosition() {
+        Vector2 nextItemPosition = availableItemPositions.random();
+        if (nextItemPosition != null) {
+            availableItemPositions.removeValue(nextItemPosition, true);
+        }
+        return nextItemPosition;
+    }
+
+    public void addAvailableItemPosition(Vector2 position) {
+        if (position != null) {
+            availableItemPositions.add(position);
+        }
     }
 
     public void openDoor() {
@@ -168,19 +215,9 @@ public class PlayScreen implements Screen {
 
     public boolean checkWinState() {
         //to check if p1 and p2 are in the area of the door
-        switch (level) {
-        case 1:
-            if (level1DoorRect.contains(player.x, player.y) && 
-                level1DoorRect.contains(friend.x, friend.y)) {
-                return true;
-            }
-            break;
-        case 2:
-            if (level2DoorRect.contains(player.x, player.y) && 
-                level2DoorRect.contains(friend.x, friend.y)) {
-                return true;
-            }
-            break;
+        if (doorRect[level-1].contains(player.x, player.y) && 
+            doorRect[level-1].contains(friend.x, friend.y)) {
+            return true;
         }
         return false;
     }
@@ -191,16 +228,19 @@ public class PlayScreen implements Screen {
 
         switch (gameState) {
             case RUNNING:
+                level_1.setLooping(true);
+                level_1.play();
                 if (checkWinState()) {
                     Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
                     openDoor();
                     gameState = GameState.WIN;
                     winTime = elapsedTime;
                 }
-                else if(hud.timer == 200){
+                else if(hud.timer == TIME_TILL_GROUND_CRACK){
                     map.getLayers().get("Tile Layer 4").setVisible(true);
                 }
-                else if(hud.timer == 100){
+                else if(hud.timer == TIME_TILL_GROUND_BREAK){
+                    player.makeCollidableWithHole();
                     map.getLayers().get("Tile Layer 5").setVisible(true);
                 }
                 else if(hud.isTimeUp()){
@@ -219,16 +259,24 @@ public class PlayScreen implements Screen {
             case SCREEN_CHANGE:
                 dispose();
                 if (level == game.MAX_LEVEL){
-                    game.setScreen(new WinScreen(game));
+                    level_2.stop();
+                    level_2.dispose();
+                    game.setScreen(new WinScreen(game, this));
                 } else {
+                    level_1.stop();
+                    level_1.dispose();
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
                 }
                 return;
 
             case TIME_UP:
+                level_1.stop();
+                level_1.dispose();
                 dispose();
-                // TODO this is just a placeholder to prevent exception
-                game.setScreen(new SplashScreen(game));
+                if(elapsedTime -winTime >2){
+                    // TODO this is just a placeholder to prevent exception
+                    game.setScreen(new SplashScreen(game));
+                }
                 return;
         }
 
@@ -253,8 +301,11 @@ public class PlayScreen implements Screen {
             networkData.createDummyData();
         }
 
-        player.update(delta);
+        player.update(delta, friend);
         hud.update(delta);
+        for(Projectile projectile : projectiles){
+            projectile.update(delta);
+        }
 
         if (networkData.messageType() != Const.REQUEST) {
             // update friend
@@ -265,9 +316,8 @@ public class PlayScreen implements Screen {
                 monster.update(delta, networkData);
 
             //update items
-            healthPotion.update(delta, networkData);
-            laserGun.update(delta, networkData);
-            shield.update(delta, networkData);
+            for (Item item : items)
+                item.update(delta, networkData);
         }
 
         // send RawNetworkData to remote client
@@ -278,9 +328,9 @@ public class PlayScreen implements Screen {
             for (Monster monster : monsters) {
                 networkData.setMonsterData(monster);
             }
-            networkData.setItemData(healthPotion);
-            networkData.setItemData(laserGun);
-            networkData.setItemData(shield);
+            for (Item item : items) {
+                networkData.setItemData(item);
+            }
             networkData.sendToServer();
         }
         // send update only at every 3rd frame
@@ -313,20 +363,29 @@ public class PlayScreen implements Screen {
         mapRenderer.render();
 
         // don't render if game ended (or else we will get seg fault!)
-        if (gameState == GameState.RUNNING) {
-            debugRenderer.render(world, viewport.getCamera().combined);
-        }
+/*
+ *        if (gameState == GameState.RUNNING) {
+ *            debugRenderer.render(world, viewport.getCamera().combined);
+ *        }
+ */
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
         // draw monsters
-        for (Monster monster : monsters)
+        for (Monster monster : monsters) {
             monster.draw(game.batch);
+        }
+
+        // draw projectiles
+        for(Projectile projectile : projectiles){
+            projectile.draw(game.batch);
+        }
 
         //draw items
-        healthPotion.draw(game.batch);
-        laserGun.draw(game.batch);
-        shield.draw(game.batch);
+        for (Item item : items) {
+            item.draw(game.batch);
+        }
 
         // draw players
         friend.draw(game.batch);
@@ -348,13 +407,14 @@ public class PlayScreen implements Screen {
             monster.dispose();
         player.dispose();
         friend.dispose();
-        healthPotion.dispose();
-        laserGun.dispose();
-        shield.dispose();
-
+        for (Item item : items)
+            item.dispose();
+        for(Projectile p : projectiles){
+            p.dispose();
+        }
         map.dispose();
         hud.dispose();
-        debugRenderer.dispose();
+        //debugRenderer.dispose();
         world.dispose();
     }
 

@@ -54,7 +54,8 @@ public class AmazeServerSingleThread {
                 case Const.PREGAME: handlePreGameMessage(); break;
                 case Const.INGAME: handleInGameMessage(); break;
                 case Const.POSTGAME: handlePostGameMessage(); break;
-                case Const.INITIALISE: handleInitialisationMessage(); break;
+                case Const.INITIALISE:
+                case Const.GET_INITIALISE: handleInitialisationMessage(); break;
                 case Const.REQUEST: handleRequestMessage(); break;
             }
         }
@@ -110,6 +111,14 @@ public class AmazeServerSingleThread {
         }
         // DEBUG PRINT
         //System.out.println("handling in game message from: " + senderAddress);
+        /*
+         * Server being the authority here. Item picking and spawning and monster chasing/unchasing
+         * will be finalised by the server. Clients cannot bypass the server to notify each other on
+         * these information.
+         */
+        GameData currentRoomData = roomData.get(senderAddress);
+        receiveGameData.itemTaken = currentRoomData.itemTaken;
+        receiveGameData.monsterChasing = currentRoomData.monsterChasing;
         send(room.get(senderAddress), receiveGameData);
     }
 
@@ -138,9 +147,28 @@ public class AmazeServerSingleThread {
             //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
             return;
         }
-        // DEBUG PRINT
-        System.out.println("handling initialiseLevel message from: " + senderAddress);
-        roomData.put(senderAddress, receiveGameData);
+        /*
+         * If slave client sends GET_INITILISE message before master sends INITIALISE, then we will
+         * set the roomData temporarily with the GET_INITIALISE message to let the future handling
+         * know that the the slave already asked for INITIALISE message.
+         */
+        if (receiveGameData.msgType == Const.INITIALISE) {
+            System.out.println("handling INITIALISE message from: " + senderAddress);
+            if (roomData.get(senderAddress) != null) {
+                send(room.get(senderAddress), receiveGameData);
+            }
+            roomData.put(senderAddress, receiveGameData);
+            roomData.put(room.get(senderAddress), receiveGameData);
+        } else {
+            System.out.println("handling GET_INITIALISE message from: " + senderAddress);
+            GameData initGameData = roomData.get(senderAddress);
+            if (initGameData == null) {
+                roomData.put(senderAddress, receiveGameData);
+                roomData.put(room.get(senderAddress), receiveGameData);
+            } else {
+                send(senderAddress, roomData.get(senderAddress));
+            }
+        }
     }
 
     private void handleRequestMessage() {
@@ -170,29 +198,114 @@ public class AmazeServerSingleThread {
             receiveGameData.requestOutcome = (receiveGameData.itemTaken & currentRoomData.itemTaken) == 0;
             currentRoomData.itemTaken |= receiveGameData.itemTaken;
             break;
+        case Const.ITEM_RESPAWN_REQUEST:
+            System.out.println("handling item respawn request from: " + senderAddress);
+            System.out.println("current item status: " + currentRoomData.itemTaken);
+            System.out.println("requested item respawn status: " + currentRoomData.itemTaken);
+            /*
+             * Reset the itemTaken flag by masking
+             */
+            currentRoomData.itemTaken &= ~receiveGameData.itemTaken;
+            receiveGameData.requestOutcome = true;
+            break;
         case Const.MONSTER_CHASE_REQUEST:
-            System.out.println("handling monster chasing request from: " + senderAddress);
-            System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
-            System.out.println("requested monster chasing status: " + receiveGameData.monsterChasing);
+            System.out.print(System.currentTimeMillis() + " - start chase"+"(id: "+receiveGameData.requestId+") - "+" - outcome ");
+            //System.out.println("handling monster chasing request from: " + senderAddress);
+            //System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
+            //System.out.println("requested monster chasing status: " + receiveGameData.monsterChasing);
             /*
              * By default, monsterChasing bit field will be 0 for each monster. A request will have
              * the corresponding bit set as 1. As a result, if the monster is not chasing yet, the
              * conjunction will result in 0. Hence, the requestOutcome is set to true when the
              * conjunction is 0.
              */
-            receiveGameData.requestOutcome = (receiveGameData.monsterChasing & currentRoomData.monsterChasing) == 0;
-            currentRoomData.monsterChasing |= receiveGameData.monsterChasing;
+            receiveGameData.requestOutcome = canChase(currentRoomData);
+            if (receiveGameData.requestOutcome) {
+                System.out.print("success: ");
+            } else {
+                System.out.print("fail: ");
+            }
+            System.out.print(currentRoomData.monsterChasing + " > ");
+            if (receiveGameData.requestOutcome) {
+                System.out.print("success: ");
+                currentRoomData.monsterChasing |= receiveGameData.monsterChasing;
+            } else {
+                System.out.print("fail: ");
+            }
+            System.out.print(currentRoomData.monsterChasing + " - sender: ");
+            System.out.print(receiveGameData.port);
             break;
         case Const.MONSTER_STOP_CHASE_REQUEST:
-            System.out.println("handling monster stop chasing request from: " + senderAddress);
-            System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
-            System.out.println("requested monster stop chasing status: " + receiveGameData.monsterChasing);
-            receiveGameData.requestOutcome = true;
-            currentRoomData.monsterChasing -= receiveGameData.monsterChasing;
+            System.out.print(System.currentTimeMillis() + " - stop chase"+"(id: "+receiveGameData.requestId+") - "+" - outcome ");
+            //System.out.println("handling monster stop chasing request from: " + senderAddress);
+            //System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
+            //System.out.println("requested monster stop chasing status: " + receiveGameData.monsterChasing);
+            /*
+             * Reset the monsterChasing flag by masking
+             */
+            receiveGameData.requestOutcome = canStopChase(currentRoomData);
+            if (receiveGameData.requestOutcome) {
+                System.out.print("success: ");
+            } else {
+                System.out.print("fail: ");
+            }
+            System.out.print(currentRoomData.monsterChasing + " > ");
+            if (receiveGameData.requestOutcome) {
+                System.out.print("success: ");
+                currentRoomData.monsterChasing &= ~receiveGameData.monsterChasing;
+            } else {
+                System.out.print("fail: ");
+            }
+            System.out.print(currentRoomData.monsterChasing + " - sender: ");
+            System.out.print(receiveGameData.port);
             break;
         }
         System.out.println("request outcome: " + receiveGameData.requestOutcome);
         send(senderAddress, receiveGameData);
+    }
+
+    private boolean canChase(GameData currentRoomData) {
+        /*
+         * compare whether master 
+         */
+        short receivedMasterRequest = (short) (receiveGameData.monsterChasing >> 8);
+        short receivedSlaveRequest = (short) (receiveGameData.monsterChasing & 0xff);
+        short currentMasterStatus = (short) (currentRoomData.monsterChasing >> 8);
+        short currentSlaveStatus = (short) (currentRoomData.monsterChasing & 0xff);
+
+        if (receivedMasterRequest != 0) {
+            if ((receivedMasterRequest & currentSlaveStatus) != 0) {
+                return false;
+            }
+        }
+        if (receivedSlaveRequest != 0) {
+            if ((receivedSlaveRequest & currentMasterStatus) != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean canStopChase(GameData currentRoomData) {
+        /*
+         * compare whether master 
+         */
+        short receivedMasterRequest = (short) (receiveGameData.monsterChasing >> 8);
+        short receivedSlaveRequest = (short) (receiveGameData.monsterChasing & 0xff);
+        short currentMasterStatus = (short) (currentRoomData.monsterChasing >> 8);
+        short currentSlaveStatus = (short) (currentRoomData.monsterChasing & 0xff);
+
+        if (receivedMasterRequest != 0) {
+            if ((receivedMasterRequest & currentMasterStatus) == 0) {
+                return false;
+            }
+        }
+        if (receivedSlaveRequest != 0) {
+            if ((receivedSlaveRequest & currentSlaveStatus) == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void createPairing(InetSocketAddress clientA, InetSocketAddress clientB) {

@@ -1,5 +1,6 @@
 package com.mygdx.amaze.collision;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -10,6 +11,7 @@ import com.mygdx.amaze.AmazeGame;
 import com.mygdx.amaze.entities.Item;
 import com.mygdx.amaze.entities.Monster;
 import com.mygdx.amaze.entities.Player;
+import com.mygdx.amaze.entities.Projectile;
 import com.mygdx.amaze.screens.PlayScreen;
 import com.mygdx.amaze.networking.ItemRequest;
 import com.mygdx.amaze.networking.MonsterChaseRequest;
@@ -32,10 +34,11 @@ public class CollisionListener implements ContactListener {
     public static final short MONSTER_RADAR_BIT     = 1 << 3;
     public static final short MONSTER_BOUNDARY_BIT  = 1 << 4;
     public static final short ITEM_BIT              = 1 << 5;
+    public static final short PROJECTILE_BIT        = 1 << 6;
+    public static final short HOLE_BIT              = 1 << 7;
 
     public CollisionListener(PlayScreen screen) {
         this.screen = screen;
-
         screen.world.setContactListener(this);
     }
 
@@ -55,9 +58,29 @@ public class CollisionListener implements ContactListener {
         }
     }
 
+    /*
+     * checks if player is standing on a hole
+     */
+    private void onHoleCollision(Fixture fixtureA, Fixture fixtureB) {
+
+        final float ALLOWANCE = Player.SIZE * 0.4f;
+
+        Fixture holeFixture = fixtureA.getFilterData().categoryBits == HOLE_BIT ? fixtureA : fixtureB;
+        Vector2 topPoint = new Vector2(screen.player.x, screen.player.y + ALLOWANCE);
+        Vector2 btmPoint = new Vector2(screen.player.x, screen.player.y - ALLOWANCE);
+        Vector2 leftPoint = new Vector2(screen.player.x - ALLOWANCE, screen.player.y);
+        Vector2 rightPoint = new Vector2(screen.player.x + ALLOWANCE, screen.player.y);
+
+        if (holeFixture.testPoint(topPoint)) screen.player.destroy();
+        if (holeFixture.testPoint(btmPoint)) screen.player.destroy();
+        if (holeFixture.testPoint(leftPoint)) screen.player.destroy();
+        if (holeFixture.testPoint(rightPoint)) screen.player.destroy();
+
+    }
+
     private void onMonsterCollision(Fixture fixtureA, Fixture fixtureB) {
         if (!screen.player.shielded) {
-            screen.player.attacked = true;
+            screen.player.attacked();
         }
     }
 
@@ -103,6 +126,34 @@ public class CollisionListener implements ContactListener {
         }
     }
 
+    private void onProjectileHitMonster(Fixture fixtureA, Fixture fixtureB) {
+        Projectile projectile;
+        Monster monster;
+
+        if (fixtureA.getFilterData().categoryBits == MONSTER_BIT) {
+            monster = (Monster) fixtureA.getUserData();
+            projectile = (Projectile) fixtureB.getUserData();
+        } else {
+            monster = (Monster) fixtureB.getUserData();
+            projectile = (Projectile) fixtureA.getUserData();
+        }
+
+        projectile.destroy();
+        monster.destroy();
+    }
+
+    private void onProjectileHitWall(Fixture fixtureA, Fixture fixtureB) {
+        Projectile projectile;
+
+        if (fixtureA.getFilterData().categoryBits == PROJECTILE_BIT) {
+            projectile = (Projectile) fixtureA.getUserData();
+        } else {
+            projectile = (Projectile) fixtureB.getUserData();
+        }
+
+        projectile.destroy();
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Fixture fixtureA = contact.getFixtureA();
@@ -118,8 +169,12 @@ public class CollisionListener implements ContactListener {
         case PLAYER_BIT | MONSTER_BIT:
             onMonsterCollision(fixtureA, fixtureB);
             break;
-        case PLAYER_BIT | MONSTER_RADAR_BIT:
-            //onMonsterRadarCollision(fixtureA, fixtureB);
+        case MONSTER_BIT | PROJECTILE_BIT:
+            onProjectileHitMonster(fixtureA, fixtureB);
+            break;
+        case PROJECTILE_BIT | WALL_BIT:
+            System.out.println("hit wall");
+            onProjectileHitWall(fixtureA, fixtureB);
             break;
         }
     }
@@ -152,6 +207,9 @@ public class CollisionListener implements ContactListener {
                                fixtureB.getFilterData().categoryBits;
 
         switch (collidedEntities) {
+        case PLAYER_BIT | HOLE_BIT:
+            onHoleCollision(fixtureA, fixtureB);
+            break;
         case PLAYER_BIT | MONSTER_BIT:
             contact.setEnabled(false); // allow player and monster to move through each other
         case PLAYER_BIT | MONSTER_RADAR_BIT:

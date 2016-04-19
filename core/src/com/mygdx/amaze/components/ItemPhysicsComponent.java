@@ -20,7 +20,6 @@ public class ItemPhysicsComponent extends PhysicsComponent{
     private Body body;
     private World world;
     private boolean taken;
-    public float itemsize;
 
     public ItemPhysicsComponent(Item item, World world){
         this.world = world;
@@ -41,7 +40,7 @@ public class ItemPhysicsComponent extends PhysicsComponent{
         body = world.createBody(bodyDef);
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(itemsize/2);
+        shape.setRadius(item.ITEM_SIZE / 2);
         FixtureDef itemFixtureDef = new FixtureDef();
         itemFixtureDef.shape = shape;
 

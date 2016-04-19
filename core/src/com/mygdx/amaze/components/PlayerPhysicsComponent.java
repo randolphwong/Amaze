@@ -3,6 +3,7 @@ package com.mygdx.amaze.components;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -45,14 +46,27 @@ public class PlayerPhysicsComponent extends PhysicsComponent {
                                      CollisionListener.MONSTER_BIT |
                                      CollisionListener.MONSTER_RADAR_BIT;
 
+        if (player.collidableWithHole) {
+            fixtureDef.filter.maskBits |= CollisionListener.HOLE_BIT;
+        }
+
         body.createFixture(fixtureDef).setUserData(player);
 
         circle.dispose();
     }
 
+    public void makeCollidableWithHole() {
+        // make player collidable with ground holes
+        player.collidableWithHole = true;
+        Filter originalMask = player.getBody().getFixtureList().get(0).getFilterData();
+        originalMask.maskBits |= CollisionListener.HOLE_BIT;
+        player.getBody().getFixtureList().get(0).setFilterData(originalMask);
+    }
+
     public void update(float delta) {
         // check if collided with monster
-        if (player.health <= 0) {
+        if (player.health <= 0 || player.todestroy) {
+            player.todestroy = false;
             world.destroyBody(body);
             createBody();
             player.health = 99;
