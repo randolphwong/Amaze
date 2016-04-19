@@ -2,6 +2,7 @@ package com.mygdx.amaze.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -38,8 +39,8 @@ public class PlayScreen implements Screen {
     private AmazeGame game;
 
     // constants for earthquake
-    public static final int TIME_TILL_GROUND_CRACK = 200;
-    public static final int TIME_TILL_GROUND_BREAK = 100;
+    public static final int TIME_TILL_GROUND_CRACK = 150;
+    public static final int TIME_TILL_GROUND_BREAK = 50;
 
     // players
     public Player player;
@@ -67,7 +68,7 @@ public class PlayScreen implements Screen {
     private OrthogonalTiledMapRenderer mapRenderer;
 
     // box2d
-    private Box2DDebugRenderer debugRenderer;
+//    private Box2DDebugRenderer debugRenderer;
     public World world;
     private CollisionListener collisionListener;
 
@@ -92,6 +93,11 @@ public class PlayScreen implements Screen {
     private RequestManager requestManager;
     private byte networkSendDelay = 1;
 
+
+    //music
+    private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
+    private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
+
     public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
         this.level = level;
@@ -105,7 +111,7 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(AmazeGame.VIEW_WIDTH / 4, AmazeGame.VIEW_HEIGHT / 4, camera);
 
         // Hud
-        hud = new Hud(game.batch,this);
+        hud = new Hud(game.batch, this);
 
         // map
         mapLoader = new TmxMapLoader();
@@ -116,6 +122,17 @@ public class PlayScreen implements Screen {
         world = new World(new Vector2(0, 0), true);
 
         collisionListener = new CollisionListener(this);
+
+        /*
+         *debugRenderer = new Box2DDebugRenderer(
+         *        true, [> draw bodies <]
+         *        false, [> don't draw joints <]
+         *        false, [> don't draw aabbs <]
+         *        true, [> draw inactive bodies <]
+         *        false, [> don't draw velocities <]
+         *        true [> draw contacts <]);
+         */
+
 
         if (clientType == Const.MASTER_CLIENT) {
             // create player
@@ -137,13 +154,6 @@ public class PlayScreen implements Screen {
             }
         }
 
-        debugRenderer = new Box2DDebugRenderer(
-                true, /* draw bodies */
-                false, /* don't draw joints */
-                false, /* don't draw aabbs */
-                true, /* draw inactive bodies */
-                false, /* don't draw velocities */
-                true /* draw contacts */);
 
         // create monster
         Monster.resetIdTracker(); // need this to prevent crash since ID tracker is static
@@ -218,6 +228,8 @@ public class PlayScreen implements Screen {
 
         switch (gameState) {
             case RUNNING:
+                level_1.setLooping(true);
+                level_1.play();
                 if (checkWinState()) {
                     Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
                     openDoor();
@@ -247,16 +259,24 @@ public class PlayScreen implements Screen {
             case SCREEN_CHANGE:
                 dispose();
                 if (level == game.MAX_LEVEL){
+                    level_2.stop();
+                    level_2.dispose();
                     game.setScreen(new WinScreen(game, this));
                 } else {
+                    level_1.stop();
+                    level_1.dispose();
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
                 }
                 return;
 
             case TIME_UP:
+                level_1.stop();
+                level_1.dispose();
                 dispose();
-                // TODO this is just a placeholder to prevent exception
-                game.setScreen(new SplashScreen(game));
+                if(elapsedTime -winTime >2){
+                    // TODO this is just a placeholder to prevent exception
+                    game.setScreen(new SplashScreen(game));
+                }
                 return;
         }
 
@@ -343,9 +363,11 @@ public class PlayScreen implements Screen {
         mapRenderer.render();
 
         // don't render if game ended (or else we will get seg fault!)
-        if (gameState == GameState.RUNNING) {
-            debugRenderer.render(world, viewport.getCamera().combined);
-        }
+/*
+ *        if (gameState == GameState.RUNNING) {
+ *            debugRenderer.render(world, viewport.getCamera().combined);
+ *        }
+ */
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
@@ -392,7 +414,7 @@ public class PlayScreen implements Screen {
         }
         map.dispose();
         hud.dispose();
-        debugRenderer.dispose();
+        //debugRenderer.dispose();
         world.dispose();
     }
 

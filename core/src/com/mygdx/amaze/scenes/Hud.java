@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.amaze.components.Earthquake;
+import com.mygdx.amaze.entities.Player;
 import com.mygdx.amaze.screens.PlayScreen;
 
 
@@ -43,6 +44,8 @@ public class Hud implements Disposable {
 
     private SpriteBatch batch;
 
+    private PlayScreen playScreen;
+
     public Stage stage;
 
     private Viewport viewport;
@@ -54,13 +57,16 @@ public class Hud implements Disposable {
 
     private Healthbar healthbar;
     private InventoryTest inventory;
-    private PlayScreen screen;
+
+    //gun stuff
+    private boolean hasGun = false;
+
     //earthquake
     public Earthquake earthquake;
 
-    public Hud(SpriteBatch batch, PlayScreen screen) {
+    public Hud(SpriteBatch batch, PlayScreen playScreen) {
         this.batch = batch;
-        this.screen =screen;
+        this.playScreen =playScreen;
         // define the constants for the left and right gutters/pane
         gutterWidth = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2;
         centerOfLeftGutter = gutterWidth / 2;
@@ -73,17 +79,21 @@ public class Hud implements Disposable {
         makeTouchpad();
 
         // healthbar
-        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.9f);
+        healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.8f);
         stage.addActor(healthbar);
 
         //firebutton
         makeFirebutton();
 
+        //playscreen
+        this.playScreen = playScreen;
+
         // input
         Gdx.input.setInputProcessor(stage);
 
         //timer
-        timer = 300;
+        if(playScreen.level == 1){timer = 200;}
+        else{timer = 300;}
         timeCount = 0;
         countdownLabel = new Label(String.format("Time: %2d", timer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         countdownLabel.setFontScale(4.5f);
@@ -100,6 +110,8 @@ public class Hud implements Disposable {
 
         //add table to the stage
         stage.addActor(table);
+
+
 
 
         //earthquake
@@ -127,19 +139,26 @@ public class Hud implements Disposable {
 
     public void makeFirebutton() {
         Sprite actor = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
-        actor.setSize(gutterWidth / 2, gutterWidth / 2);
-        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
-        accept.setSize(gutterWidth / 2, gutterWidth / 2);
+        actor.setSize(gutterWidth/2,gutterWidth/2);
         ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
         imageButtonStyle.up = new TextureRegionDrawable(new Sprite(actor));
 
-        imageButtonStyle.imageUp = new TextureRegionDrawable(new Sprite(accept));
+        Sprite accept = new Sprite(new Texture(Gdx.files.internal("item/LaserGun.png")));
+        accept.setSize(gutterWidth/2,gutterWidth/2);
 
-        firebutton = new ImageButton(imageButtonStyle);
+
+        if(hasGun){
+            imageButtonStyle.imageUp = new TextureRegionDrawable(new Sprite(accept));
+            firebutton = new ImageButton(imageButtonStyle);
+        }
+        else{
+            firebutton = new ImageButton(imageButtonStyle);
+        }
+
 
         Table table = new Table();
-        table.add(firebutton).size(gutterWidth / 2, gutterWidth / 2);
-        table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.2f);
+        table.add(firebutton).size(gutterWidth/2,gutterWidth/2);
+        table.setPosition(centerOfRightGutter, Gdx.graphics.getHeight() * 0.19f);
         stage.addActor(table);
     }
 
@@ -147,7 +166,11 @@ public class Hud implements Disposable {
         return timeUp;
     }
 
-    public void update(float delta) {
+    public void update(float delta){
+        if(playScreen.player.gunequipped){
+            hasGun = true;
+
+        }
         timeCount += delta;
         if (timeCount >= 1) {
             if (timer > 0) {
@@ -155,8 +178,9 @@ public class Hud implements Disposable {
                 if (timer == 200 || timer == 150 || timer == 125 ||
                         timer == 100 || timer == 75 || timer == 50 ||
                         timer == 25 || timer == 12 || timer == 10 ||
-                        timer == 5) {
-                    earthquake.rumble(15.0f, 4f);
+                        timer == 5){
+                    earthquake.rumble(15.0f, 3f);
+                    Gdx.input.vibrate(2700);
                 }
             } else {
                 timeUp = true;
