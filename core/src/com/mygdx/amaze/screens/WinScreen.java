@@ -196,6 +196,7 @@ public class WinScreen implements Screen {
         pointsLabel.setFontScale(7.5f);
 
         //define a table used to organize hud's labels
+        table = new Table();
         table.top();
         table.setFillParent(true);
 
