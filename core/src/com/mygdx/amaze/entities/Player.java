@@ -29,7 +29,7 @@ public class Player {
 
     public boolean todestroy;
 
-    public int health = 99;
+    public float health = 99;
     public boolean shielded = false;
     public boolean attacked = false;
     public boolean collidableWithHole = false;
