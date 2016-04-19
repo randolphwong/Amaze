@@ -58,6 +58,7 @@ public class Hud implements Disposable {
     private Sprite touchpadBackground, touchpadKnob;
 
     private Healthbar healthbar;
+    private Image healthbarLabel;
     private InventoryTest inventory;
 
     //earthquake
@@ -80,6 +81,11 @@ public class Hud implements Disposable {
         // healthbar
         healthbar = new Healthbar(centerOfRightGutter, Gdx.graphics.getHeight() * 0.8f);
         stage.addActor(healthbar);
+
+        healthbarLabel = new Image(new Texture(Gdx.files.internal("health/healthbar-health.png")));
+        healthbarLabel.setSize(gutterWidth * 0.70f, gutterWidth * 0.15f);
+        healthbarLabel.setPosition(centerOfRightGutter - (healthbarLabel.getWidth() / 2), Gdx.graphics.getHeight() * 0.85f);
+        stage.addActor(healthbarLabel);
 
         //firebutton
         makeFirebutton();
