@@ -28,6 +28,7 @@ public class Friend {
     public int health = 99;
     public boolean attacked = false;
     public boolean shielded = false;
+    public boolean dead = false;
 
     //inventory
     public Item[] Inventory;

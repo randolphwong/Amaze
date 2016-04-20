@@ -33,6 +33,7 @@ public class Monster {
     public Vector2 spawnLocation;
     public boolean todestroy;
     public boolean destroyed;
+    public boolean dead;
 
     public Vector2 velocity;
 
@@ -90,6 +91,8 @@ public class Monster {
             input.update(delta, networkData);
             physics.update(delta);
             graphics.update(delta);
+        } else if (!dead) {
+            graphics.update(delta);
         }
         if(todestroy && !destroyed){
             death.play();
@@ -105,7 +108,7 @@ public class Monster {
 
 
     public void draw(SpriteBatch batch) {
-        if(!destroyed) {
+        if(!dead) {
             graphics.draw(batch);
         }
     }

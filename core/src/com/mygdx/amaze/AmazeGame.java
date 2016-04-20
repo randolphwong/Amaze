@@ -10,14 +10,14 @@ import com.mygdx.amaze.screens.MainScreen;
 
 public class AmazeGame extends Game {
 
-    public static final boolean SINGLE_PLAYER = true;
+    public static final boolean SINGLE_PLAYER = false;
 
     // the map is 1600 x 1600
     public static final float VIEW_WIDTH = 1600;
     public static final float VIEW_HEIGHT = 1600;
 
     // levels
-    public static final int MAX_LEVEL = 1;
+    public static final int MAX_LEVEL = 2;
 
     // networking
     public AmazeClient networkClient;

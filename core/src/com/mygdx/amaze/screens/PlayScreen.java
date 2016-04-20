@@ -98,6 +98,9 @@ public class PlayScreen implements Screen {
     private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
     private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
 
+    //points
+    private int points = 0;
+
     public PlayScreen(AmazeGame game, byte clientType, int level) {
         this.game = game;
         this.level = level;
@@ -228,8 +231,14 @@ public class PlayScreen implements Screen {
 
         switch (gameState) {
             case RUNNING:
-                level_1.setLooping(true);
-                level_1.play();
+                if(level == 1){
+                    level_1.setLooping(true);
+                    level_1.play();
+                }
+                else if(level == 2){
+                    level_2.setLooping(true);
+                    level_2.play();
+                }
                 if (checkWinState()) {
                     Gdx.app.log("PlayScreen", "Plays Winning music ~~~");
                     openDoor();
@@ -261,11 +270,20 @@ public class PlayScreen implements Screen {
                 if (level == game.MAX_LEVEL){
                     level_2.stop();
                     level_2.dispose();
-                    game.setScreen(new WinScreen(game, this));
+                    for(Monster m : monsters){
+                        if(m.destroyed){
+                            points += 100;
+                        }
+                    }
+                    points += (hud.timer - elapsedTime)*50;
+                    System.out.println("Points: " + points);
+                    game.setScreen(new WinScreen(game, this, points));
                 } else {
                     level_1.stop();
                     level_1.dispose();
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
+                    level_2.setLooping(true);
+                    level_2.play();
                 }
                 return;
 
@@ -273,9 +291,14 @@ public class PlayScreen implements Screen {
                 level_1.stop();
                 level_1.dispose();
                 dispose();
+                for(Monster m : monsters){
+                    if(m.destroyed){
+                        points += 100;
+                    }
+                }
                 if(elapsedTime -winTime >2){
                     // TODO this is just a placeholder to prevent exception
-                    game.setScreen(new SplashScreen(game));
+                    game.setScreen(new WinScreen(game, this, points));
                 }
                 return;
         }

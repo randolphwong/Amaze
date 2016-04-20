@@ -124,6 +124,10 @@ public class PlayerGraphicsComponent {
     }
 
     private void updateMovementState() {
+        if (player.dead) {
+            movementState = MovementState.STATIONARY;
+            return;
+        }
         Vector2 playerVelocity = physics.getBody().getLinearVelocity();
         if (playerVelocity.x < 0) {
             movementState = MovementState.MOVE_LEFT;
@@ -154,7 +158,9 @@ public class PlayerGraphicsComponent {
                 break;
         }
 
-        if (player.attacked && !player.shielded) {
+        if (player.dead) {
+            playerSprite.setColor(1, 0, 1, 0.8f);
+        } else if (player.attacked && !player.shielded) {
             if (blinkAnimation.getKeyFrame(elapsedTime, true) == white) {
                 playerSprite.setColor(0, 0, 0, 0.5f);
             } else {

@@ -167,14 +167,14 @@ public class WinScreen implements Screen {
     private PlayScreen playScreen;
     private Label pointsLabel;
     private Table table;
+    private int points;
 
 
 
-
-
-    public WinScreen(AmazeGame game, PlayScreen playScreen) {
+    public WinScreen(AmazeGame game, PlayScreen playScreen, int points) {
         this.game = game;
         this.playScreen = playScreen;
+        this.points = points;
 
         // set up a stage for displaying button
         stage = new Stage(new FillViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
@@ -188,12 +188,10 @@ public class WinScreen implements Screen {
 //        backgroundSet.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
-        //points: doesn't work for now....NEED TO FIX
-        int timeLeft = playScreen.hud.timer;
-        int points = timeLeft*10;
 
         pointsLabel = new Label(String.format("POINTS: %2d", points), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("hud/SF_Atarian.fnt")), Color.WHITE));
-        pointsLabel.setFontScale(7.5f);
+        pointsLabel.setFontScale(5.5f);
+        pointsLabel.setPosition(Gdx.graphics.getWidth()/2 - pointsLabel.getWidth()/2, Gdx.graphics.getHeight()/2);
 
         //define a table used to organize hud's labels
         table = new Table();
@@ -201,6 +199,7 @@ public class WinScreen implements Screen {
         table.setFillParent(true);
 
         //add labels to table
+        table.row();
         table.row();
         table.add(pointsLabel).expandX();
 
@@ -223,6 +222,7 @@ public class WinScreen implements Screen {
         buttonStyle.font = font;
         buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
         TextButton textButton = new TextButton("PLAY AGAIN", buttonStyle);
+        textButton.setSize(Gdx.graphics.getWidth()/256, Gdx.graphics.getHeight()/256);
         textButton.setPosition(Gdx.graphics.getWidth()/2 - textButton.getWidth()/2, Gdx.graphics.getHeight()/2 - textButton.getHeight()/2);
         textButton.addListener(new ClickListener() {
             @Override
@@ -295,3 +295,4 @@ public class WinScreen implements Screen {
     }
 
 }
+
