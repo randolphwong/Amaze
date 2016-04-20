@@ -228,6 +228,12 @@ public class WinScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 buttonClicked();
+                if(playScreen.getGameover().isPlaying()){
+                    playScreen.getGameover().stop();
+                }
+                if(playScreen.getVictory().isPlaying()){
+                    playScreen.getVictory().stop();
+                }
             }
 
             ;
