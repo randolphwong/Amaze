@@ -70,7 +70,7 @@ public class ClientDisconnectedScreen implements Screen {
         //add labels to table
         table.row();
         table.row();
-        table.add(pointsLabel).expandX();
+        table.add(pointsLabel).expandX().pad(70);
 
         //add table to the stage
         stage.addActor(table);
