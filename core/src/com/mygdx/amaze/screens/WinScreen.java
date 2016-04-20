@@ -237,6 +237,7 @@ public class WinScreen implements Screen {
     }
 
     public void buttonClicked() {
+        dispose();
         game.setScreen(new SplashScreen(game));
     }
 
@@ -267,6 +268,7 @@ public class WinScreen implements Screen {
         buttonTexture.dispose();
         font.dispose();
         stage.dispose();
+        game.networkClient.stop();
     }
 
     @Override

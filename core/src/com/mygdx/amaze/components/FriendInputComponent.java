@@ -46,6 +46,7 @@ public class FriendInputComponent {
                 respawnTimer += delta;
                 if (respawnTimer >= RESPAWN_TIME) {
                     friend.dead = false;
+                    respawnTimer = 0;
                 }
             }
         }

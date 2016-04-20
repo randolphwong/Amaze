@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -68,22 +69,32 @@ public class AmazeClient {
     }
 
     public void stop() {
-        GameData data = new GameData();
-        data.msgType = Const.POSTGAME;
-        sendGameDataBlocking(data);
-
         if (joinRoomThread != null) joinRoomThread.interrupt();
         if (senderThread != null) senderThread.interrupt();
         if (receiverThread != null) receiverThread.interrupt();
 
         try {
-            if (joinRoomThread != null) joinRoomThread.join(100);
-            if (senderThread != null) senderThread.join(100);
-            if (receiverThread != null) receiverThread.join(100);
+            if (joinRoomThread != null) joinRoomThread.join();
+            if (senderThread != null) senderThread.join();
+            if (receiverThread != null) receiverThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        GameData data = new GameData();
+        data.msgType = Const.POSTGAME;
+        try {
+            sendGameDataBlocking(data);
+        } catch (SocketException e) {
+            System.err.println("socket closed while sending POSTGAME message");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("interrupted while sending POSTGAME message");
+        }
+        gameStarted = false;
+    }
+
+    public void close() {
         clientSocket.close();
     }
 
@@ -99,14 +110,14 @@ public class AmazeClient {
 
     // TODO: is this thread-safe?
     private void sender() {
-        while (true) {
-            if (Thread.interrupted()) return;
-            if (clientSocket.isClosed()) return;
-
+        while (!Thread.interrupted()) {
             try {
                 sendGameDataBlocking(sendQueue.take());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (SocketException e) {
+                System.err.println("socket closed in sender thread");
+            } catch (InterruptedException e) {
+                System.err.println("senderThread interrupted.");
+                return;
             }
         }
     }
@@ -123,17 +134,20 @@ public class AmazeClient {
 
     // TODO: is this thread-safe?
     private void receiver() {
-        while (true) {
-            if (Thread.interrupted()) return;
-            if (clientSocket.isClosed()) return;
-
+        while (!Thread.interrupted()) {
             try {
                 GameData gameData = getGameDataBlocking();
                 if (gameData != null) {
                     receiveQueue.put(gameData);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (SocketException e) {
+                System.err.println("socket closed in receiverThread.");
+                return;
+            } catch (SocketTimeoutException e) {
+                System.err.println("socket timed out in receiverThread.");
+            } catch (InterruptedException e) {
+                System.err.println("receiverThread interrupted.");
+                return;
             }
         }
     }
@@ -160,20 +174,28 @@ public class AmazeClient {
      * precondition: networkListener != null
      */
     private void join() {
-        while (true) {
-            if (Thread.interrupted()) return;
-            if (clientSocket.isClosed()) return;
-
+        while (!Thread.interrupted()) {
             GameData data = new GameData();
             data.msgType = Const.PREGAME;
-            sendGameDataBlocking(data);
 
-            data = getGameDataBlocking();
-            if (data != null && data.msgType == Const.INGAME) {
-                // clear receiveQueue in case it has any PREGAME data
-                receiveQueue.clear();
-                networkListener.onRoomCreated(data);
-                break;
+            try {
+                sendGameDataBlocking(data);
+
+                data = getGameDataBlocking();
+                if (data != null && data.msgType == Const.INGAME) {
+                    // clear receiveQueue in case it has any PREGAME data
+                    receiveQueue.clear();
+                    networkListener.onRoomCreated(data);
+                    break;
+                }
+            } catch (SocketException e) {
+                System.err.println("socket closed in joinRoomThread.");
+                return;
+            } catch (SocketTimeoutException e) {
+                System.err.println("socket timed out in joinRoomThread.");
+            } catch (InterruptedException e) {
+                System.err.println("joinRoomThread interrupted");
+                return;
             }
         }
     }
@@ -193,7 +215,7 @@ public class AmazeClient {
         return receiveQueue.poll();
     }
 
-    private void sendGameDataBlocking(GameData gameData) {
+    private void sendGameDataBlocking(GameData gameData) throws InterruptedException, SocketException {
         try {
             ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objOutputStream = new ObjectOutputStream(arrayOutputStream);
@@ -201,21 +223,27 @@ public class AmazeClient {
             sendData = arrayOutputStream.toByteArray();
             sendPacket.setData(sendData);
             clientSocket.send(sendPacket);
-        } catch (SocketTimeoutException e) {
-        } catch (Exception e) {
+        } catch (SocketException e) {
+            throw e;
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private GameData getGameDataBlocking() {
+    private GameData getGameDataBlocking() throws InterruptedException, SocketTimeoutException, SocketException {
         GameData gameData = null;
         try {
             clientSocket.receive(receivePacket);
             ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(receivePacket.getData());
             ObjectInputStream objectInputStream = new ObjectInputStream(arrayInputStream);
             gameData = (GameData) objectInputStream.readObject();
+        } catch (SocketException e) {
+            throw e;
         } catch (SocketTimeoutException e) {
-        } catch (Exception e) {
+            throw e;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return gameData;

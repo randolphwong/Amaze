@@ -66,6 +66,10 @@ public class Friend {
         graphics.draw(batch);
     }
 
+    public byte getType() {
+        return screen.clientType;
+    }
+
     public void dispose() {
         graphics.dispose();
     }

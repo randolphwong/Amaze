@@ -154,7 +154,8 @@ public class AmazeServerSingleThread {
          */
         if (receiveGameData.msgType == Const.INITIALISE) {
             System.out.println("handling INITIALISE message from: " + senderAddress);
-            if (roomData.get(senderAddress) != null) {
+            GameData existingData = roomData.get(senderAddress);
+            if (existingData != null && receiveGameData.level == existingData.level) {
                 send(room.get(senderAddress), receiveGameData);
             }
             roomData.put(senderAddress, receiveGameData);
@@ -166,7 +167,12 @@ public class AmazeServerSingleThread {
                 roomData.put(senderAddress, receiveGameData);
                 roomData.put(room.get(senderAddress), receiveGameData);
             } else {
-                send(senderAddress, roomData.get(senderAddress));
+                if (receiveGameData.level == initGameData.level) {
+                    send(room.get(senderAddress), receiveGameData);
+                } else {
+                    roomData.put(senderAddress, receiveGameData);
+                    roomData.put(room.get(senderAddress), receiveGameData);
+                }
             }
         }
     }

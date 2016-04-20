@@ -93,7 +93,6 @@ public class PlayScreen implements Screen {
     private RequestManager requestManager;
     private byte networkSendDelay = 1;
 
-
     //music
     private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
     private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
@@ -182,11 +181,11 @@ public class PlayScreen implements Screen {
         game.networkClient.startMultiplayerGame();
         networkData = new NetworkData(clientType, game.networkClient);
         if (clientType == Const.MASTER_CLIENT) {
-            networkData.initialiseLevel(items, monsters, player, friend);
+            networkData.initialiseLevel(level, items, monsters, player, friend);
         } else {
             // this will busy wait
             // TODO: maybe should timeout?
-            networkData.getInitialisationData();
+            networkData.getInitialisationData(level);
             player = new Player(this, networkData.friendPosition().x, networkData.friendPosition().y);
             friend = new Friend(this, networkData.playerPosition().x, networkData.playerPosition().y);
 

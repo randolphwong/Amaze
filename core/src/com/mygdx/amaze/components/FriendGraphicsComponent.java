@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.networking.GameData;
+import com.mygdx.amaze.utilities.Const;
 import com.mygdx.amaze.scenes.Healthbar;
 import com.mygdx.amaze.scenes.Hud;
 
@@ -21,6 +22,7 @@ public class FriendGraphicsComponent extends GraphicsComponent {
 
     private enum MovementState { MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, STATIONARY };
 
+    private String playerType;
     private Friend friend;
     private FriendPhysicsComponent physics;
 
@@ -46,9 +48,10 @@ public class FriendGraphicsComponent extends GraphicsComponent {
     public FriendGraphicsComponent(Friend friend, FriendPhysicsComponent physics) {
         this.friend = friend;
         this.physics = physics;
+        playerType = friend.getType() == Const.MASTER_CLIENT ? new String("friend") : new String("player");
 
-        friendAtlas = new TextureAtlas("friend/friend.atlas");
-        friendSprite = new Sprite(friendAtlas.findRegion("friend_down", 1));
+        friendAtlas = new TextureAtlas(playerType + "/" + playerType + ".atlas");
+        friendSprite = new Sprite(friendAtlas.findRegion(playerType + "_down", 1));
         friendSprite.setCenter(friend.x, friend.y);
         friendSprite.setSize(friend.SIZE, friend.SIZE);
 
@@ -67,34 +70,34 @@ public class FriendGraphicsComponent extends GraphicsComponent {
         Array<TextureRegion> regions = new Array<TextureRegion>();
 
         // up animation
-        regions.add(friendAtlas.findRegion("friend_up", 0));
-        regions.add(friendAtlas.findRegion("friend_up", 1));
-        regions.add(friendAtlas.findRegion("friend_up", 2));
-        regions.add(friendAtlas.findRegion("friend_up", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_up", 0));
+        regions.add(friendAtlas.findRegion(playerType + "_up", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_up", 2));
+        regions.add(friendAtlas.findRegion(playerType + "_up", 1));
         moveUpAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // down animation
-        regions.add(friendAtlas.findRegion("friend_down", 0));
-        regions.add(friendAtlas.findRegion("friend_down", 1));
-        regions.add(friendAtlas.findRegion("friend_down", 2));
-        regions.add(friendAtlas.findRegion("friend_down", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_down", 0));
+        regions.add(friendAtlas.findRegion(playerType + "_down", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_down", 2));
+        regions.add(friendAtlas.findRegion(playerType + "_down", 1));
         moveDownAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // left animation
-        regions.add(friendAtlas.findRegion("friend_left", 0));
-        regions.add(friendAtlas.findRegion("friend_left", 1));
-        regions.add(friendAtlas.findRegion("friend_left", 2));
-        regions.add(friendAtlas.findRegion("friend_left", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_left", 0));
+        regions.add(friendAtlas.findRegion(playerType + "_left", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_left", 2));
+        regions.add(friendAtlas.findRegion(playerType + "_left", 1));
         moveLeftAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // right animation
-        regions.add(friendAtlas.findRegion("friend_right", 0));
-        regions.add(friendAtlas.findRegion("friend_right", 1));
-        regions.add(friendAtlas.findRegion("friend_right", 2));
-        regions.add(friendAtlas.findRegion("friend_right", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_right", 0));
+        regions.add(friendAtlas.findRegion(playerType + "_right", 1));
+        regions.add(friendAtlas.findRegion(playerType + "_right", 2));
+        regions.add(friendAtlas.findRegion(playerType + "_right", 1));
         moveRightAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
