@@ -146,7 +146,7 @@ public class Hud implements Disposable {
     }
 
     public void makeFirebutton() {
-        Sprite buttonBackground = new Sprite(new Texture(Gdx.files.internal("hud/orangebutton.png")));
+            Sprite buttonBackground = new Sprite(new Texture(Gdx.files.internal("hud/greybutton.png")));
         Sprite gun = new Sprite(new Texture(Gdx.files.internal("item/gunButton.png")));
 
         ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
