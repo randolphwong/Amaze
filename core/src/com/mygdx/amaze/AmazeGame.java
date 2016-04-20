@@ -40,6 +40,7 @@ public class AmazeGame extends Game {
 	@Override
 	public void dispose() {
         networkClient.stop();
+        networkClient.close();
 	}
 
 	@Override
