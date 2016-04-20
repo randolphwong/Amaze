@@ -15,6 +15,7 @@ import com.mygdx.amaze.scenes.Healthbar;
 import com.mygdx.amaze.scenes.Hud;
 import com.mygdx.amaze.entities.Friend;
 import com.mygdx.amaze.screens.PlayScreen;
+import com.mygdx.amaze.utilities.Const;
 import com.badlogic.gdx.math.MathUtils;
 
 
@@ -27,6 +28,7 @@ public class PlayerGraphicsComponent {
 
     private Hud hud;
 
+    private String playerType;
     private Player player;
     private PlayerPhysicsComponent physics;
 
@@ -56,9 +58,10 @@ public class PlayerGraphicsComponent {
         this.player = player;
         this.physics = physics;
         this.hud = hud;
+        playerType = player.getType() == Const.MASTER_CLIENT ? new String("player") : new String("friend");
 
-        playerAtlas = new TextureAtlas("player/player.atlas");
-        playerSprite = new Sprite(playerAtlas.findRegion("player_down", 1));
+        playerAtlas = new TextureAtlas(playerType + "/" + playerType + ".atlas");
+        playerSprite = new Sprite(playerAtlas.findRegion(playerType + "_down", 1));
         playerSprite.setCenter(player.x, player.y);
         playerSprite.setSize(player.SIZE, player.SIZE);
 
@@ -83,34 +86,34 @@ public class PlayerGraphicsComponent {
         Array<TextureRegion> regions = new Array<TextureRegion>();
 
         // up animation
-        regions.add(playerAtlas.findRegion("player_up", 0));
-        regions.add(playerAtlas.findRegion("player_up", 1));
-        regions.add(playerAtlas.findRegion("player_up", 2));
-        regions.add(playerAtlas.findRegion("player_up", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_up", 0));
+        regions.add(playerAtlas.findRegion(playerType + "_up", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_up", 2));
+        regions.add(playerAtlas.findRegion(playerType + "_up", 1));
         moveUpAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // down animation
-        regions.add(playerAtlas.findRegion("player_down", 0));
-        regions.add(playerAtlas.findRegion("player_down", 1));
-        regions.add(playerAtlas.findRegion("player_down", 2));
-        regions.add(playerAtlas.findRegion("player_down", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_down", 0));
+        regions.add(playerAtlas.findRegion(playerType + "_down", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_down", 2));
+        regions.add(playerAtlas.findRegion(playerType + "_down", 1));
         moveDownAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // left animation
-        regions.add(playerAtlas.findRegion("player_left", 0));
-        regions.add(playerAtlas.findRegion("player_left", 1));
-        regions.add(playerAtlas.findRegion("player_left", 2));
-        regions.add(playerAtlas.findRegion("player_left", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_left", 0));
+        regions.add(playerAtlas.findRegion(playerType + "_left", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_left", 2));
+        regions.add(playerAtlas.findRegion(playerType + "_left", 1));
         moveLeftAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 
         // right animation
-        regions.add(playerAtlas.findRegion("player_right", 0));
-        regions.add(playerAtlas.findRegion("player_right", 1));
-        regions.add(playerAtlas.findRegion("player_right", 2));
-        regions.add(playerAtlas.findRegion("player_right", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_right", 0));
+        regions.add(playerAtlas.findRegion(playerType + "_right", 1));
+        regions.add(playerAtlas.findRegion(playerType + "_right", 2));
+        regions.add(playerAtlas.findRegion(playerType + "_right", 1));
         moveRightAnimation = new Animation(1 / 5f, regions);
         regions.clear();
 

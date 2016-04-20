@@ -128,4 +128,8 @@ public class Player {
             shotsLeft--;
         }
     }
+
+    public byte getType() {
+        return screen.clientType;
+    }
 }
