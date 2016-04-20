@@ -11,6 +11,7 @@ public class GameData implements Serializable {
     
     // general
     public byte msgType;
+    public byte level;
 
     // player
     public Coord playerPosition;

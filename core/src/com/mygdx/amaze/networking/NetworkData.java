@@ -121,8 +121,10 @@ public class NetworkData {
         gameData.itemTaken = 0;
     }
 
-    public void initialiseLevel(Array<Item> items, Array<Monster> monsters, Player player, Friend friend) {
+    public void initialiseLevel(int level, Array<Item> items, Array<Monster> monsters, Player player, Friend friend) {
         if (gameData == null) gameData = new GameData();
+
+        gameData.level = (byte) level;
 
         setMessageType(Const.INITIALISE);
         for (Item item : items) {
@@ -136,8 +138,9 @@ public class NetworkData {
         sendToServer();
     }
 
-    public void getInitialisationData() {
+    public void getInitialisationData(int level) {
         setMessageType(Const.GET_INITIALISE);
+        gameData.level = (byte) level;
         sendToServer();
 
         while (true) {
