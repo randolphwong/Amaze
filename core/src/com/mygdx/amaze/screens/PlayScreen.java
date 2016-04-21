@@ -76,7 +76,7 @@ public class PlayScreen implements Screen {
             new Rectangle(144, 3200 - 128, 192, 128)};
 
     // states
-    public enum GameState { RUNNING, WIN, SCREEN_CHANGE, TIME_UP };
+    public enum GameState { RUNNING, WIN, SCREEN_CHANGE, TIME_UP, DISCONNECTED };
     public GameState gameState;
     public int level;
 
@@ -267,6 +267,26 @@ public class PlayScreen implements Screen {
                 }
                 break;
 
+            case DISCONNECTED:
+                // pause for about 1 seconds before to transit to next level
+                if (level == game.MAX_LEVEL){
+                    level_2.stop();
+                    level_2.dispose();
+                    for(Monster m : monsters){
+                        if(m.destroyed){
+                            points += 100;
+                        }
+                    }
+                    points += (hud.timer - elapsedTime)*50;
+                    System.out.println("Points: " + points);
+                    game.setScreen(new ClientDisconnectedScreen(game, this, points));
+                } else {
+                    level_1.stop();
+                    level_1.dispose();
+                    game.setScreen(new ClientDisconnectedScreen(game, this, points));
+                }
+                break;
+
             case SCREEN_CHANGE:
                 dispose();
                 if (level == game.MAX_LEVEL){
@@ -317,6 +337,7 @@ public class PlayScreen implements Screen {
             switch (networkData.messageType()) {
                 case Const.POSTGAME:
                     Gdx.app.log("PlayScreen", "Remote client disconnected.");
+                    gameState = GameState.DISCONNECTED;
                     break;
                 case Const.REQUEST:
                     requestManager.resolve(networkData);
