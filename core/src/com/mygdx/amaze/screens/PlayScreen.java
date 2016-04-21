@@ -277,7 +277,7 @@ public class PlayScreen implements Screen {
                             points += 100;
                         }
                     }
-                    points += (hud.timer - elapsedTime)*50;
+                    points += elapsedTime*50;
                     System.out.println("Points: " + points);
                     game.setScreen(new ClientDisconnectedScreen(game, this, points));
                 } else {
@@ -297,7 +297,7 @@ public class PlayScreen implements Screen {
                             points += 100;
                         }
                     }
-                    points += (hud.timer - elapsedTime)*50;
+                    points += elapsedTime*50;
                     System.out.println("Points: " + points);
                     victory.play();
                     game.setScreen(new WinScreen(game, this, points));
