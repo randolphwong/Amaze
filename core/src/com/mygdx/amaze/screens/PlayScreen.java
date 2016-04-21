@@ -285,8 +285,6 @@ public class PlayScreen implements Screen {
                     level_1.stop();
                     level_1.dispose();
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
-                    level_2.setLooping(true);
-                    level_2.play();
                 }
                 return;
 
