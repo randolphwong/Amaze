@@ -75,42 +75,13 @@ public class ClientDisconnectedScreen implements Screen {
         //add table to the stage
         stage.addActor(table);
 
-
-        // add a button
-        textButton = createButton();
-        stage.addActor(textButton);
-
-
-    }
-
-    public TextButton createButton() {
-        font = new BitmapFont(Gdx.files.internal("hud/SF_Atarian.fnt"));
-        buttonTexture = new Texture(250, 60, Pixmap.Format.Alpha);
-
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
-        TextButton textButton = new TextButton("PLAY AGAIN", buttonStyle);
-        textButton.setSize(Gdx.graphics.getWidth()/64, Gdx.graphics.getHeight()/64);
-        textButton.setPosition(Gdx.graphics.getWidth()/2 - textButton.getWidth()/2, Gdx.graphics.getHeight()/2 - textButton.getHeight()/2);
-        textButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                buttonClicked();
-            }
-
-            ;
-        });
-
-        return textButton;
-    }
-
-    public void buttonClicked() {
-        game.setScreen(new SplashScreen(game));
     }
 
     public void update(float delta) {
-
+        if (Gdx.input.isTouched()) {
+            dispose();
+            game.setScreen(new SplashScreen(game));
+        }
     }
 
 
@@ -133,8 +104,6 @@ public class ClientDisconnectedScreen implements Screen {
 
     @Override
     public void dispose() {
-        buttonTexture.dispose();
-        font.dispose();
         stage.dispose();
     }
 
