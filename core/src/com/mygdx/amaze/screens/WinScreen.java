@@ -191,7 +191,7 @@ public class WinScreen implements Screen {
 
         pointsLabel = new Label(String.format("POINTS: %2d", points), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("hud/SF_Atarian.fnt")), Color.WHITE));
         pointsLabel.setFontScale(5.5f);
-        pointsLabel.setPosition(Gdx.graphics.getWidth()/2 - pointsLabel.getWidth()/2, Gdx.graphics.getHeight()/2);
+        pointsLabel.setPosition(Gdx.graphics.getWidth()/2 - pointsLabel.getWidth()/2, Gdx.graphics.getHeight()/2-pointsLabel.getHeight());
 
         //define a table used to organize hud's labels
         table = new Table();
@@ -199,50 +199,27 @@ public class WinScreen implements Screen {
         table.setFillParent(true);
 
         //add labels to table
-        table.row();
-        table.row();
-        table.add(pointsLabel).expandX();
+        table.add(pointsLabel).expandX().pad(70);
 
         //add table to the stage
         stage.addActor(table);
 
-
-        // add a button
-        textButton = createButton();
-        stage.addActor(textButton);
-
-
-    }
-
-    public TextButton createButton() {
-        font = new BitmapFont(Gdx.files.internal("hud/SF_Atarian.fnt"));
-        buttonTexture = new Texture(250, 60, Pixmap.Format.Alpha);
-
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.up = new TextureRegionDrawable(new TextureRegion(buttonTexture));
-        TextButton textButton = new TextButton("PLAY AGAIN", buttonStyle);
-        textButton.setSize(Gdx.graphics.getWidth()/256, Gdx.graphics.getHeight()/256);
-        textButton.setPosition(Gdx.graphics.getWidth()/2 - textButton.getWidth()/2, Gdx.graphics.getHeight()/2 - textButton.getHeight()/2);
-        textButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                buttonClicked();
-            }
-
-            ;
-        });
-
-        return textButton;
-    }
-
-    public void buttonClicked() {
-        dispose();
-        game.setScreen(new SplashScreen(game));
     }
 
     public void update(float delta) {
-
+        if (Gdx.input.isTouched()) {
+            System.out.println("pressed");
+            if (playScreen != null) {
+                if(playScreen.getGameover().isPlaying()){
+                    playScreen.getGameover().stop();
+                }
+                if(playScreen.getVictory().isPlaying()){
+                    playScreen.getVictory().stop();
+                }
+            }
+            dispose();
+            game.setScreen(new SplashScreen(game));
+        }
     }
 
 
@@ -265,8 +242,6 @@ public class WinScreen implements Screen {
 
     @Override
     public void dispose() {
-        buttonTexture.dispose();
-        font.dispose();
         stage.dispose();
         game.networkClient.stop();
     }

@@ -73,10 +73,10 @@ public class PlayScreen implements Screen {
     private CollisionListener collisionListener;
 
     public static final Rectangle[] doorRect = new Rectangle[] {new Rectangle(320, 1600 - 144, 175, 144),
-                                                                new Rectangle(144, 3200 - 128, 192, 128)};
+            new Rectangle(144, 3200 - 128, 192, 128)};
 
     // states
-    public enum GameState { RUNNING, WIN, SCREEN_CHANGE, TIME_UP };
+    public enum GameState { RUNNING, WIN, SCREEN_CHANGE, TIME_UP, DISCONNECTED };
     public GameState gameState;
     public int level;
 
@@ -96,6 +96,9 @@ public class PlayScreen implements Screen {
     //music
     private Music level_1 = Gdx.audio.newMusic(Gdx.files.internal("music/urgent.mp3"));
     private Music level_2 = Gdx.audio.newMusic(Gdx.files.internal("music/black_star.mp3"));
+    private Music gameover = Gdx.audio.newMusic(Gdx.files.internal("music/gameover.mp3"));
+    private Music victory = Gdx.audio.newMusic(Gdx.files.internal("music/victory.ogg"));
+
 
     //points
     private int points = 0;
@@ -217,8 +220,8 @@ public class PlayScreen implements Screen {
 
     public boolean checkWinState() {
         //to check if p1 and p2 are in the area of the door
-        if (doorRect[level-1].contains(player.x, player.y) && 
-            doorRect[level-1].contains(friend.x, friend.y)) {
+        if (doorRect[level-1].contains(player.x, player.y) &&
+                doorRect[level-1].contains(friend.x, friend.y)) {
             return true;
         }
         return false;
@@ -264,6 +267,26 @@ public class PlayScreen implements Screen {
                 }
                 break;
 
+            case DISCONNECTED:
+                // pause for about 1 seconds before to transit to next level
+                if (level == game.MAX_LEVEL){
+                    level_2.stop();
+                    level_2.dispose();
+                    for(Monster m : monsters){
+                        if(m.destroyed){
+                            points += 100;
+                        }
+                    }
+                    points += elapsedTime*50;
+                    System.out.println("Points: " + points);
+                    game.setScreen(new ClientDisconnectedScreen(game, this, points));
+                } else {
+                    level_1.stop();
+                    level_1.dispose();
+                    game.setScreen(new ClientDisconnectedScreen(game, this, points));
+                }
+                break;
+
             case SCREEN_CHANGE:
                 dispose();
                 if (level == game.MAX_LEVEL){
@@ -274,15 +297,14 @@ public class PlayScreen implements Screen {
                             points += 100;
                         }
                     }
-                    points += (hud.timer - elapsedTime)*50;
+                    points += elapsedTime*50;
                     System.out.println("Points: " + points);
+                    victory.play();
                     game.setScreen(new WinScreen(game, this, points));
                 } else {
                     level_1.stop();
                     level_1.dispose();
                     game.setScreen(new PlayScreen(game, clientType, level + 1));
-                    level_2.setLooping(true);
-                    level_2.play();
                 }
                 return;
 
@@ -290,6 +312,7 @@ public class PlayScreen implements Screen {
                 level_1.stop();
                 level_1.dispose();
                 dispose();
+                gameover.play();
                 for(Monster m : monsters){
                     if(m.destroyed){
                         points += 100;
@@ -312,12 +335,13 @@ public class PlayScreen implements Screen {
         networkData.getFromServer();
         if (networkData.isAvailable()) {
             switch (networkData.messageType()) {
-            case Const.POSTGAME:
-                Gdx.app.log("PlayScreen", "Remote client disconnected.");
-                break;
-            case Const.REQUEST:
-                requestManager.resolve(networkData);
-                break;
+                case Const.POSTGAME:
+                    Gdx.app.log("PlayScreen", "Remote client disconnected.");
+                    gameState = GameState.DISCONNECTED;
+                    break;
+                case Const.REQUEST:
+                    requestManager.resolve(networkData);
+                    break;
             }
         } else {
             networkData.createDummyData();
@@ -465,4 +489,8 @@ public class PlayScreen implements Screen {
     public void hide() {
 
     }
+    public Music getGameover(){return gameover;}
+
+    public  Music getVictory(){return victory;}
 }
+
