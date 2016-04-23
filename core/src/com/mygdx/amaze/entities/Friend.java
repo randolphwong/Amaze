@@ -31,7 +31,7 @@ public class Friend extends AbstractPlayer {
 
         input = new FriendInputComponent(this, screen);
         physics = new FriendPhysicsComponent(this, screen.world);
-        graphics = new FriendGraphicsComponent(this, physics);
+        graphics = new FriendGraphicsComponent(this);
     }
 
     public void update(float delta, NetworkData networkData) {
@@ -42,10 +42,6 @@ public class Friend extends AbstractPlayer {
 
     public void draw(SpriteBatch batch) {
         graphics.draw(batch);
-    }
-
-    public byte getType() {
-        return screen.clientType;
     }
 
     public void dispose() {

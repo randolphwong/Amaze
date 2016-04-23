@@ -73,8 +73,4 @@ public class Player extends AbstractPlayer {
     public void makeCollidableWithHole() {
         physics.makeCollidableWithHole();
     }
-
-    public byte getType() {
-        return screen.clientType;
-    }
 }

@@ -22,5 +22,7 @@ public abstract class AbstractPlayer {
     public Vector2 velocity;
     public PlayScreen screen;
 
-    public abstract byte getType();
+    public byte getType() {
+        return screen.clientType;
+    }
 }
