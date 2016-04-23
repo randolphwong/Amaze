@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 import com.mygdx.amaze.utilities.Const;
 
-public class AmazeServerSingleThread {
+public class AmazeServer {
 
     private static final int PACKET_SIZE = 1024;
 
@@ -30,7 +30,7 @@ public class AmazeServerSingleThread {
     private long waitingTime;
     private static final long WAIT_TIME_THRESHOLD = 5000;
 
-    public AmazeServerSingleThread(int port) throws Exception {
+    public AmazeServer(int port) throws Exception {
         serverSocket = new DatagramSocket(port);
         room = new HashMap<InetSocketAddress, InetSocketAddress>();
         roomData = new HashMap<InetSocketAddress, GameData>();
