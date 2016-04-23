@@ -202,6 +202,8 @@ public class MonsterPhysicsComponent {
     }
 
     public void update(float delta) {
+        if (monster.destroyed) return;
+
         if (monster.isChasing()) {
             playerPosition.set(monster.player.x, monster.player.y);
             chase();

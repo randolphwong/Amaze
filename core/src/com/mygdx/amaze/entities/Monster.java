@@ -1,7 +1,5 @@
 package com.mygdx.amaze.entities;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -22,9 +20,7 @@ public class Monster {
     private static int monsterIdTracker = 0;
     private int id;
 
-    private PlayScreen screen;
-    private Sound laugh = Gdx.audio.newSound(Gdx.files.internal("sound/kefkalaugh.mp3"));
-    private Sound death = Gdx.audio.newSound(Gdx.files.internal("sound/monsterdeath.mp3"));
+    public PlayScreen screen;
 
     public static final float WIDTH = 90;
     public static final float HEIGHT = 90;
@@ -40,7 +36,7 @@ public class Monster {
     // target position that the monster will always move towards
     public Vector2 target;
 
-    private boolean chasingPlayer;
+    public boolean chasingPlayer;
     public Player player;
 
     // components
@@ -74,8 +70,8 @@ public class Monster {
 
     public void startChase(Player player) {
         this.player = player;
-        laugh.play();
         chasingPlayer = true;
+        input.startChase();
     }
 
     public void stopChase() {
@@ -87,19 +83,9 @@ public class Monster {
     }
 
     public void update(float delta, NetworkData networkData) {
-        if(!destroyed) {
-            input.update(delta, networkData);
-            physics.update(delta);
-            graphics.update(delta);
-        } else if (!dead) {
-            graphics.update(delta);
-        }
-        if(todestroy && !destroyed){
-            death.play();
-            screen.world.destroyBody(getBody());
-            position.set(-1f, -1f);
-            destroyed = true;
-        }
+        input.update(delta, networkData);
+        physics.update(delta);
+        graphics.update(delta);
     }
 
     public void destroy(){
@@ -119,6 +105,7 @@ public class Monster {
 
     public void dispose() {
         monsterIdTracker -= 1;
+        input.dispose();
         graphics.dispose();
     }
 }

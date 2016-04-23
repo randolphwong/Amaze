@@ -28,6 +28,8 @@ public class MonsterGraphicsComponent extends GraphicsComponent {
 
     @Override
     public void update(float delta) {
+        if (monster.dead) return;
+
         if (monster.position.x > 0) {
             monsterSprite.setCenter(monster.position.x, monster.position.y);
         }
