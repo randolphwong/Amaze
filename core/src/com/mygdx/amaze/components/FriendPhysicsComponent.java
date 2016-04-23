@@ -11,7 +11,7 @@ import com.mygdx.amaze.networking.GameData;
 /**
  * Created by Randolph on 13/3/2016.
  */
-public class FriendPhysicsComponent extends PhysicsComponent {
+public class FriendPhysicsComponent {
 
     private Friend friend;
 

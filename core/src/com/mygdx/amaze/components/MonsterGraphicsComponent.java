@@ -8,7 +8,7 @@ import com.mygdx.amaze.entities.Monster;
 /**
  * Created by Randolph on 13/3/2016.
  */
-public class MonsterGraphicsComponent extends GraphicsComponent {
+public class MonsterGraphicsComponent {
 
     public static final float RESPAWN_TIME = 2; // time in seconds
     private float respawnTimer;
@@ -26,8 +26,9 @@ public class MonsterGraphicsComponent extends GraphicsComponent {
 
     }
 
-    @Override
     public void update(float delta) {
+        if (monster.dead) return;
+
         if (monster.position.x > 0) {
             monsterSprite.setCenter(monster.position.x, monster.position.y);
         }
@@ -41,12 +42,10 @@ public class MonsterGraphicsComponent extends GraphicsComponent {
         }
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         monsterSprite.draw(batch);
     }
 
-    @Override
     public void dispose() {
         monsterSprite.getTexture().dispose();
     }

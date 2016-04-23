@@ -13,7 +13,7 @@ import com.mygdx.amaze.collision.CollisionListener;
 /**
  * Created by Loo Yi on 3/31/2016.
  */
-public class ProjectilePhysicsComponent extends PhysicsComponent {
+public class ProjectilePhysicsComponent {
     private Projectile projectile;
 
     private World world;
@@ -26,14 +26,12 @@ public class ProjectilePhysicsComponent extends PhysicsComponent {
         createBody();
     }
 
-    @Override
     public void update(float delta) {
         body.setLinearVelocity(projectile.velocity);
         projectile.x = body.getPosition().x;
         projectile.y = body.getPosition().y;
     }
 
-    @Override
     public void createBody() {
 
         BodyDef bodyDef = new BodyDef();
@@ -56,7 +54,6 @@ public class ProjectilePhysicsComponent extends PhysicsComponent {
 
     }
 
-    @Override
     public Body getBody() {
         return body;
     }

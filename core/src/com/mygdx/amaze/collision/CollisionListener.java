@@ -26,6 +26,7 @@ public class CollisionListener implements ContactListener {
     public PlayScreen screen;
 
     private int requestDelay = 1;
+    public static final int REQUEST_DELAY = (int) Math.pow(2, 20); // delay request for 20 frames
 
     // collision filter bits (for identification of collision entities)
     public static final short WALL_BIT              = 1 << 0;
@@ -102,10 +103,10 @@ public class CollisionListener implements ContactListener {
                 if (requestDelay == 1) {
                     RequestManager.getInstance().newRequest(new MonsterChaseRequest(screen.player, monster));
                 }
-                // delay the request so as not the flood the server?
-                // send request at every 10th attempt
+                // delay the request so as not the flood the server
+                // send request at every 20th frame
                 requestDelay <<= 1;
-                if (requestDelay == 1048576) requestDelay = 1;
+                if (requestDelay == REQUEST_DELAY) requestDelay = 1;
             }
         }
         // prevent collided bodies from sleeping and thus missing a collision!
@@ -173,7 +174,6 @@ public class CollisionListener implements ContactListener {
             onProjectileHitMonster(fixtureA, fixtureB);
             break;
         case PROJECTILE_BIT | WALL_BIT:
-            System.out.println("hit wall");
             onProjectileHitWall(fixtureA, fixtureB);
             break;
         }

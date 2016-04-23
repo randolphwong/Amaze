@@ -9,12 +9,11 @@ import java.io.Serializable;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import com.mygdx.amaze.utilities.Const;
 
-public class AmazeServerSingleThread {
+public class AmazeServer {
 
     private static final int PACKET_SIZE = 1024;
 
@@ -31,7 +30,7 @@ public class AmazeServerSingleThread {
     private long waitingTime;
     private static final long WAIT_TIME_THRESHOLD = 5000;
 
-    public AmazeServerSingleThread(int port) throws Exception {
+    public AmazeServer(int port) throws Exception {
         serverSocket = new DatagramSocket(port);
         room = new HashMap<InetSocketAddress, InetSocketAddress>();
         roomData = new HashMap<InetSocketAddress, GameData>();
@@ -46,9 +45,6 @@ public class AmazeServerSingleThread {
         while (true) {
             getClientMessage();
             if (receiveGameData == null) continue;
-
-            // DEBUG PRINT
-            //System.out.println("received packet");
             
             switch (receiveGameData.msgType) {
                 case Const.PREGAME: handlePreGameMessage(); break;
@@ -63,10 +59,9 @@ public class AmazeServerSingleThread {
 
     private void getClientMessage() {
         try {
-            Arrays.fill(receiveData, (byte) 0);
             serverSocket.receive(receivePacket);
 
-            ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(receiveData);
+            ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(receiveData, 0, receivePacket.getLength());
             ObjectInputStream objInputStream = new ObjectInputStream(arrayInputStream);
             receiveGameData = (GameData) objInputStream.readObject();
 
@@ -74,14 +69,12 @@ public class AmazeServerSingleThread {
             receiveGameData.ipAddress = receivePacket.getAddress().getHostAddress();
             receiveGameData.port = receivePacket.getPort();
         } catch (ClassNotFoundException e) {
-            // DEBUG PRINT
             System.out.println("Received packet is not recognised.");
         } catch (Exception e) {}
     }
 
     private void handlePreGameMessage() {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
-        // DEBUG PRINT
         System.out.println(senderAddress + " is attempting to join game.");
         if (room.containsKey(senderAddress)) return; // ignore if a client is already in game
 
@@ -105,12 +98,8 @@ public class AmazeServerSingleThread {
     private void handleInGameMessage() {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
         if (!room.containsKey(senderAddress)) {
-            // DEBUG PRINT
-            //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
             return;
         }
-        // DEBUG PRINT
-        //System.out.println("handling in game message from: " + senderAddress);
         /*
          * Server being the authority here. Item picking and spawning and monster chasing/unchasing
          * will be finalised by the server. Clients cannot bypass the server to notify each other on
@@ -125,8 +114,6 @@ public class AmazeServerSingleThread {
     private void handlePostGameMessage() {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
         if (!room.containsKey(senderAddress)) {
-            // DEBUG PRINT
-            //System.out.println(senderAddress + " is not in game room, but POSTGAME message received.");
             return;
         }
         // DEBUG PRINT
@@ -143,8 +130,6 @@ public class AmazeServerSingleThread {
     private void handleInitialisationMessage() {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
         if (!room.containsKey(senderAddress)) {
-            // DEBUG PRINT
-            //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
             return;
         }
         /*
@@ -180,11 +165,8 @@ public class AmazeServerSingleThread {
     private void handleRequestMessage() {
         InetSocketAddress senderAddress = new InetSocketAddress(receiveGameData.ipAddress, receiveGameData.port);
         if (!room.containsKey(senderAddress)) {
-            // DEBUG PRINT
-            //System.out.println(senderAddress + " is not in game room, but INGAME message received.");
             return;
         }
-        // DEBUG PRINT
         evaluateRequest(senderAddress);
     }
 
@@ -194,7 +176,6 @@ public class AmazeServerSingleThread {
 
         switch(receiveGameData.requestType) {
         case Const.ITEM_REQUEST:
-            System.out.println("handling item request from: " + senderAddress);
             /*
              * By default, itemTaken bit field will be 0 for each item. A request will have the
              * corresponding bit set as 1. As a result, if an item has no yet been taken, the
@@ -205,9 +186,6 @@ public class AmazeServerSingleThread {
             currentRoomData.itemTaken |= receiveGameData.itemTaken;
             break;
         case Const.ITEM_RESPAWN_REQUEST:
-            System.out.println("handling item respawn request from: " + senderAddress);
-            System.out.println("current item status: " + currentRoomData.itemTaken);
-            System.out.println("requested item respawn status: " + currentRoomData.itemTaken);
             /*
              * Reset the itemTaken flag by masking
              */
@@ -215,10 +193,6 @@ public class AmazeServerSingleThread {
             receiveGameData.requestOutcome = true;
             break;
         case Const.MONSTER_CHASE_REQUEST:
-            System.out.print(System.currentTimeMillis() + " - start chase"+"(id: "+receiveGameData.requestId+") - "+" - outcome ");
-            //System.out.println("handling monster chasing request from: " + senderAddress);
-            //System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
-            //System.out.println("requested monster chasing status: " + receiveGameData.monsterChasing);
             /*
              * By default, monsterChasing bit field will be 0 for each monster. A request will have
              * the corresponding bit set as 1. As a result, if the monster is not chasing yet, the
@@ -227,53 +201,23 @@ public class AmazeServerSingleThread {
              */
             receiveGameData.requestOutcome = canChase(currentRoomData);
             if (receiveGameData.requestOutcome) {
-                System.out.print("success: ");
-            } else {
-                System.out.print("fail: ");
-            }
-            System.out.print(currentRoomData.monsterChasing + " > ");
-            if (receiveGameData.requestOutcome) {
-                System.out.print("success: ");
                 currentRoomData.monsterChasing |= receiveGameData.monsterChasing;
-            } else {
-                System.out.print("fail: ");
             }
-            System.out.print(currentRoomData.monsterChasing + " - sender: ");
-            System.out.print(receiveGameData.port);
             break;
         case Const.MONSTER_STOP_CHASE_REQUEST:
-            System.out.print(System.currentTimeMillis() + " - stop chase"+"(id: "+receiveGameData.requestId+") - "+" - outcome ");
-            //System.out.println("handling monster stop chasing request from: " + senderAddress);
-            //System.out.println("current monster chasing status: " + currentRoomData.monsterChasing);
-            //System.out.println("requested monster stop chasing status: " + receiveGameData.monsterChasing);
             /*
              * Reset the monsterChasing flag by masking
              */
             receiveGameData.requestOutcome = canStopChase(currentRoomData);
             if (receiveGameData.requestOutcome) {
-                System.out.print("success: ");
-            } else {
-                System.out.print("fail: ");
-            }
-            System.out.print(currentRoomData.monsterChasing + " > ");
-            if (receiveGameData.requestOutcome) {
-                System.out.print("success: ");
                 currentRoomData.monsterChasing &= ~receiveGameData.monsterChasing;
-            } else {
-                System.out.print("fail: ");
             }
-            System.out.print(currentRoomData.monsterChasing + " - sender: ");
-            System.out.print(receiveGameData.port);
             break;
         }
-        System.out.println("request outcome: " + receiveGameData.requestOutcome);
         send(senderAddress, receiveGameData);
     }
 
     private boolean canChase(GameData currentRoomData) {
-        /*
-         * compare whether master 
-         */
         short receivedMasterRequest = (short) (receiveGameData.monsterChasing >> 8);
         short receivedSlaveRequest = (short) (receiveGameData.monsterChasing & 0xff);
         short currentMasterStatus = (short) (currentRoomData.monsterChasing >> 8);
@@ -293,9 +237,6 @@ public class AmazeServerSingleThread {
     }
 
     private boolean canStopChase(GameData currentRoomData) {
-        /*
-         * compare whether master 
-         */
         short receivedMasterRequest = (short) (receiveGameData.monsterChasing >> 8);
         short receivedSlaveRequest = (short) (receiveGameData.monsterChasing & 0xff);
         short currentMasterStatus = (short) (currentRoomData.monsterChasing >> 8);
@@ -324,7 +265,7 @@ public class AmazeServerSingleThread {
         // DEBUG PRINT
         System.out.println("Sending confirmation to " + clientA);
         System.out.println("Sending confirmation to " + clientB);
-        // assuming that these packets don't get lost!
+
         newGameData.clientType = Const.MASTER_CLIENT;
         send(clientA, newGameData);
         newGameData.clientType = Const.SLAVE_CLIENT;
@@ -332,7 +273,6 @@ public class AmazeServerSingleThread {
     }
 
     private void send(InetSocketAddress sockAddr, GameData gameData) {
-        Arrays.fill(sendData, (byte) 0);
         gameData.ServerTimeStamp = System.currentTimeMillis();
         try {
             ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();

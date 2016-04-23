@@ -12,28 +12,10 @@ import com.mygdx.amaze.screens.PlayScreen;
 /**
  * Created by Randolph on 12/3/2016.
  */
-public class Friend {
+public class Friend extends AbstractPlayer {
 
-    private PlayScreen screen;
-
-    public float spawnX;
-    public float spawnY;
-
-    public static final float SIZE = 32;
-    public float x;
-    public float y;
     public float targetX;
     public float targetY;
-
-    public int health = 99;
-    public boolean attacked = false;
-    public boolean shielded = false;
-    public boolean dead = false;
-
-    //inventory
-    public Item[] Inventory;
-
-    public Vector2 velocity;
 
     // components
     public FriendInputComponent input;
@@ -49,12 +31,8 @@ public class Friend {
 
         input = new FriendInputComponent(this, screen);
         physics = new FriendPhysicsComponent(this, screen.world);
-        graphics = new FriendGraphicsComponent(this, physics);
+        graphics = new FriendGraphicsComponent(this);
     }
-
-    //public Body getBody() {
-        //return physics.getBody();
-    //}
 
     public void update(float delta, NetworkData networkData) {
         input.update(delta, networkData);
@@ -64,10 +42,6 @@ public class Friend {
 
     public void draw(SpriteBatch batch) {
         graphics.draw(batch);
-    }
-
-    public byte getType() {
-        return screen.clientType;
     }
 
     public void dispose() {

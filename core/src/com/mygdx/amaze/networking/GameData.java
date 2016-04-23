@@ -1,7 +1,6 @@
 package com.mygdx.amaze.networking;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import com.mygdx.amaze.utilities.Coord;
 
@@ -34,7 +33,6 @@ public class GameData implements Serializable {
     public int port;
     public long clientTimeStamp;
     public long ServerTimeStamp;
-    public long acknowledgement;
     public int requestId;
     public byte requestType;
     public boolean requestOutcome;
