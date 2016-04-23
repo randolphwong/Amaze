@@ -15,7 +15,7 @@ import com.mygdx.amaze.entities.Item;
 /**
  * Created by Dhanya on 24/03/2016.
  */
-public class ItemPhysicsComponent extends PhysicsComponent{
+public class ItemPhysicsComponent {
     private Item item;
     private Body body;
     private World world;
@@ -27,7 +27,6 @@ public class ItemPhysicsComponent extends PhysicsComponent{
         createBody();
     }
 
-    @Override
     public void update(float delta) {
 //        item.posX = body.getPosition().x; // <<this part
 //        item.posY = body.getPosition().y;
@@ -52,7 +51,6 @@ public class ItemPhysicsComponent extends PhysicsComponent{
         shape.dispose();
     }
 
-    @Override
     public Body getBody() {
         return body;
     }

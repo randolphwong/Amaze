@@ -16,7 +16,7 @@ import com.mygdx.amaze.scenes.Hud;
 /**
  * Created by Randolph on 13/3/2016.
  */
-public class PlayerInputComponent extends InputComponent {
+public class PlayerInputComponent {
 
     private Player player;
     private Sound sound_fire = Gdx.audio.newSound(Gdx.files.internal("sound/firesoundeffect.ogg"));

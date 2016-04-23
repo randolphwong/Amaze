@@ -13,7 +13,7 @@ import com.mygdx.amaze.entities.Player;
 /**
  * Created by Randolph on 13/3/2016.
  */
-public class PlayerPhysicsComponent extends PhysicsComponent {
+public class PlayerPhysicsComponent {
 
     public static final float RESPAWN_TIME = 2; // time in seconds
 

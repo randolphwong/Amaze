@@ -12,7 +12,7 @@ import com.mygdx.amaze.entities.Monster;
 /**
  * Created by Dhanya on 22/03/2016.
  */
-public class ItemGraphicsComponent extends GraphicsComponent {
+public class ItemGraphicsComponent {
     private Item item;
     private ItemType type;
 
@@ -53,17 +53,14 @@ public class ItemGraphicsComponent extends GraphicsComponent {
 
     }
 
-    @Override
     public void update(float delta) {
         itemSprite.setCenter(item.posX, item.posY);
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         itemSprite.draw(batch);
     }
 
-    @Override
     public void dispose() {
         for (int i = 0; i < itemList.length; i++)
             itemList[i].getTexture().dispose();

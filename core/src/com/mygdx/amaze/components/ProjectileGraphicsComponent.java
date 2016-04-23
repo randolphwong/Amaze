@@ -10,7 +10,7 @@ import com.mygdx.amaze.screens.PlayScreen;
 /**
  * Created by Loo Yi on 3/31/2016.
  */
-public class ProjectileGraphicsComponent extends GraphicsComponent {
+public class ProjectileGraphicsComponent {
     private Projectile projectile;
 
     private World world;
@@ -37,12 +37,10 @@ public class ProjectileGraphicsComponent extends GraphicsComponent {
 
     }
 
-    @Override
     public void update(float delta) {
         laserSprite.setCenter(projectile.x,projectile.y);
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         laserSprite.draw(batch);
     }
