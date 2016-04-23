@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import com.mygdx.amaze.utilities.Const;
@@ -63,10 +62,9 @@ public class AmazeServerSingleThread {
 
     private void getClientMessage() {
         try {
-            Arrays.fill(receiveData, (byte) 0);
             serverSocket.receive(receivePacket);
 
-            ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(receiveData);
+            ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(receiveData, 0, receivePacket.getLength());
             ObjectInputStream objInputStream = new ObjectInputStream(arrayInputStream);
             receiveGameData = (GameData) objInputStream.readObject();
 
@@ -332,7 +330,6 @@ public class AmazeServerSingleThread {
     }
 
     private void send(InetSocketAddress sockAddr, GameData gameData) {
-        Arrays.fill(sendData, (byte) 0);
         gameData.ServerTimeStamp = System.currentTimeMillis();
         try {
             ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
