@@ -1,8 +1,6 @@
 package com.mygdx.amaze.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.amaze.components.ItemGraphicsComponent;
@@ -25,9 +23,6 @@ public class Item {
     private PlayScreen screen;
     public ItemType type;
 
-    private Sound gunpickup = Gdx.audio.newSound(Gdx.files.internal("sound/gunpickupsound.mp3"));
-    private Sound potionpickup = Gdx.audio.newSound(Gdx.files.internal("sound/potionsound.mp3"));
-    private Sound shieldpickup = Gdx.audio.newSound(Gdx.files.internal("sound/shieldsound.mp3"));
 
     private boolean todestroy;
     private boolean destroyed;
@@ -87,14 +82,6 @@ public class Item {
         if(todestroy && !destroyed){
             todestroy = false;
             screen.world.destroyBody(getBody());
-            switch(this.type){
-                case LASER_GUN : gunpickup.play(0.5f);
-                    break;
-                case HEALTH_POTION: potionpickup.play(0.5f);
-                    break;
-                case SHIELD: shieldpickup.play(0.5f);
-                    break;
-            }
             destroyed = true;
             if (screen.clientType == Const.MASTER_CLIENT) {
                 screen.addAvailableItemPosition(new Vector2(posX, posY));
@@ -136,8 +123,5 @@ public class Item {
 
     public void dispose() {
         graphics.dispose();
-        gunpickup.dispose();
-        shieldpickup.dispose();
-        potionpickup.dispose();
     }
 }

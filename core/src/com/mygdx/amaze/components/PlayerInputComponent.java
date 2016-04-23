@@ -21,6 +21,9 @@ public class PlayerInputComponent extends InputComponent {
     private Player player;
     private Sound sound_fire = Gdx.audio.newSound(Gdx.files.internal("sound/firesoundeffect.ogg"));
     private Sound sound_hit = Gdx.audio.newSound(Gdx.files.internal("sound/takingdamage.mp3"));
+    private Sound sound_gunpickup = Gdx.audio.newSound(Gdx.files.internal("sound/gunpickupsound.mp3"));
+    private Sound sound_potionpickup = Gdx.audio.newSound(Gdx.files.internal("sound/potionsound.mp3"));
+    private Sound sound_shieldpickup = Gdx.audio.newSound(Gdx.files.internal("sound/shieldsound.mp3"));
 
     private Hud hud;
     private Touchpad touchpad;
@@ -44,14 +47,17 @@ public class PlayerInputComponent extends InputComponent {
         case HEALTH_POTION:
             if(player.health < 99) {
                 player.health = 99;
+                sound_potionpickup.play(0.5f);
             }
             break;
         case LASER_GUN:
             player.gunequipped = true;
             player.shotsLeft += 5;
+            sound_gunpickup.play(0.5f);
             break;
         case SHIELD:
             player.shielded = true;
+            sound_shieldpickup.play(0.5f);
             break;
         }
         item.destroy();
@@ -115,5 +121,8 @@ public class PlayerInputComponent extends InputComponent {
     public void dispose() {
         sound_hit.dispose();
         sound_fire.dispose();
+        sound_gunpickup.dispose();
+        sound_shieldpickup.dispose();
+        sound_potionpickup.dispose();
     }
 }
