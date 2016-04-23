@@ -37,7 +37,6 @@ public class NetworkData {
         cloned.itemTaken = gameData.itemTaken;
         cloned.clientTimeStamp = gameData.clientTimeStamp;
         cloned.ServerTimeStamp = gameData.ServerTimeStamp;
-        cloned.acknowledgement = gameData.acknowledgement;
         cloned.requestId = gameData.requestId;
         cloned.requestType = gameData.requestType;
         cloned.requestOutcome = gameData.requestOutcome;
@@ -79,7 +78,6 @@ public class NetworkData {
         cloned.port = gameData.port;
         cloned.clientTimeStamp = gameData.clientTimeStamp;
         cloned.ServerTimeStamp = gameData.ServerTimeStamp;
-        cloned.acknowledgement = gameData.acknowledgement;
         cloned.requestId = gameData.requestId;
         cloned.requestType = gameData.requestType;
         cloned.requestOutcome = gameData.requestOutcome;
