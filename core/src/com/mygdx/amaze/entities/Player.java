@@ -1,7 +1,5 @@
 package com.mygdx.amaze.entities;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -20,8 +18,6 @@ public class Player {
 
     public float spawnX;
     public float spawnY;
-    private Sound fire = Gdx.audio.newSound(Gdx.files.internal("sound/firesoundeffect.ogg"));
-    private Sound hit = Gdx.audio.newSound(Gdx.files.internal("sound/takingdamage.mp3"));
 
     public static final float SIZE = 32;
     public float x;
@@ -44,6 +40,7 @@ public class Player {
 
     public Vector2 velocity;
     public PlayScreen screen;
+
     // components
     public PlayerInputComponent input;
     public PlayerPhysicsComponent physics;
@@ -73,9 +70,6 @@ public class Player {
         input.update(delta);
         physics.update(delta);
         graphics.update(delta, friend);
-        faceState();
-        gunState();
-
     }
 
     public void destroy() {
@@ -83,8 +77,7 @@ public class Player {
     }
 
     public void attacked() {
-        this.attacked = true;
-        hit.play();
+        input.attacked();
     }
 
     public void draw(SpriteBatch batch) {
@@ -92,41 +85,12 @@ public class Player {
     }
 
     public void dispose() {
-        hit.dispose();
-        fire.dispose();
+        input.dispose();
         graphics.dispose();
     }
 
     public void makeCollidableWithHole() {
         physics.makeCollidableWithHole();
-    }
-
-    public void gunState(){
-        if(shotsLeft<=0){
-            gunequipped =false;
-        }
-    }
-
-    public void faceState (){
-        if(this.velocity.x>0 && this.velocity.y==0){
-            this.faceState = FaceState.RIGHT;
-        }else if(this.velocity.x<0 && this.velocity.y==0){
-            this.faceState = FaceState.LEFT;
-        }else if(this.velocity.x==0 && this.velocity.y>0){
-            this.faceState = FaceState.UP;
-        }else if(this.velocity.x ==0 && this.velocity.y<0) {
-            this.faceState = FaceState.DOWN;
-        }
-    }
-
-    public void fireLaser(){
-        if(gunequipped || shotsLeft >0){
-            fire.play(0.5f);
-            Projectile p = new Projectile(this.screen,this.x,this.y, faceState);
-            this.screen.projectiles.add(p);
-            shotsDone += 1;
-            shotsLeft--;
-        }
     }
 
     public byte getType() {
