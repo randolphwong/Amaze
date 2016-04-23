@@ -226,7 +226,7 @@ public class AmazeClient {
     }
 
     /**
-     * invariant: this method will only be called by one thread at any time
+     * invariant: this method will only be called by a single thread at any point of time
      */
     private void sendGameDataBlocking(GameData gameData) throws InterruptedException, SocketException {
         try {
@@ -244,8 +244,7 @@ public class AmazeClient {
     }
 
     /**
-     * invariant: these data structures will only be modified by a single
-     * thread at any point of time
+     * invariant: this method will only be called by a single thread at any point of time
      */
     private GameData getGameDataBlocking() throws InterruptedException, SocketTimeoutException, SocketException {
         GameData gameData = null;
