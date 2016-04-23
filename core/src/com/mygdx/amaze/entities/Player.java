@@ -11,35 +11,16 @@ import com.mygdx.amaze.screens.PlayScreen;
 /**
  * Created by Randolph on 12/3/2016.
  */
-public class Player {
+public class Player extends AbstractPlayer {
 
     public enum FaceState { UP, DOWN, LEFT, RIGHT }
     public FaceState faceState;
 
-    public float spawnX;
-    public float spawnY;
-
-    public static final float SIZE = 32;
-    public float x;
-    public float y;
-
-    public boolean todestroy;
-    public boolean dead;
-
-    public float health = 99;
-    public boolean shielded = false;
-    public boolean attacked = false;
     public boolean collidableWithHole = false;
 
     public int shotsLeft;
     public int shotsDone;
     public boolean gunequipped;
-
-    //inventory
-    public Item[] Inventory;
-
-    public Vector2 velocity;
-    public PlayScreen screen;
 
     // components
     public PlayerInputComponent input;
