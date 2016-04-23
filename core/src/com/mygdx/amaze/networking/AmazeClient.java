@@ -26,6 +26,11 @@ public class AmazeClient {
 
     // udp stuffs
     private DatagramSocket clientSocket;
+
+    /**
+     * invariant: these data structures will only be modified by a single
+     * thread at any point of time
+     */
     private DatagramPacket sendPacket;
     private DatagramPacket receivePacket;
     private byte[] sendData;
@@ -66,7 +71,7 @@ public class AmazeClient {
         try {
             if (joinRoomThread != null) joinRoomThread.join();
         } catch (InterruptedException e) {
-            Gdx.app.error("AmazeClient", "startMultiplayerGame()", e);
+            Gdx.app.error("AmazeClient", "startMultiplayerGame()");
             Thread.currentThread().interrupt();
         }
         if (!gameStarted) {
@@ -94,10 +99,10 @@ public class AmazeClient {
         try {
             sendGameDataBlocking(data);
         } catch (SocketException e) {
-            System.err.println("socket closed while sending POSTGAME message");
+            Gdx.app.error("AmazeClient", "socket closed while sending POSTGAME message");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("interrupted while sending POSTGAME message");
+            Gdx.app.error("AmazeClient", "interrupted while sending POSTGAME message");
         }
         gameStarted = false;
     }
@@ -116,15 +121,14 @@ public class AmazeClient {
         senderThread.start();
     }
 
-    // TODO: is this thread-safe?
     private void sender() {
         while (!Thread.interrupted()) {
             try {
                 sendGameDataBlocking(sendQueue.take());
             } catch (SocketException e) {
-                System.err.println("socket closed in sender thread");
+                Gdx.app.error("AmazeClient", "socket closed in sender thread");
             } catch (InterruptedException e) {
-                System.err.println("senderThread interrupted.");
+                Gdx.app.error("AmazeClient", "senderThread interrupted.");
                 return;
             }
         }
@@ -140,7 +144,6 @@ public class AmazeClient {
         receiverThread.start();
     }
 
-    // TODO: is this thread-safe?
     private void receiver() {
         while (!Thread.interrupted()) {
             try {
@@ -149,12 +152,12 @@ public class AmazeClient {
                     receiveQueue.put(gameData);
                 }
             } catch (SocketException e) {
-                System.err.println("socket closed in receiverThread.");
+                Gdx.app.error("AmazeClient", "socket closed in receiverThread.");
                 return;
             } catch (SocketTimeoutException e) {
-                System.err.println("socket timed out in receiverThread.");
+                Gdx.app.error("AmazeClient", "socket timed out in receiverThread.");
             } catch (InterruptedException e) {
-                System.err.println("receiverThread interrupted.");
+                Gdx.app.error("AmazeClient", "receiverThread interrupted.");
                 return;
             }
         }
@@ -177,7 +180,6 @@ public class AmazeClient {
         joinRoomThread.start();
     }
 
-    // TODO: is this thread-safe?
     /**
      * precondition: networkListener != null
      */
@@ -197,12 +199,12 @@ public class AmazeClient {
                     break;
                 }
             } catch (SocketException e) {
-                System.err.println("socket closed in joinRoomThread.");
+                Gdx.app.error("AmazeClient", "socket closed in joinRoomThread.");
                 return;
             } catch (SocketTimeoutException e) {
-                System.err.println("socket timed out in joinRoomThread.");
+                Gdx.app.error("AmazeClient", "socket timed out in joinRoomThread.");
             } catch (InterruptedException e) {
-                System.err.println("joinRoomThread interrupted");
+                Gdx.app.error("AmazeClient", "joinRoomThread interrupted");
                 return;
             }
         }
@@ -223,6 +225,9 @@ public class AmazeClient {
         return receiveQueue.poll();
     }
 
+    /**
+     * invariant: this method will only be called by one thread at any time
+     */
     private void sendGameDataBlocking(GameData gameData) throws InterruptedException, SocketException {
         try {
             ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
@@ -234,10 +239,14 @@ public class AmazeClient {
         } catch (SocketException e) {
             throw e;
         } catch (IOException e) {
-            e.printStackTrace();
+            Gdx.app.error("AmazeClient", "sendGameDataBlocking()", e);
         }
     }
 
+    /**
+     * invariant: these data structures will only be modified by a single
+     * thread at any point of time
+     */
     private GameData getGameDataBlocking() throws InterruptedException, SocketTimeoutException, SocketException {
         GameData gameData = null;
         try {
@@ -250,9 +259,9 @@ public class AmazeClient {
         } catch (SocketTimeoutException e) {
             throw e;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Gdx.app.error("AmazeClient", "getGameDataBlocking()", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            Gdx.app.error("AmazeClient", "getGameDataBlocking()", e);
         }
         return gameData;
     }
