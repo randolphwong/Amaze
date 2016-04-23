@@ -35,8 +35,8 @@ public class ItemsScreen implements Screen, AmazeNetworkListener {
     private Sprite backgroundSet;
     private TextButton textButton;
 
-    private boolean joinedRoom; // guarded by InstructionScreen.class
-    private GameData gameData; // guarded by InstructionScreen.class
+    private boolean joinedRoom; // guarded by this
+    private GameData gameData; // guarded by this
 
     public ItemsScreen(AmazeGame game) {
         this.game = game;
@@ -89,15 +89,13 @@ public class ItemsScreen implements Screen, AmazeNetworkListener {
         }
     }
 
-    public void update(float delta) {
-        //System.out.println("Width: " + Gdx.graphics.getWidth() + " Height: " + Gdx.graphics.getHeight());
-        synchronized(InstructionScreen.class) {
-            if (joinedRoom) {
-                joinedRoom = false;
+    public synchronized void update(float delta) {
+        if (joinedRoom) {
+            joinedRoom = false;
+            byte clientType = gameData.clientType;
 
-                game.setScreen(new PlayScreen(game, gameData.clientType, 1));
-                dispose();
-            }
+            game.setScreen(new PlayScreen(game, clientType, 1));
+            dispose();
         }
     }
 
@@ -119,10 +117,7 @@ public class ItemsScreen implements Screen, AmazeNetworkListener {
 
     @Override
     public void onRoomCreated(GameData data) {
-        // unfortunately i cannot perform setscreen here because this is not
-        // under the UI thread... so it means this onRoomCreated is kind of
-        // redundant
-        synchronized(InstructionScreen.class) {
+        synchronized(this) {
             joinedRoom = true;
             gameData = data;
         }
