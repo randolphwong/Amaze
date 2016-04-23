@@ -1,5 +1,6 @@
 package com.mygdx.amaze.networking;
 
+import com.badlogic.gdx.Gdx;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -61,6 +62,13 @@ public class AmazeClient {
     }
 
     public void startMultiplayerGame() {
+        if (joinRoomThread != null) joinRoomThread.interrupt();
+        try {
+            if (joinRoomThread != null) joinRoomThread.join();
+        } catch (InterruptedException e) {
+            Gdx.app.error("AmazeClient", "startMultiplayerGame()", e);
+            Thread.currentThread().interrupt();
+        }
         if (!gameStarted) {
             startSender();
             startReceiver();
