@@ -1,4 +1,4 @@
-package com.mygdx.amaze.components;
+package com.mygdx.amaze.scenes;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.amaze.entities.Player;
