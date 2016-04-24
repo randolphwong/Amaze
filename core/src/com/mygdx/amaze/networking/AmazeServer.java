@@ -28,7 +28,7 @@ public class AmazeServer {
 
     private InetSocketAddress currentWaiting;
     private long waitingTime;
-    private static final long WAIT_TIME_THRESHOLD = 5000;
+    private static final long WAIT_TIME_THRESHOLD = 600;
 
     public AmazeServer(int port) throws Exception {
         serverSocket = new DatagramSocket(port);
