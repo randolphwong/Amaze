@@ -52,9 +52,6 @@ public class AmazeClient {
     public AmazeClient() {
         sendData = new byte[PACKET_SIZE];
         receiveData = new byte[PACKET_SIZE];
-
-        receiveQueue = new LinkedBlockingQueue<GameData>();
-        sendQueue = new LinkedBlockingQueue<GameData>();
     }
 
     public void start() throws SocketException, UnknownHostException {
@@ -75,6 +72,8 @@ public class AmazeClient {
             Thread.currentThread().interrupt();
         }
         if (!gameStarted) {
+            receiveQueue = new LinkedBlockingQueue<GameData>();
+            sendQueue = new LinkedBlockingQueue<GameData>();
             startSender();
             startReceiver();
             gameStarted = true;
@@ -193,8 +192,6 @@ public class AmazeClient {
 
                 data = getGameDataBlocking();
                 if (data != null && data.msgType == Const.INGAME) {
-                    // clear receiveQueue in case it has any PREGAME data
-                    receiveQueue.clear();
                     networkListener.onRoomCreated(data);
                     break;
                 }
